@@ -1,0 +1,95 @@
+version: "3.7"
+
+services:
+  app:
+    build:
+      #args:
+      #  user: sammy
+      #  uid: 1000
+      context: ./docker/php/
+      dockerfile: Dockerfile
+    image: project
+    container_name: app-project
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    networks:
+      - network-project
+
+#  db:
+#    image: mysql:8.0
+#    container_name: project-db
+#    restart: unless-stopped
+#    environment:
+#      MYSQL_DATABASE: ${DB_DATABASE}
+#      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+#      MYSQL_PASSWORD: ${DB_PASSWORD}
+#      MYSQL_USER: ${DB_USERNAME}
+#      SERVICE_TAGS: dev
+#      SERVICE_NAME: mysql
+#    #volumes:
+#    #  - ./docker-compose/mysql:/docker-entrypoint-initdb.d
+#    networks:
+#      - project-network
+
+  nginx:
+    image: nginx:1.17-alpine
+    container_name: nginx-project
+    restart: unless-stopped
+    ports:
+      - "9000:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - network-project
+
+
+
+
+
+
+networks:
+  network-project:
+    driver: bridge
+
+
+
+
+
+
+
+
+
+
+
+
+
+#version: '3'
+#
+#services:
+#  php8.1:
+#    image: php:8.1
+#    container_name: php8.1
+#    ports:
+#      - 9001:80
+#    restart: always
+#    volumes:
+#      - /var/www/html:/var/www/html
+#    links:
+#      - db80
+
+
+# Imagem Mysql Versão 8.0
+#db80:
+#  image: mysql:8.0
+#  container_name: mysql8.0
+#  command: --default-authentication-plugin=mysql_native_password
+#  restart: always
+#  ports:
+#    - 3380:3306
+#  environment:
+#    - MYSQL_ROOT_PASSWORD=root
+#  volumes:
+#    - ./data-mysql-80:/var/lib/mysql
