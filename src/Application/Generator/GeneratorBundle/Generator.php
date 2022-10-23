@@ -5,7 +5,9 @@ namespace App\Application\Generator\GeneratorBundle;
 use App\Application\Generator\GeneratorBundle\Helper\GitHelper;
 use App\Application\Generator\GeneratorBundle\Helper\StringHelper;
 use App\Application\Generator\GeneratorBundle\Helper\TwigHelper;
+use App\Application\Generator\GeneratorBundle\Maker\MakeApplicationFileBundle;
 use App\Application\Generator\GeneratorBundle\Maker\MakeBundleDir;
+use App\Application\Generator\GeneratorBundle\Maker\MakeRouterFile;
 use App\Application\Generator\GeneratorBundle\Maker\MakeSonataAdmin;
 use Twig\Environment;
 
@@ -95,34 +97,34 @@ class Generator
 
             $bundleName = $this->stringHelper->createBundleName($class->className);
             $bundleDirectory = $this->projectDirectory . "/src/Application/" . $this->packageName . "/" . $bundleName;
-            $nameSpaceBase = "App\Application\\" . $this->packageName . "\\" . "$bundleName" . "\\" ;
+            $baseNamespace = "App\Application\\" . $this->packageName . "\\" . "$bundleName" ;
+
 
             /** Cria o diretório da bundle  */
             $makeBundleDir = new MakeBundleDir(
                 projectDirectory: $this->projectDirectory,
-                bundleDirectory: $bundleDirectory,
-                className: $class->className,
+                bundleDirectory:  $bundleDirectory,
+                className:        $class->className,
                 twigHelper:       $this->twigHelper,
             );
             $makeBundleDir->make();
 
-            /** Registra a bundle no arquivo do doctrine [doctrine.yaml] */
-            //registerDoctrine
 
-            /** Registra o serviço da bundle no arquivo de serviços [services.yaml] */
-            //$this->registerMenuAdmin();
-
-            /** Registra a bundle no arquivo de rotas [routes.yaml] */
-            //$this->registerRoute();
-
-            /** Registra a bundle no arquivo de bundles [bundles.php] */
-            //$this->registerBundle();
-
+            /** Gera o arquivo de registro da bundle  */
+            $makeApplicationFileBundle = new MakeApplicationFileBundle(
+                twigHelper:  $this->twigHelper,
+                bundleDirectory:  $bundleDirectory,
+                baseNamespace:  $baseNamespace,
+                bundleName:  $bundleName,
+                packageName:  $this->packageName
+            );
+            $makeApplicationFileBundle->make();
 
 
+            $makeRouterFile = new MakeRouterFile();
 
-            /** Gera o arquivo de registro da bundle */
-            //$this->createApplicationFile();
+
+
 
             /** Gera o arquivo de rota da bundle */
             //$this->createRouteFile();
@@ -148,6 +150,26 @@ class Generator
 
 
         }
+
+
+
+
+
+
+
+        /** Registra a bundle no arquivo do doctrine [doctrine.yaml] */
+        //registerDoctrine
+
+        /** Registra o serviço da bundle no arquivo de serviços [services.yaml] */
+        //$this->registerMenuAdmin();
+
+        /** Registra a bundle no arquivo de rotas [routes.yaml] */
+        //$this->registerRoute();
+
+        /** Registra a bundle no arquivo de bundles [bundles.php] */
+        //$this->registerBundle();
+
+
 
 
 

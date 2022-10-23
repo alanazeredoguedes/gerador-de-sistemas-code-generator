@@ -1,0 +1,14 @@
+<?php
+
+namespace {{ baseNamespace }};
+
+use Symfony\Component\HttpKernel\Bundle\Bundle;
+
+class Application{{ packageName }}{{ bundleName }} extends Bundle
+{
+    /** {@inheritdoc} */
+    public function getParent()
+    {
+        return 'Application{{ packageName }}{{ bundleName }}';
+    }
+}

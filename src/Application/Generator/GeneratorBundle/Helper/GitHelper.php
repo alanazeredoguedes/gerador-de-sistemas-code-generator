@@ -10,7 +10,8 @@ class GitHelper
     protected $projectsDir;
     protected $baseProjectDir;
     protected $projectDir;
-    protected $gitBaseRepository = 'https://github.com/alanazeredoguedes/symfonySonata7.2.git';
+    //protected $gitBaseRepository = 'https://github.com/alanazeredoguedes/symfonySonata7.2.git';
+    protected $gitBaseRepository = 'https://github.com/alanazeredoguedes/symfony-jwtauth-php8.git';
 
     /**
      * @param string $kernelDirectory
@@ -19,7 +20,7 @@ class GitHelper
     {
         $this->kernelDirectory = $kernelDirectory;
         $this->projectsDir = $kernelDirectory . '/public/projects/';
-        $this->baseProjectDir = $kernelDirectory . '/public/projects/symfonySonata7.2';
+        $this->baseProjectDir = $kernelDirectory . '/public/projects/symfony-jwtauth-php8';
         $this->projectDir = $projectDir;
     }
 
