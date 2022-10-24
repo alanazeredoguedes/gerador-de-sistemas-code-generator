@@ -1,1 +1,21 @@
-dasdsa dsa das dsa dsa
+<?php
+
+namespace {{ baseNamespace }}\Entity;
+
+
+namespace {{ baseNamespace }}\Repository\{{ className }}\Repository;
+use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Attributes as OA;
+
+#[ORM\Table(name: '{{ tableName }}')]
+#[ORM\Entity(repositoryClass: {{ className }}\Repository::class)]
+class {{ className }}
+{
+
+    {{ attributes }}
+
+    {{ construct }}
+
+    {{ gettersAndSetters }}
+
+}}

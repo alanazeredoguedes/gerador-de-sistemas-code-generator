@@ -1,0 +1,65 @@
+<?php
+namespace {{ baseNamespace }}\Admin;
+
+
+use {{ baseNamespace }}\Entity\{{ className }};
+use Sonata\AdminBundle\Admin\AbstractAdmin;
+use Sonata\AdminBundle\Route\RouteCollectionInterface;
+use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\AdminBundle\Datagrid\ListMapper;
+use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Show\ShowMapper;
+/** Components Form */
+
+
+final class {{ className }}Admin extends AbstractAdmin
+{
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    public function toString(object $object): string
+    {
+        return $object instanceof {{ className }} ? $object->get{{ primaryKey|capitalize }}() . '' : '';
+    }
+
+
+    protected function configureRoutes(RouteCollectionInterface $collection): void
+    {
+        parent::configureRoutes($collection);
+
+        //$collection->remove('list');
+
+    }
+
+    protected function configureFormFields(FormMapper $form): void
+    {
+        $form->tab('Geral');
+            $form->with('Informações Gerais');
+
+
+
+            $form->end();
+        $form->end();
+    }
+
+    protected function configureDatagridFilters(DatagridMapper $datagrid): void
+    {
+
+    }
+
+    protected function configureListFields(ListMapper $list): void
+    {
+
+    }
+
+    protected function configureShowFields(ShowMapper $show): void
+    {
+
+    }
+
+
+
+
+}

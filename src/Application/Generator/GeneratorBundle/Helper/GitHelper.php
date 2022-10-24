@@ -11,7 +11,7 @@ class GitHelper
     protected $baseProjectDir;
     protected $projectDir;
     //protected $gitBaseRepository = 'https://github.com/alanazeredoguedes/symfonySonata7.2.git';
-    protected $gitBaseRepository = 'https://github.com/alanazeredoguedes/symfony-jwtauth-php8.git';
+    protected $gitBaseRepository = 'https://github.com/alanazeredoguedes/gerador-de-sistemas-base.git';
 
     /**
      * @param string $kernelDirectory
@@ -20,7 +20,7 @@ class GitHelper
     {
         $this->kernelDirectory = $kernelDirectory;
         $this->projectsDir = $kernelDirectory . '/public/projects/';
-        $this->baseProjectDir = $kernelDirectory . '/public/projects/symfony-jwtauth-php8';
+        $this->baseProjectDir = $kernelDirectory . '/public/projects/gerador-de-sistemas-base';
         $this->projectDir = $projectDir;
     }
 
@@ -60,6 +60,5 @@ class GitHelper
 
         return $process->isSuccessful();
     }
-
 
 }

@@ -7,6 +7,8 @@ use App\Application\Generator\GeneratorBundle\Helper\StringHelper;
 use App\Application\Generator\GeneratorBundle\Helper\TwigHelper;
 use App\Application\Generator\GeneratorBundle\Maker\MakeApplicationFileBundle;
 use App\Application\Generator\GeneratorBundle\Maker\MakeBundleDir;
+use App\Application\Generator\GeneratorBundle\Maker\MakeDockerCompose;
+use App\Application\Generator\GeneratorBundle\Maker\MakeEnv;
 use App\Application\Generator\GeneratorBundle\Maker\MakeRouterFile;
 use App\Application\Generator\GeneratorBundle\Maker\MakeSonataAdmin;
 use Twig\Environment;
@@ -78,11 +80,25 @@ class Generator
         $isValid = $this->validateRelationships();
 
 
+        /** Clona o repositório base e troca o nome do diretório conforme o projeto atual */
+        $this->gitHelper->cloneBaseRepository();
 
-        //$this->gitHelper->cloneBaseRepository();
+        /** Cria o arquivo docker-compose */
+        $makeDockerCompose = new MakeDockerCompose(
+            projectDirectory: $this->projectDirectory,
+            twigHelper: $this->twigHelper,
+            projectName: $this->stringHelper->filterProjectDirName($this->projectName)
+        );
+        $makeDockerCompose->make();
 
+        /** Cria o arquivo .env */
+        $makeEnvFile = new MakeEnv(
+            projectDirectory: $this->projectDirectory,
+            twigHelper: $this->twigHelper,
+        );
+        $makeEnvFile->make();
 
-        /** Criar o Arquivo de configuração do Sonata Admin */
+        /** Criar o arquivo de configuração do Sonata Admin. [sonata_admin.yaml] */
         $makeSonataAdmin = new MakeSonataAdmin(
             projectDirectory: $this->projectDirectory,
             twigHelper:       $this->twigHelper,
@@ -92,7 +108,7 @@ class Generator
         //$makeSonataAdmin->make();
 
 
-
+        /** Percorre todas as classe e cria outros arquivos do projeto */
         foreach ($this->class as $class){
 
             $bundleName = $this->stringHelper->createBundleName($class->className);
@@ -100,7 +116,7 @@ class Generator
             $baseNamespace = "App\Application\\" . $this->packageName . "\\" . "$bundleName" ;
 
 
-            /** Cria o diretório da bundle  */
+            /** Cria a estrutura de diretórios da bundle da classe atual  */
             $makeBundleDir = new MakeBundleDir(
                 projectDirectory: $this->projectDirectory,
                 bundleDirectory:  $bundleDirectory,
@@ -110,7 +126,7 @@ class Generator
             $makeBundleDir->make();
 
 
-            /** Gera o arquivo de registro da bundle  */
+            /** Cria o arquivo de registro da bundle atual */
             $makeApplicationFileBundle = new MakeApplicationFileBundle(
                 twigHelper:  $this->twigHelper,
                 bundleDirectory:  $bundleDirectory,
@@ -121,7 +137,16 @@ class Generator
             $makeApplicationFileBundle->make();
 
 
-            $makeRouterFile = new MakeRouterFile();
+           /* foreach ($class->attributes as $attribute) {
+
+            }*/
+
+
+            dump($class);
+
+
+
+            //$makeRouterFile = new MakeRouterFile();
 
 
 
@@ -150,9 +175,6 @@ class Generator
 
 
         }
-
-
-
 
 
 
