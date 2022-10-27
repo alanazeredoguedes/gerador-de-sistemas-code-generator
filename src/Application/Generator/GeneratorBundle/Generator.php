@@ -5,12 +5,23 @@ namespace App\Application\Generator\GeneratorBundle;
 use App\Application\Generator\GeneratorBundle\Helper\GitHelper;
 use App\Application\Generator\GeneratorBundle\Helper\StringHelper;
 use App\Application\Generator\GeneratorBundle\Helper\TwigHelper;
+use App\Application\Generator\GeneratorBundle\Maker\Admin\MakeAdmin;
+use App\Application\Generator\GeneratorBundle\Maker\Controller\MakeAdminController;
+use App\Application\Generator\GeneratorBundle\Maker\Controller\MakeApiController;
+use App\Application\Generator\GeneratorBundle\Maker\Controller\MakeFrontController;
+use App\Application\Generator\GeneratorBundle\Maker\Entity\MakeAttribute;
+use App\Application\Generator\GeneratorBundle\Maker\Entity\MakeConstructor;
+use App\Application\Generator\GeneratorBundle\Maker\Entity\MakeEntity;
+use App\Application\Generator\GeneratorBundle\Maker\Entity\MakeGetter;
+use App\Application\Generator\GeneratorBundle\Maker\Entity\MakeSetter;
 use App\Application\Generator\GeneratorBundle\Maker\MakeApplicationFileBundle;
 use App\Application\Generator\GeneratorBundle\Maker\MakeBundleDir;
 use App\Application\Generator\GeneratorBundle\Maker\MakeDockerCompose;
 use App\Application\Generator\GeneratorBundle\Maker\MakeEnv;
 use App\Application\Generator\GeneratorBundle\Maker\MakeRouterFile;
 use App\Application\Generator\GeneratorBundle\Maker\MakeSonataAdmin;
+use App\Application\Generator\GeneratorBundle\Maker\Repository\MakeMethod;
+use App\Application\Generator\GeneratorBundle\Maker\Repository\MakeRepository;
 use Twig\Environment;
 
 class Generator
@@ -81,7 +92,7 @@ class Generator
 
 
         /** Clona o repositório base e troca o nome do diretório conforme o projeto atual */
-        $this->gitHelper->cloneBaseRepository();
+        //$this->gitHelper->cloneBaseRepository();
 
         /** Cria o arquivo docker-compose */
         $makeDockerCompose = new MakeDockerCompose(
@@ -89,14 +100,14 @@ class Generator
             twigHelper: $this->twigHelper,
             projectName: $this->stringHelper->filterProjectDirName($this->projectName)
         );
-        $makeDockerCompose->make();
+        //$makeDockerCompose->make();
 
         /** Cria o arquivo .env */
         $makeEnvFile = new MakeEnv(
             projectDirectory: $this->projectDirectory,
             twigHelper: $this->twigHelper,
         );
-        $makeEnvFile->make();
+        //$makeEnvFile->make();
 
         /** Criar o arquivo de configuração do Sonata Admin. [sonata_admin.yaml] */
         $makeSonataAdmin = new MakeSonataAdmin(
@@ -145,32 +156,33 @@ class Generator
             dump($class);
 
 
-
-            //$makeRouterFile = new MakeRouterFile();
-
-
-
-
             /** Gera o arquivo de rota da bundle */
-            //$this->createRouteFile();
+            $makeRouterFile = new MakeRouterFile();
 
             /** Gera o arquivo da controladora FrontEnd */
-            //$this->createFrontControllerFile();
+            $makeFrontController = new MakeFrontController();
 
             /** Gera o arquivo da controladora Administrativa */
-            //$this->createAdminControllerFile();
+            $makeAdminController = new MakeAdminController();
 
             /** Gera o arquivo da controladora Api */
-            //$this->createApiControllerFile();
+            $makeApiController = new MakeApiController();
 
             /** Gera o arquivo de Repositório */
-            //$this->createRepositoryFile();
+            $makeRepository = new MakeRepository();
+            $makeMethod = new MakeMethod();
 
             /** Gera o arquivo Admin */
-            //$this->createAdminFile();
+            $makeAdmin = new MakeAdmin();
 
             /** Gera o arquivo da Entidade */
-            //$this->createEntityFile();
+            $makeEntity = new MakeEntity();
+            $makeConstructor = new MakeConstructor();
+            $makeAttribute = new MakeAttribute();
+            $makeGetter = new MakeGetter();
+            $makeSetter = new MakeSetter();
+
+
 
 
 
