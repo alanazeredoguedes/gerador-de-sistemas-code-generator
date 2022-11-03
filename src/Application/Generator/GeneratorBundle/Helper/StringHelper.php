@@ -14,7 +14,7 @@ class StringHelper
 
     public function filterProjectDirName($string){
         $string = $this->cleanString($string);
-        $string = str_replace(" ", "_", $string);
+        $string = str_replace(" ", "-", $string);
         $string = strtolower($string);
         return $string;
     }

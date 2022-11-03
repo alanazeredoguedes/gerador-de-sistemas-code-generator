@@ -6,59 +6,101 @@ use Symfony\Component\Process\Process;
 
 class GitHelper
 {
-    protected string $kernelDirectory;
-    protected $projectsDir;
-    protected $baseProjectDir;
-    protected $projectDir;
-    //protected $gitBaseRepository = 'https://github.com/alanazeredoguedes/symfonySonata7.2.git';
-    protected $gitBaseRepository = 'https://github.com/alanazeredoguedes/gerador-de-sistemas-base.git';
+    protected string $gitBaseRepository = 'https://github.com/alanazeredoguedes/alanazeredoguedes-gerador-de-sistemas-base';
 
-    /**
-     * @param string $kernelDirectory
-     */
-    public function __construct(string $kernelDirectory, string $projectDir)
+    public function __construct(
+        protected string $workingDirectory,
+        protected string $projectDirectory,
+        protected string $projectName,
+    )
     {
-        $this->kernelDirectory = $kernelDirectory;
-        $this->projectsDir = $kernelDirectory . '/public/projects/';
-        $this->baseProjectDir = $kernelDirectory . '/public/projects/gerador-de-sistemas-base';
-        $this->projectDir = $projectDir;
     }
 
     public function cloneBaseRepository(): bool
     {
-        $this->removeDir($this->baseProjectDir);
-        $this->removeDir($this->projectDir);
+        $this->removeDir($this->projectDirectory);
 
-        $command = ['git', 'clone', $this->gitBaseRepository];
+        $command = ['git', 'clone', $this->gitBaseRepository, $this->projectName];
         $process = new Process($command);
-        $process->setWorkingDirectory($this->projectsDir);
+        $process->setWorkingDirectory($this->workingDirectory);
         $process->run();
-
-        if($process->isSuccessful())
-            $this->renameDirectory($this->baseProjectDir, $this->projectDir);
 
         return $process->isSuccessful();
     }
 
-    public function renameDirectory(string $directory, string $newDirectory): bool
+    public function removeDir($directory): void
     {
-        $command = ['mv', $directory, $newDirectory];
-        $process = new Process($command);
-        $process->setWorkingDirectory($this->projectsDir);
-        $process->run();
-
-        return $process->isSuccessful();
+        if( is_dir( $directory) ){
+            $command = ['rm', '-rf', $directory];
+            $process = new Process($command);
+            $process->setWorkingDirectory($this->workingDirectory);
+            $process->run();
+        }
     }
 
 
-    public function removeDir($directory): bool
-    {
-        $command = ['rm', '-rf', $directory];
-        $process = new Process($command);
-        $process->setWorkingDirectory($this->projectsDir);
-        $process->run();
 
-        return $process->isSuccessful();
-    }
+
+
+
+
+
+
+
+
+//    protected string $kernelDirectory;
+//    protected $projectsDir;
+//    protected $baseProjectDir;
+//    protected $projectDir;
+//    //protected $gitBaseRepository = 'https://github.com/alanazeredoguedes/symfonySonata7.2.git';
+//    protected $gitBaseRepository = 'https://github.com/alanazeredoguedes/gerador-de-sistemas-base.git';
+//
+//    /**
+//     * @param string $kernelDirectory
+//     */
+//    public function __construct(string $kernelDirectory, string $projectDir)
+//    {
+//        $this->kernelDirectory = $kernelDirectory;
+//        $this->projectsDir = $kernelDirectory . '/public/projects/';
+//        $this->baseProjectDir = $kernelDirectory . '/public/projects/gerador-de-sistemas-base';
+//        $this->projectDir = $projectDir;
+//    }
+//
+//    public function cloneBaseRepository(): bool
+//    {
+//        $this->removeDir($this->baseProjectDir);
+//        $this->removeDir($this->projectDir);
+//
+//        $command = ['git', 'clone', $this->gitBaseRepository];
+//        $process = new Process($command);
+//        $process->setWorkingDirectory($this->projectsDir);
+//        $process->run();
+//
+//        if($process->isSuccessful())
+//            $this->renameDirectory($this->baseProjectDir, $this->projectDir);
+//
+//        return $process->isSuccessful();
+//    }
+//
+//    public function renameDirectory(string $directory, string $newDirectory): bool
+//    {
+//        $command = ['mv', $directory, $newDirectory];
+//        $process = new Process($command);
+//        $process->setWorkingDirectory($this->projectsDir);
+//        $process->run();
+//
+//        return $process->isSuccessful();
+//    }
+//
+//
+//    public function removeDir($directory): bool
+//    {
+//        $command = ['rm', '-rf', $directory];
+//        $process = new Process($command);
+//        $process->setWorkingDirectory($this->projectsDir);
+//        $process->run();
+//
+//        return $process->isSuccessful();
+//    }
 
 }

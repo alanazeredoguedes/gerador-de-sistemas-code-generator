@@ -3,10 +3,9 @@
 namespace App\Controller;
 
 use App\Application\Generator\GeneratorBundle\Generator;
-use App\Entity\GitHelper;
-use App\Entity\StringHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
@@ -17,10 +16,14 @@ class IntegrationController extends AbstractController
 {
 
     #[Route('/', name: 'app_integration')]
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $jsonStructureDir = $this->getParameter('kernel.project_dir') . '/public/data.json';
         $jsonStructure = json_decode( file_get_contents($jsonStructureDir) );
+
+        //$requestBody =  $request->getContent();
+        //$requestBody = json_decode($requestBody);
+
 
         $kernelDirectory = $this->getParameter('kernel.project_dir');
 
@@ -32,240 +35,15 @@ class IntegrationController extends AbstractController
             kernelDirectory: $kernelDirectory,
         );
 
-
         $status = $generator->startGenerator();
 
 
         return $this->json([
             'message' => 'Welcome to your new controller!',
             'status' => $status,
+            //'request' => $requestBody,
         ]);
     }
-
-
-
-    private function generateStructure($structure)
-    {
-        //dd( $structure );
-
-
-        /** Registra as informações do projeto [sonata_admin.yaml] */
-        //$this->editSonataAdminFile($projectDirectory, $projectName, $projectDescription);
-
-//        foreach ($structure->class as $class) {
-//            //dd($class);
-//
-//            /** Gera o nome da Bundle */
-//            $bundleName = trim( ucfirst( $class->className ) ) .'Bundle';
-//
-//            /** Criar o diretório da bundle */
-//            $this->createBundleDir($projectDirectory, $packageName, $bundleName, $class->className );
-//
-//            /** Registra a bundle no arquivo do doctrine [doctrine.yaml] */
-//            $this->registerDoctrine($projectDirectory,$packageName, $bundleName);
-//
-//            /** Registra o serviço da bundle no arquivo de serviços [services.yaml] */
-//            $this->registerMenuAdmin();
-//
-//            /** Registra a bundle no arquivo de rotas [routes.yaml] */
-//            $this->registerRoute();
-//
-//            /** Registra a bundle no arquivo de bundles [bundles.php] */
-//            $this->registerBundle();
-//
-//
-//
-//
-//            /** Gera o arquivo de registro da bundle */
-//            $this->createApplicationFile();
-//
-//            /** Gera o arquivo de rota da bundle */
-//            $this->createRouteFile();
-//
-//            /** Gera o arquivo da controladora FrontEnd */
-//            $this->createFrontControllerFile();
-//
-//            /** Gera o arquivo da controladora Administrativa */
-//            $this->createAdminControllerFile();
-//
-//            /** Gera o arquivo da controladora Api */
-//            $this->createApiControllerFile();
-//
-//            /** Gera o arquivo de Repositório */
-//            $this->createRepositoryFile();
-//
-//            /** Gera o arquivo Admin */
-//            $this->createAdminFile();
-//
-//            /** Gera o arquivo da Entidade */
-//            $this->createEntityFile();
-//
-//        }
-
-
-
-
-
-    }
-
-
-    /**
-     * @param $projectDir = Diretorio do projeto
-     * @param $name = nome do projeto
-     * @param $description = descrição do projeto
-     * @return void
-     */
-    private function editSonataAdminFile($projectDir, $name, $description): void
-    {
-        $sonataAdminFile = $projectDir . '/config/packages/sonata_admin.yaml';
-
-        $edit = array("Project-Base", "Project-Description");
-        $values = array($name, $description);
-
-        $file = file_get_contents($sonataAdminFile);
-        $newFile = str_replace( $edit, $values, $file);
-
-        file_put_contents($sonataAdminFile, $newFile);
-    }
-
-
-    private function createBundleDir($projectDir, $packageName, $bundleName, $entity)
-    {
-        $bundleDirectory = $projectDir . '/src/Application/' . $packageName . '/' . $bundleName;
-
-        $registerDirectory = [
-            '/Admin/',
-            '/Controller/',
-            '/Entity/',
-            '/Repository/',
-            '/Form/',
-            // Resources Directory
-            '/Resources/config/routes/',
-            '/Resources/public/css/',
-            '/Resources/public/js/',
-            '/Resources/public/fonts/',
-            '/Resources/public/images/',
-            // Views Directory
-            //'/Resources/views/' . strtolower($entity),
-            '/Resources/views/' . strtolower($entity) . '/macros/',
-            '/Resources/views/' . strtolower($entity) . '/template/',
-            '/Resources/views/' . strtolower($entity) . '/components/',
-        ];
-
-        foreach ($registerDirectory as $register){
-            if ( !file_exists($bundleDirectory . $register) ) {
-                $directory = $bundleDirectory . $register;
-                mkdir($directory, 0777, true);
-
-                if ( !file_exists($directory . '.gitignore' . $register) ) {
-                    $fp = fopen($directory . '.gitignore', "a+");
-                    fwrite($fp, '');
-                    fclose($fp);
-                }
-
-            }
-        }
-
-    }
-
-    private function registerDoctrine($projectDir, $packageName, $bundleName)
-    {
-        $filePath = $projectDir . "/config/packages/doctrine.yaml";
-
-        if (file_exists($filePath))
-        {
-            $fp = fopen($filePath, "a+");
-            $text = $this->twig->render('base.html.twig');
-           dd($text);
-
-
-            /*$text =  $this->templateHelper->getRegisterDoctrineTemplate($packageName, $bundleName);
-            $text = $this->inFile(file_get_contents($filePath), $text);
-            fwrite($fp, $text);
-            fclose($fp);*/
-            //$this->triggerHelper->addFileGit( str_replace($projectDir.'/','', $filePath) );
-        }
-    }
-
-    private function registerMenuAdmin()
-    {
-
-    }
-
-    private function registerRoute()
-    {
-
-    }
-
-    private function registerBundle()
-    {
-
-    }
-
-    private function createApplicationFile()
-    {
-
-    }
-
-    private function createRouteFile()
-    {
-
-    }
-
-    private function createFrontControllerFile()
-    {
-
-    }
-
-    private function createAdminControllerFile()
-    {
-
-    }
-
-    private function createApiControllerFile()
-    {
-
-    }
-
-    private function createRepositoryFile()
-    {
-
-    }
-
-    private function createAdminFile()
-    {
-
-    }
-
-    private function createEntityFile()
-    {
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

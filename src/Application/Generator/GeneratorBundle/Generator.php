@@ -33,7 +33,7 @@ class Generator
     protected string $projectDirectory;
 
     /** @var string Nome do pacote onde será construído as bundles */
-    protected string $packageName = 'Internit';
+    protected string $packageName = 'Schema';
 
     /** Helpers */
     protected GitHelper $gitHelper;
@@ -61,15 +61,18 @@ class Generator
     {
         $this->stringHelper = new StringHelper();
         $this->twigHelper = new TwigHelper(
-            kernelDirectory: $this->kernelDirectory,
-            templateDirectory: '/src/Application/Generator/GeneratorBundle/Resources/skeleton'
+            kernelDirectory:     $this->kernelDirectory,
+            templateDirectory:   '/src/Application/Generator/GeneratorBundle/Resources/skeleton'
         );
 
     }
 
     private function initDependencies2(): void
     {
-        $this->gitHelper = new GitHelper($this->kernelDirectory, $this->projectDirectory);
+        $this->gitHelper = new GitHelper(
+            workingDirectory:     $this->workingDirectory,
+            projectDirectory:     $this->projectDirectory,
+            projectName:          $this->stringHelper->filterProjectDirName($this->projectName));
     }
 
     private function validateClass(): bool
@@ -92,31 +95,40 @@ class Generator
 
 
         /** Clona o repositório base e troca o nome do diretório conforme o projeto atual */
-        //$this->gitHelper->cloneBaseRepository();
+        $this->gitHelper->cloneBaseRepository();
+
 
         /** Cria o arquivo docker-compose */
-        $makeDockerCompose = new MakeDockerCompose(
+        /*$makeDockerCompose = new MakeDockerCompose(
             projectDirectory: $this->projectDirectory,
             twigHelper: $this->twigHelper,
             projectName: $this->stringHelper->filterProjectDirName($this->projectName)
-        );
+        );*/
         //$makeDockerCompose->make();
 
         /** Cria o arquivo .env */
-        $makeEnvFile = new MakeEnv(
+        /*$makeEnvFile = new MakeEnv(
             projectDirectory: $this->projectDirectory,
             twigHelper: $this->twigHelper,
-        );
+        );*/
         //$makeEnvFile->make();
 
         /** Criar o arquivo de configuração do Sonata Admin. [sonata_admin.yaml] */
         $makeSonataAdmin = new MakeSonataAdmin(
-            projectDirectory: $this->projectDirectory,
-            twigHelper:       $this->twigHelper,
-            projectName:      $this->projectName,
+            projectDirectory:    $this->projectDirectory,
+            twigHelper:          $this->twigHelper,
+            projectName:         $this->projectName,
             projectDescription:  $this->projectDescription
         );
-        //$makeSonataAdmin->make();
+        $makeSonataAdmin->make();
+
+
+
+
+
+
+
+
 
 
         /** Percorre todas as classe e cria outros arquivos do projeto */
@@ -153,7 +165,7 @@ class Generator
             }*/
 
 
-            dump($class);
+
 
 
             /** Gera o arquivo de rota da bundle */

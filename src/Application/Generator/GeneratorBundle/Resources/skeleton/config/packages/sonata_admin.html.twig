@@ -1,53 +1,5 @@
 sonata_admin:
-    security:
-        handler: sonata.admin.security.handler.role
-        role_super_admin: ROLE_SUPER_ADMIN
-
-        admin_permissions:
-
-            # Defaults:
-            - CREATE
-            - LIST
-            - DELETE
-            - UNDELETE
-            - EXPORT
-            - OPERATOR
-            - MASTER
-
-        object_permissions:
-
-            # Defaults:
-            - VIEW
-            - EDIT
-            - DELETE
-            - UNDELETE
-            - OPERATOR
-            - MASTER
-            - OWNER
-
-    title: ' '
-    title_logo: 'img/logo/logo.png'
-    search: true
-
-    options:
-        legacy_twig_text_extension: false
-        sort_admins: false
-        js_debug: false
-        confirm_exit: true
-        skin: 'skin-black'
-        use_select2: true
-        use_icheck: true
-        use_bootlint: false
-        use_stickyforms: true
-        default_group: default
-        dropdown_number_groups_per_colums:  2
-
-    show_mosaic_button: false
-    global_search:
-        case_sensitive: true
-        empty_boxes: fade
-
-
+    title: 'Painel Admin'
     dashboard:
         blocks:
             - { type: sonata.admin.block.admin_list, position: center }
@@ -60,14 +12,14 @@ sonata_admin:
                     content: >
                         <div class="jumbotron" style="background-color: #2b2c2d; background-size: 100%;">
                             <div class="conteiner" >
-                                <br>
+                                
                                 <h1 class="text-center" style="color:white">
                                     {{ projectName }}
                                 </h1>
                                 <h3 class="text-center" style="color:white">
                                     {{ projectDescription }}
                                 </h3>
-                                <br><br><br>
+                                <br><br>
                                 <h4 class="text-right" style="color:white; margin-right: 50px;">
                                     Sistema Desenvolvido Por:
                                     <a style="color:white;" target="_blank" href="https://www.linkedin.com/in/alan-azeredo-guedes-786575191/" aria-hidden="true">
@@ -77,10 +29,51 @@ sonata_admin:
                             </div>
                         </div>
                         <br>
-
+                        
 
 #####################################################################################################
 #####################################################################################################
+
+    #default_controller: App\Application\Project\AdminBundle\Controller\DefaultCRUDController
+
+    templates:
+        layout: '@ApplicationProjectContent/templates/standard_layout.html.twig'
+    #        ajax:                       '@SonataAdmin/ajax_layout.html.twig'
+    #        list:                       '@SonataAdmin/CRUD/list.html.twig'
+    #        show:                       '@SonataAdmin/CRUD/show.html.twig'
+    #        show_compare:               '@SonataAdmin/CRUD/show_compare.html.twig'
+    #        edit:                       '@SonataAdmin/CRUD/edit.html.twig'
+    #        history:                    '@SonataAdmin/CRUD/history.html.twig'
+    #        preview:                    '@SonataAdmin/CRUD/preview.html.twig'
+    #        delete:                     '@SonataAdmin/CRUD/delete.html.twig'
+    #        batch:                      '@SonataAdmin/CRUD/list__batch.html.twig'
+    #        acl:                        '@SonataAdmin/CRUD/acl.html.twig'
+    #        action:                     '@SonataAdmin/CRUD/action.html.twig'
+    #        select:                     '@SonataAdmin/CRUD/list__select.html.twig'
+    #        filter:                     '@SonataAdmin/Form/filter_admin_fields.html.twig'
+    #        dashboard:                  '@SonataAdmin/Core/dashboard.html.twig'
+    #        search:                     '@SonataAdmin/Core/search.html.twig'
+    #        batch_confirmation:         '@SonataAdmin/CRUD/batch_confirmation.html.twig'
+    #        inner_list_row:             '@SonataAdmin/CRUD/list_inner_row.html.twig'
+    #        base_list_field:            '@SonataAdmin/CRUD/base_list_field.html.twig'
+    #        list_block:                 '@SonataAdmin/Block/block_admin_list.html.twig'
+    #        user_block:                 '@SonataAdmin/Core/user_block.html.twig'
+    #        add_block:                  '@SonataAdmin/Core/add_block.html.twig'
+    #        pager_links:                '@SonataAdmin/Pager/links.html.twig'
+    #        pager_results:              '@SonataAdmin/Pager/results.html.twig'
+    #        tab_menu_template:          '@SonataAdmin/Core/tab_menu_template.html.twig'
+    #        history_revision_timestamp: '@SonataAdmin/CRUD/history_revision_timestamp.html.twig'
+    #        short_object_description:   '@SonataAdmin/Helper/short-object-description.html.twig'
+    #        search_result_block:        '@SonataAdmin/Block/block_search_result.html.twig'
+    #        action_create:              '@SonataAdmin/CRUD/dashboard__action_create.html.twig'
+    #        button_acl:                 '@SonataAdmin/Button/acl_button.html.twig'
+    #        button_create:              '@SonataAdmin/Button/create_button.html.twig'
+    #        button_edit:                '@SonataAdmin/Button/edit_button.html.twig'
+    #        button_history:             '@SonataAdmin/Button/history_button.html.twig'
+    #        button_list:                '@SonataAdmin/Button/list_button.html.twig'
+    #        button_show:                '@SonataAdmin/Button/show_button.html.twig'
+    #        form_theme:                 []
+    #        filter_theme:               []
 
     assets:
         remove_stylesheets:
@@ -93,14 +86,22 @@ sonata_admin:
         #- bundles/sonatacore/js/base.js
 
         extra_stylesheets:
-            - bundles/applicationsonatauser/css/styles.css
+            #- bundles/applicationsonatauser/css/styles.css
 
         extra_javascripts:
-            - bundles/applicationsonatauser/js/configs-admin.js
+            - bundles/applicationprojectcontent/js/config-roles.js
+            - bundles/applicationprojectcontent/js/sweetalert2@11.js
+            - bundles/applicationprojectcontent/js/template_remove.js
+
 
 sonata_block:
     blocks:
         sonata.admin.block.admin_list:
             contexts: [admin]
-        sonata.block.service.text:
-        sonata.admin.block.stats:
+
+
+
+
+
+
+
