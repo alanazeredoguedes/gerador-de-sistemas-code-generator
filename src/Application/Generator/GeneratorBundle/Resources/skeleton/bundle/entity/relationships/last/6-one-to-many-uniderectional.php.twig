@@ -1,0 +1,24 @@
+<?php
+#[Entity]
+class Autor
+{
+
+    /** Muitos autores têm muitos documentos. */
+    #[JoinTable(name: 'autor_documento')]
+    #[JoinColumn(name: 'autor_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'documento_id', referencedColumnName: 'id', unique: true)]
+    #[ManyToMany(targetEntity: 'Documento')]
+    private Collection $documentos;
+
+    public function __construct()
+    {
+        $this->documentos = new ArrayCollection();
+    }
+
+}
+
+#[Entity]
+class Documento
+{
+    // ...
+}

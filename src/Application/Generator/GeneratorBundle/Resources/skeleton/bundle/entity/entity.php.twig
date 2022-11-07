@@ -1,0 +1,37 @@
+<?php
+
+namespace {{ baseNamespace }}\Entity;
+
+namespace {{ baseNamespace }}\Repository\{{ className }}Repository;
+use Doctrine\ORM\Mapping as ORM;
+
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+use DateTime;
+
+/**
+* Descrição
+* {{ description }}
+*/
+#[ORM\Table(name: '{{ tableName }}')]
+#[ORM\Entity(repositoryClass: {{ className }}Repository::class)]
+{% for attribute in uniqueAttributes  %}
+#[UniqueEntity('{{ attribute }}')]
+{% endfor %}
+class {{ className }}
+{
+
+{% for attribute in attributes %}
+{{ attribute|raw }}
+{% endfor %}
+
+
+{{ construct }}
+
+{% for getSet in gettersAndSetters %}
+    {{ getSet }}
+
+{% endfor %}
+
+
+}

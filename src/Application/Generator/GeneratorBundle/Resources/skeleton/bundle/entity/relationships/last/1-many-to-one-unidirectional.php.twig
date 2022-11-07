@@ -1,0 +1,15 @@
+#[Entity]
+class User
+{
+
+    #[ManyToOne(targetEntity: Address::class)]
+    #[JoinColumn(name: 'address_id', referencedColumnName: 'id')]
+    private Address|null $address = null;
+
+}
+
+#[Entity]
+class Address
+{
+
+}

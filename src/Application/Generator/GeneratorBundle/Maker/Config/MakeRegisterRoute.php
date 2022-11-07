@@ -1,25 +1,25 @@
 <?php
 
-namespace App\Application\Generator\GeneratorBundle\Maker;
+namespace App\Application\Generator\GeneratorBundle\Maker\Config;
 
 use App\Application\Generator\GeneratorBundle\Helper\TwigHelper;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-class MakeDockerCompose
+class MakeRegisterRoute
 {
-
-    protected string $filePath = "/docker-compose.yml";
-    protected string $template = "/docker-compose.yml.twig";
+    protected string $filePath = "/config/routes.yaml";
+    protected string $template = "/config/routes.yaml.twig";
 
     public function __construct(
-        protected string $projectDirectory,
         protected TwigHelper $twigHelper,
-        protected string $projectName,
+        protected string $projectDirectory,
+        protected array $registerBundle,
     )
     {
         $this->filePath = $this->projectDirectory . $this->filePath;
+
         $this->validate();
         $this->filter();
     }
@@ -36,8 +36,11 @@ class MakeDockerCompose
 
     public function make()
     {
-        //chmod( $this->filePath, 0777);
-        file_put_contents($this->filePath, $this->getTemplate());
+        //dd($this->registerBundle);
+        $fp = fopen($this->filePath, "r+");
+        $template = $this->getTemplate();
+        fwrite($fp, $template);
+        fclose($fp);
     }
 
     /**
@@ -48,8 +51,7 @@ class MakeDockerCompose
     public function getTemplate(): string
     {
         return $this->twigHelper->getTwig()->render($this->template,[
-            'projectName' => $this->projectName,
+            'bundles' => $this->registerBundle,
         ]);
     }
-
 }

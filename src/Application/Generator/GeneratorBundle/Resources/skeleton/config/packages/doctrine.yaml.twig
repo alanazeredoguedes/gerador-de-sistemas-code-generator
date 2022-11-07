@@ -1,0 +1,69 @@
+when@test:
+    doctrine:
+        dbal:
+            # "TEST_TOKEN" is typically set by ParaTest
+            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+
+when@prod:
+    doctrine:
+        orm:
+            auto_generate_proxy_classes: false
+            query_cache_driver:
+                type: pool
+                pool: doctrine.system_cache_pool
+            result_cache_driver:
+                type: pool
+                pool: doctrine.result_cache_pool
+
+    framework:
+        cache:
+            pools:
+                doctrine.result_cache_pool:
+                    adapter: cache.app
+                doctrine.system_cache_pool:
+                    adapter: cache.system
+
+
+doctrine:
+    dbal:
+        url: '%env(resolve:DATABASE_URL)%'
+
+    orm:
+        auto_generate_proxy_classes: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        auto_mapping: true
+
+        mappings:
+
+            App:
+                is_bundle: false
+                #type: ~
+                #type: attribute
+                dir: '%kernel.project_dir%/src/Entity'
+                prefix: 'App\Entity'
+                alias: App
+
+            SonataMediaBundle: ~
+            ApplicationProjectSecurityAdminBundle: ~
+            ApplicationProjectSecurityUserBundle: ~
+
+
+            # Model Bundles
+            ###########################################################
+
+            ApplicationInternitCursoBundle: ~
+            ApplicationInternitDocumentoBundle: ~
+#           ApplicationInternitPalavraChaveBundle: ~
+#           ApplicationInternitTipoDocumentoBundle: ~
+
+            # Register Schema Project
+            ###########################################################
+{% for bundle in bundles %}
+            Application{{ bundle['packageName'] }}{{ bundle['bundleName'] }}: ~
+{% endfor %}
+
+
+
+
+
+

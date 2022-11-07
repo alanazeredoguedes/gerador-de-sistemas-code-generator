@@ -1,0 +1,18 @@
+#[Entity]
+class Aluno
+{
+
+    /** Um mentor tem muitos alunos.  Este é o lado inverso. */
+    #[OneToMany(targetEntity: Aluno::class, mappedBy: 'mentor')]
+    private Collection $listMentor;
+
+    /** Muitos Mentores pertencem a um autor.  Este é o lado proprietário. */
+    #[ManyToOne(targetEntity: Aluno::class, inversedBy: 'listMentor')]
+    #[JoinColumn(name: 'mentor', referencedColumnName: 'id')]
+    private Aluno|null $mentor = null;
+
+    public function __construct() {
+        $this->mentoresList = new ArrayCollection();
+    }
+
+}

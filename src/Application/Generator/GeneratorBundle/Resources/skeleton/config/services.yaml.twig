@@ -1,0 +1,231 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+    locale: 'pt_BR'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    # overload kernel exception
+    #    App\Application\Project\ContentBundle\EventListener\ExceptionListener:
+    #        tags:
+    #            - { name: kernel.event_listener, event: kernel.exception }
+
+    #    App\Application\Project\SecurityProviderApiBundle\EventListener\ExceptionListener:
+    #        tags:
+    #            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+    #
+    #
+
+
+    # ####################################################################################
+    # injeções de dependências
+
+    #    app.menu_listener:
+    #        class: App\Application\Project\ContentBundle\EventListener\MenuBuilderListener
+    #        tags:
+    #            - { name: kernel.event_listener, event: sonata.admin.event.configure.menu.sidebar, method: addMenuItems }
+    #        arguments:
+
+
+    #    admin.custom:
+    #        class: App\Admin\CustomAdmin
+    #        tags:
+    #            - { name: sonata.admin, model_class: App\Entity\Custom, manager_type: orm, label: Category, security_handler: App\Application\Project\AdminBundle\Security\Handler }
+
+
+    # ####################################################################################
+    # serviços padrões da estrutura do projeto
+
+    # ####################################################################################
+    # Provedor de usuário ADMIN
+
+    project.security.provider.admin.user:
+        class: App\Application\Project\SecurityAdminBundle\Admin\UserAdminAdmin
+        calls:
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                model_class: App\Application\Project\SecurityAdminBundle\Entity\UserAdmin,
+                controller: App\Application\Project\SecurityAdminBundle\Controller\UserAdminAdminController,
+                show_in_dashboard: true,
+                on_top: false,
+                group: "Acesso Admin",
+                label: Administradores,
+                icon: 'fa fa-solid fa-shield-alt',
+            }
+
+    project.security.provider.admin.group:
+        class: App\Application\Project\SecurityAdminBundle\Admin\GroupAdminAdmin
+        calls:
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                model_class: App\Application\Project\SecurityAdminBundle\Entity\GroupAdmin,
+                controller: App\Application\Project\SecurityAdminBundle\Controller\GroupAdminAdminController,
+                show_in_dashboard: true,
+                on_top: false,
+                group: "Acesso Admin",
+                label: Grupos,
+                icon: 'fa fa-solid fa-shield-alt',
+            }
+
+    # ####################################################################################
+    # Provedor de usuário API
+
+    project.security.provider.api.user:
+        class: App\Application\Project\SecurityUserBundle\Admin\UserAdmin
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                model_class: App\Application\Project\SecurityUserBundle\Entity\User,
+                controller: App\Application\Project\SecurityUserBundle\Controller\UserAdminController,
+                show_in_dashboard: true,
+                on_top: false,
+                group: "Acesso Usuários",
+                label: Usuários,
+                icon: 'fa fa-solid fa-users',
+            }
+
+    project.security.provider.api.group:
+        class: App\Application\Project\SecurityUserBundle\Admin\GroupAdmin
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                model_class: App\Application\Project\SecurityUserBundle\Entity\Group,
+                controller: App\Application\Project\SecurityUserBundle\Controller\GroupAdminController,
+                show_in_dashboard: true,
+                on_top: false,
+                group: "Acesso Usuários",
+                label: Grupos,
+                icon: 'fa fa-solid fa-users',
+            }
+
+
+
+
+    # ####################################################################################
+    # Serviços padrões da estrutura do projeto
+
+    # Content Bundle
+    project.content.content:
+        class: App\Application\Project\ContentBundle\Admin\ContentAdmin
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                model_class: App\Application\Project\ContentBundle\Entity\Content,
+                controller: App\Application\Project\ContentBundle\Controller\ContentAdminController,
+                show_in_dashboard: false,
+                on_top: false,
+                group: "Content",
+                label: Content,
+                icon: 'fa fa-solid fa-passport',
+            }
+            #- { name: sonata.admin, manager_type: orm, group: "Content", label: User, on_top: false, icon: 'fa fa-solid fa-user',, show_in_dashboard: false }
+
+
+
+
+    # ####################################################################################
+    # por favor, note que as últimas definições sao da estrutura padrão do projeto
+    # adicione mais definições de serviço quando for necessária abaixo
+
+    internit.cursobundle.curso:
+        class: App\Application\Internit\CursoBundle\Admin\CursoAdmin
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                model_class: App\Application\Internit\CursoBundle\Entity\Curso,
+                controller: App\Application\Internit\CursoBundle\Controller\CursoAdminController,
+                show_in_dashboard: true,
+                on_top: true,
+                group: "Curso",
+                label: Curso,
+                icon: 'fa fa-solid fa-book',
+            }
+
+    internit.documentobundle.documento:
+        class: App\Application\Internit\DocumentoBundle\Admin\DocumentoAdmin
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                model_class: App\Application\Internit\DocumentoBundle\Entity\Documento,
+                controller: App\Application\Internit\DocumentoBundle\Controller\DocumentoAdminController,
+                show_in_dashboard: true,
+                on_top: true,
+                group: "Documento",
+                label: Documento,
+                icon: 'fa fa-solid fa-book',
+            }
+
+#    internit.palavrachavebundle.palavrachave:
+#        class: App\Admin\DocumentoAdmin
+#        tags:
+#            - {
+#                name: sonata.admin,
+#                manager_type: orm,
+#                model_class: App\Entity\Documento,
+#                controller: App\Controller\DocumentoAdminController,
+#                show_in_dashboard: true,
+#                on_top: true,
+#                group: "Palavra Chave",
+#                label: Palavra Chave,
+#                icon: 'fa fa-solid fa-book',
+#            }
+#
+#    internit.tipodocumentobundle.tipodocumento:
+#        class: App\Admin\DocumentoAdmin
+#        tags:
+#            - {
+#                name: sonata.admin,
+#                manager_type: orm,
+#                model_class: App\Entity\Documento,
+#                controller: App\Controller\DocumentoAdminController,
+#                show_in_dashboard: true,
+#                on_top: true,
+#                group: "Tipo Documento",
+#                label: Tipo Documento,
+#                icon: 'fa fa-solid fa-book',
+#            }
+
+
+# Services Schemas Bundle
+# ####################################################################################
+{% for bundle in bundles %}
+    {{ bundle['packageName']|lower }}.{{ bundle['bundleName']|lower }}.{{ bundle['className']|lower }}:
+        class: App\Application\{{ bundle['packageName'] }}\{{ bundle['bundleName'] }}\Admin\{{ bundle['className'] }}Admin
+        tags:
+            - {
+                name: sonata.admin,
+                manager_type: orm,
+                model_class: App\Application\{{ bundle['packageName'] }}\{{ bundle['bundleName'] }}\Entity\{{ bundle['className'] }},
+                controller: App\Application\{{ bundle['packageName'] }}\{{ bundle['bundleName'] }}\Controller\{{ bundle['className'] }}AdminController,
+                show_in_dashboard: true,
+                on_top: true,
+                group: "{{ bundle['className'] }}",
+                label: {{ bundle['className'] }},
+                icon: 'fa fa-solid fa-book',
+
+{% endfor %}

@@ -1,23 +1,26 @@
 <?php
 
-namespace App\Application\Generator\GeneratorBundle\Maker;
+namespace App\Application\Generator\GeneratorBundle\Maker\Bundle\Controller;
 
 use App\Application\Generator\GeneratorBundle\Helper\TwigHelper;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-class MakeEnv
+class MakeAdminController
 {
-    protected string $filePath = "/.env";
-    protected string $template = "/env.twig";
+    protected string $filePath;
+    protected string $template = "/bundle/controller/admin_controller.php.twig";
 
     public function __construct(
-        protected string $projectDirectory,
         protected TwigHelper $twigHelper,
+        protected string $bundleDirectory,
+        protected string $baseNamespace,
+        protected mixed $class,
     )
     {
-        $this->filePath = $this->projectDirectory . $this->filePath;
+        $this->filePath = $this->bundleDirectory . "/Controller/" . $this->class->className . "AdminController.php";
+
         $this->validate();
         $this->filter();
     }
@@ -32,24 +35,18 @@ class MakeEnv
 
     }
 
-
-    /**
-     * @throws SyntaxError
-     * @throws RuntimeError
-     * @throws LoaderError
-     */
-    public function make(): void
+    public function make()
     {
-        //chmod( $this->filePath, 0777);
+        //dd($this->bundleDirectory, $this->baseNamespace, $this->filePath,  $this->class);
 
         if (!file_exists($this->filePath))
         {
             $fp = fopen($this->filePath, "a+");
-            fwrite($fp, $this->getTemplate());
+            $template = $this->getTemplate();
+            fwrite($fp, $template);
             fclose($fp);
-        }else{
-            file_put_contents($this->filePath, $this->getTemplate());
         }
+
     }
 
     /**
@@ -60,6 +57,8 @@ class MakeEnv
     public function getTemplate(): string
     {
         return $this->twigHelper->getTwig()->render($this->template,[
+            'baseNamespace' => $this->baseNamespace,
+            'className' => $this->class->className,
         ]);
     }
 }

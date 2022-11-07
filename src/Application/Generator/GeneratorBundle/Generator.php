@@ -5,24 +5,28 @@ namespace App\Application\Generator\GeneratorBundle;
 use App\Application\Generator\GeneratorBundle\Helper\GitHelper;
 use App\Application\Generator\GeneratorBundle\Helper\StringHelper;
 use App\Application\Generator\GeneratorBundle\Helper\TwigHelper;
-use App\Application\Generator\GeneratorBundle\Maker\Admin\MakeAdmin;
-use App\Application\Generator\GeneratorBundle\Maker\Controller\MakeAdminController;
-use App\Application\Generator\GeneratorBundle\Maker\Controller\MakeApiController;
-use App\Application\Generator\GeneratorBundle\Maker\Controller\MakeFrontController;
-use App\Application\Generator\GeneratorBundle\Maker\Entity\MakeAttribute;
-use App\Application\Generator\GeneratorBundle\Maker\Entity\MakeConstructor;
-use App\Application\Generator\GeneratorBundle\Maker\Entity\MakeEntity;
-use App\Application\Generator\GeneratorBundle\Maker\Entity\MakeGetter;
-use App\Application\Generator\GeneratorBundle\Maker\Entity\MakeSetter;
-use App\Application\Generator\GeneratorBundle\Maker\MakeApplicationFileBundle;
-use App\Application\Generator\GeneratorBundle\Maker\MakeBundleDir;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\Admin\MakeAdmin;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\Controller\MakeAdminController;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\Controller\MakeApiController;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\Controller\MakeFrontController;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeAttribute;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeConstructor;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeEntity;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeGetter;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeSetter;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\MakeApplicationFileBundle;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\MakeBundleDir;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\Repository\MakeMethod;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\Repository\MakeRepository;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\Resources\Config\Routes\MakeRouterFileBundle;
+use App\Application\Generator\GeneratorBundle\Maker\Config\MakeRegisterBundle;
+use App\Application\Generator\GeneratorBundle\Maker\Config\MakeRegisterRoute;
+use App\Application\Generator\GeneratorBundle\Maker\Config\MakeRegisterService;
+use App\Application\Generator\GeneratorBundle\Maker\Config\Packages\MakeRegisterDoctrine;
+use App\Application\Generator\GeneratorBundle\Maker\Config\Packages\MakeSonataAdmin;
 use App\Application\Generator\GeneratorBundle\Maker\MakeDockerCompose;
 use App\Application\Generator\GeneratorBundle\Maker\MakeEnv;
-use App\Application\Generator\GeneratorBundle\Maker\MakeRouterFile;
-use App\Application\Generator\GeneratorBundle\Maker\MakeSonataAdmin;
-use App\Application\Generator\GeneratorBundle\Maker\Repository\MakeMethod;
-use App\Application\Generator\GeneratorBundle\Maker\Repository\MakeRepository;
-use Twig\Environment;
+use App\Application\Generator\GeneratorBundle\Maker\MakeReadme;
 
 class Generator
 {
@@ -34,6 +38,8 @@ class Generator
 
     /** @var string Nome do pacote onde será construído as bundles */
     protected string $packageName = 'Schema';
+
+    protected array $completedProcesses;
 
     /** Helpers */
     protected GitHelper $gitHelper;
@@ -96,22 +102,26 @@ class Generator
 
         /** Clona o repositório base e troca o nome do diretório conforme o projeto atual */
         $this->gitHelper->cloneBaseRepository();
-
+        $this->completedProcesses[] = 'cloneBaseRepository - Clona o repositório base e troca o nome do diretório conforme o projeto atual';
 
         /** Cria o arquivo docker-compose */
-        /*$makeDockerCompose = new MakeDockerCompose(
+        $makeDockerCompose = new MakeDockerCompose(
             projectDirectory: $this->projectDirectory,
             twigHelper: $this->twigHelper,
             projectName: $this->stringHelper->filterProjectDirName($this->projectName)
-        );*/
-        //$makeDockerCompose->make();
+        );
+        $makeDockerCompose->make();
+        $this->completedProcesses[] = 'MakeDockerCompose - Cria o arquivo docker-compose';
+
 
         /** Cria o arquivo .env */
-        /*$makeEnvFile = new MakeEnv(
+        $makeEnvFile = new MakeEnv(
             projectDirectory: $this->projectDirectory,
             twigHelper: $this->twigHelper,
-        );*/
-        //$makeEnvFile->make();
+        );
+        $makeEnvFile->make();
+        $this->completedProcesses[] = 'MakeEnv - Cria o arquivo .env';
+
 
         /** Criar o arquivo de configuração do Sonata Admin. [sonata_admin.yaml] */
         $makeSonataAdmin = new MakeSonataAdmin(
@@ -121,22 +131,53 @@ class Generator
             projectDescription:  $this->projectDescription
         );
         $makeSonataAdmin->make();
+        $this->completedProcesses[] = 'MakeSonataAdmin - Criar o arquivo de configuração do Sonata Admin. [sonata_admin.yaml]';
 
 
+        /** Criar o arquivo de documentação do repositorio. [.README.md] */
+        $makeReadme = new MakeReadme(
+            projectDirectory:    $this->projectDirectory,
+            twigHelper:          $this->twigHelper,
+            projectName:         $this->projectName,
+            projectDescription:  $this->projectDescription
+        );
+        $makeReadme->make();
+        $this->completedProcesses[] = 'MakeReadme - Criar o arquivo de documentação do repositorio. [.README.md] ';
 
 
-
-
-
-
+        /** Array com definiçaão de todas as bunldes para ser usado para gerar arquivos de registro no final do script */
+        $registerBundle = [
+            //"packageName" => "", //"bundleName" => "", //"className" => "",
+        ];
 
 
         /** Percorre todas as classe e cria outros arquivos do projeto */
         foreach ($this->class as $class){
 
+            /** Ignora a criação das tabelas assosiativas e das classes do sistemas */
+            if($class->associativeModel || $class->systemModel)
+                continue;
+
+           // dd($class);
+
+            /** Bundle Name = ExemploBundle */
             $bundleName = $this->stringHelper->createBundleName($class->className);
+
+
+            /** Bundle Directory = /var/www/public/projects/project-dir/src/Application/Package/ExempleBundle */
             $bundleDirectory = $this->projectDirectory . "/src/Application/" . $this->packageName . "/" . $bundleName;
+
+
+            /** Bundle Namespace = App\Application\Package\ExempleBundle */
             $baseNamespace = "App\Application\\" . $this->packageName . "\\" . "$bundleName" ;
+
+
+            /** Utilizado para Realizar registro em arquivos de configuração no final do script */
+            $registerBundle[] = [
+                "packageName" => $this->packageName,
+                "bundleName" => $bundleName,
+                "className" => $class->className,
+            ];
 
 
             /** Cria a estrutura de diretórios da bundle da classe atual  */
@@ -147,6 +188,7 @@ class Generator
                 twigHelper:       $this->twigHelper,
             );
             $makeBundleDir->make();
+            $this->completedProcesses[] = 'MakeBundleDir - Cria a estrutura de diretórios da bundle da classe atual ';
 
 
             /** Cria o arquivo de registro da bundle atual */
@@ -158,43 +200,68 @@ class Generator
                 packageName:  $this->packageName
             );
             $makeApplicationFileBundle->make();
-
-
-           /* foreach ($class->attributes as $attribute) {
-
-            }*/
-
-
-
+            $this->completedProcesses[] = 'MakeApplicationFileBundle - Cria o arquivo de registro da bundle atual ';
 
 
             /** Gera o arquivo de rota da bundle */
-            $makeRouterFile = new MakeRouterFile();
+            $makeRouterFileBundle = new MakeRouterFileBundle(
+                twigHelper:  $this->twigHelper,
+                bundleDirectory:  $bundleDirectory,
+                baseNamespace:  $baseNamespace,
+                bundleName:  $bundleName,
+                packageName: $this->packageName
+            );
+            $makeRouterFileBundle->make();
+            $this->completedProcesses[] = 'MakeRouterFileBundle - Gera o arquivo de rota da bundle ';
+
+
+            /** Gera o arquivo de Repositório */
+            $makeRepository = new MakeRepository(
+                twigHelper:  $this->twigHelper,
+                bundleDirectory:  $bundleDirectory,
+                baseNamespace:  $baseNamespace,
+                class:  $class,
+            );
+            $makeRepository->make();
+            $this->completedProcesses[] = 'MakeRepository - Gera o arquivo de Repositório';
+
+
+            /** Gera o arquivo da controladora Administrativa */
+            $makeAdminController = new MakeAdminController(
+                twigHelper:  $this->twigHelper,
+                bundleDirectory:  $bundleDirectory,
+                baseNamespace:  $baseNamespace,
+                class:  $class,
+            );
+            $makeAdminController->make();
+            $this->completedProcesses[] = 'MakeAdminController - Gera o arquivo da controladora Administrativa ';
+
+
+            /** Gera o arquivo da Entidade */
+            $makeEntity = new MakeEntity(
+                twigHelper:  $this->twigHelper,
+                bundleDirectory:  $bundleDirectory,
+                baseNamespace:  $baseNamespace,
+                class:  $class
+            );
+            $makeEntity->make();
+
+
+
+
+
 
             /** Gera o arquivo da controladora FrontEnd */
             $makeFrontController = new MakeFrontController();
 
-            /** Gera o arquivo da controladora Administrativa */
-            $makeAdminController = new MakeAdminController();
-
             /** Gera o arquivo da controladora Api */
             $makeApiController = new MakeApiController();
-
-            /** Gera o arquivo de Repositório */
-            $makeRepository = new MakeRepository();
-            $makeMethod = new MakeMethod();
 
             /** Gera o arquivo Admin */
             $makeAdmin = new MakeAdmin();
 
-            /** Gera o arquivo da Entidade */
-            $makeEntity = new MakeEntity();
-            $makeConstructor = new MakeConstructor();
-            $makeAttribute = new MakeAttribute();
-            $makeGetter = new MakeGetter();
-            $makeSetter = new MakeSetter();
-
-
+            /** Gera o arquivo Form Type */
+            //$makeMake = new MakeFormType();
 
 
 
@@ -202,24 +269,47 @@ class Generator
 
 
 
+        /** Registra a bundle no arquivo de bundles [bundles.php] */
+        $makeRegisterBundle = new MakeRegisterBundle(
+            twigHelper:  $this->twigHelper,
+            projectDirectory: $this->projectDirectory,
+            registerBundle: $registerBundle,
+        );
+        $makeRegisterBundle->make();
+        $this->completedProcesses[] = 'MakeRegisterBundle - Registra a bundle no arquivo de bundles [bundles.php] ';
+
 
         /** Registra a bundle no arquivo do doctrine [doctrine.yaml] */
-        //registerDoctrine
+        $makeRegisterDoctrine = new MakeRegisterDoctrine(
+            twigHelper:  $this->twigHelper,
+            projectDirectory: $this->projectDirectory,
+            registerBundle: $registerBundle,
+        );
+        $makeRegisterDoctrine->make();
+        $this->completedProcesses[] = 'MakeRegisterDoctrine - Registra a bundle no arquivo do doctrine [doctrine.yaml] ';
 
-        /** Registra o serviço da bundle no arquivo de serviços [services.yaml] */
-        //$this->registerMenuAdmin();
 
         /** Registra a bundle no arquivo de rotas [routes.yaml] */
-        //$this->registerRoute();
+        $makeRegisterRoute = new MakeRegisterRoute(
+            twigHelper:  $this->twigHelper,
+            projectDirectory: $this->projectDirectory,
+            registerBundle: $registerBundle,
+        );
+        $makeRegisterRoute->make();
+        $this->completedProcesses[] = 'MakeRegisterRoute - Registra a bundle no arquivo de rotas [routes.yaml] ';
 
-        /** Registra a bundle no arquivo de bundles [bundles.php] */
-        //$this->registerBundle();
+
+        /** Registra o serviço da bundle no arquivo de serviços [services.yaml] */
+        $makeRegisterService = new MakeRegisterService(
+            twigHelper:  $this->twigHelper,
+            projectDirectory: $this->projectDirectory,
+            registerBundle: $registerBundle,
+        );
+        $makeRegisterService->make();
+        $this->completedProcesses[] = 'MakeRegisterService - Registra o serviço da bundle no arquivo de serviços [services.yaml] ';
 
 
-
-
-
-
+        dd($this->completedProcesses);
         return true;
     }
 

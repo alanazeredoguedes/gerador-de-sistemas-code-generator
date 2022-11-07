@@ -1,0 +1,10 @@
+#[Entity]
+class Aluno
+{
+
+    /** Um aluno tem um mentor. */
+    #[OneToOne(targetEntity: Aluno::class)]
+    #[JoinColumn(name: 'mentor_id', referencedColumnName: 'id')]
+    private Aluno|null $mentor = null;
+
+}

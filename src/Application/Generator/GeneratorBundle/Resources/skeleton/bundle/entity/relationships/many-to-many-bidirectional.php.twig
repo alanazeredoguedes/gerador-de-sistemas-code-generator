@@ -1,0 +1,29 @@
+#[Entity]
+class Autor
+{
+
+    /** Muitos autores têm muitos documentos. Este é o lado inverso. */
+    #[ManyToMany(targetEntity: Documento::class, mappedBy: 'autores')]
+    private Collection $documentos;
+
+    public function __construct() {
+        $this->documentos = new ArrayCollection();
+    }
+
+}
+
+#[Entity]
+class Documento
+{
+
+    /** Muitos documentos pertencem a muitos autores. Este é o lado proprietário. */
+    #[ManyToMany(targetEntity: Autor::class, inversedBy: 'autor')]
+    #[JoinTable(name: 'documento_autor')]
+    private Collection $autores;
+
+    public function __construct() {
+        $this->autores = new ArrayCollection();
+    }
+
+
+}

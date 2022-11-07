@@ -1,0 +1,84 @@
+application.project.security.provider.admin:
+    resource: '@ApplicationProjectSecurityAdminBundle/Resources/config/routes/routes.yaml'
+    prefix: /
+
+application.project.security.provider.api:
+    resource: '@ApplicationProjectSecurityUserBundle/Resources/config/routes/routes.yaml'
+    prefix: /
+
+application.project.content:
+    resource: '@ApplicationProjectContentBundle/Resources/config/routes/routes.yaml'
+    prefix: /
+
+media:
+    resource: '@SonataMediaBundle/Resources/config/routing/media.xml'
+    prefix: /media
+
+controllers:
+    resource: ../src/Controller/
+    type: annotation
+
+kernel:
+    resource: ../src/Kernel.php
+    type: annotation
+
+#api_login_check:
+#    path: /api/login_check
+
+app.swagger_ui:
+    path: /api
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
+
+app.swagger:
+    path: /api.json
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger }
+
+
+
+
+###############################################################################
+#application.internit.cursobundle.curso:
+#    resource: '@ApplicationInternitCursoBundle/Resources/config/routes/routes.yaml'
+#    prefix: /
+#
+application.internit.documentobundle.documento:
+    resource: '@ApplicationInternitDocumentoBundle/Resources/config/routes/routes.yaml'
+    prefix: /
+
+#application.internit.palavrachavebundle.palavrachave:
+#    resource: '@ApplicationInternitPalavraChaveBundle/Resources/config/routes/routes.yaml'
+#    prefix: /
+#
+#application.internit.tipodocumentobundle.tipodocumento:
+#    resource: '@ApplicationInternitTipoDocumentoBundle/Resources/config/routes/routes.yaml'
+#    prefix: /
+#
+
+# Schema Bundles Routes
+###############################################################################
+
+{% for bundle in bundles %}
+application.{{ bundle['packageName']|lower }}.{{ bundle['bundleName']|lower }}:
+    resource: '@Application{{ bundle['packageName'] }}{{ bundle['bundleName'] }}/Resources/config/routes/routes.yaml'
+    prefix: /
+
+{% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

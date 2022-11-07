@@ -7,16 +7,16 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-class MakeDockerCompose
+class MakeReadme
 {
-
-    protected string $filePath = "/docker-compose.yml";
-    protected string $template = "/docker-compose.yml.twig";
+    protected string $filePath = "/config/packages/sonata_admin.yaml";
+    protected string $template = "/config/packages/sonata_admin.yaml.twig";
 
     public function __construct(
         protected string $projectDirectory,
         protected TwigHelper $twigHelper,
         protected string $projectName,
+        protected string $projectDescription,
     )
     {
         $this->filePath = $this->projectDirectory . $this->filePath;
@@ -49,7 +49,7 @@ class MakeDockerCompose
     {
         return $this->twigHelper->getTwig()->render($this->template,[
             'projectName' => $this->projectName,
+            'projectDescription' => $this->projectDescription
         ]);
     }
-
 }

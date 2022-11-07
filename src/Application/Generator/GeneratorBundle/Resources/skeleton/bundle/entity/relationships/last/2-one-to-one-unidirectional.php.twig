@@ -1,0 +1,11 @@
+#[Entity]
+class Product
+{
+
+    /** Um produto tem uma remessa. */
+    #[OneToOne(targetEntity: Shipment::class)]
+    #[JoinColumn(name: 'shipment_id', referencedColumnName: 'id')]
+    private Shipment|null $shipment = null;
+
+
+}

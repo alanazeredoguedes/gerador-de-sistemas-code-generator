@@ -1,0 +1,20 @@
+#[Entity]
+class Autor
+{
+
+    /** Um autor tem um documento. Este é o lado inverso. */
+    #[OneToOne(targetEntity: Documento::class, mappedBy: 'autor')]
+    private Documento|null $documento = null;
+
+}
+
+#[Entity]
+class Documento
+{
+
+    /** Um documento pertence a um autor */
+    #[OneToOne(targetEntity: Autor::class, inversedBy: 'documento')]
+    #[JoinColumn(name: 'autor_id', referencedColumnName: 'id')]
+    private Autor|null $autor = null;
+
+}

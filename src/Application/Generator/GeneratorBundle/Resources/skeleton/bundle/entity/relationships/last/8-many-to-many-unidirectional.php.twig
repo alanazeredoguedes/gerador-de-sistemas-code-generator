@@ -1,0 +1,23 @@
+#[Entity]
+class User
+{
+
+    /** Muitos usuários têm muitos grupos. */
+    #[JoinTable(name: 'users_groups')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: Group::class)]
+    private Collection $groups;
+
+
+    public function __construct() {
+        $this->groups = new ArrayCollection();
+    }
+
+}
+
+#[Entity]
+class Group
+{
+    // ...
+}

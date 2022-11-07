@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Application\Generator\GeneratorBundle\Maker;
+namespace App\Application\Generator\GeneratorBundle\Maker\Config\Packages;
 
 use App\Application\Generator\GeneratorBundle\Helper\TwigHelper;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-class MakeDockerCompose
+class MakeSonataAdmin
 {
-
-    protected string $filePath = "/docker-compose.yml";
-    protected string $template = "/docker-compose.yml.twig";
+    protected string $filePath = "/README.md";
+    protected string $template = "/readme.md.twig";
 
     public function __construct(
         protected string $projectDirectory,
         protected TwigHelper $twigHelper,
         protected string $projectName,
+        protected string $projectDescription,
     )
     {
         $this->filePath = $this->projectDirectory . $this->filePath;
@@ -37,7 +37,7 @@ class MakeDockerCompose
     public function make()
     {
         //chmod( $this->filePath, 0777);
-        file_put_contents($this->filePath, $this->getTemplate());
+        //file_put_contents($this->filePath, $this->getTemplate());
     }
 
     /**
@@ -49,7 +49,7 @@ class MakeDockerCompose
     {
         return $this->twigHelper->getTwig()->render($this->template,[
             'projectName' => $this->projectName,
+            'projectDescription' => $this->projectDescription
         ]);
     }
-
 }

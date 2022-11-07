@@ -1,0 +1,14 @@
+    #[ORM\Id]
+{% if atrribute.autoGenerate %}
+    #[ORM\GeneratedValue]
+    #[ORM\Column({% if fieldName  %}name: '{{ fieldName }}', {% endif %}type: 'integer')]
+    private ?int ${{ attributeName }} = null;
+{% else %}
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+{% if ( attribute.type is same as("string") or attribute.type is same as("text") ) and ( attribute.lengthMin is not same as(0) or attribute.lengthMax is not same as(0) ) %}
+    #[Assert\Length({% if attribute.lengthMin is not same as(0) %}min: {{ attribute.lengthMin }}{% endif %}{% if attribute.lengthMax is not same as(0) %}, max: {{ attribute.lengthMax }}{% endif %})]
+{% endif %}
+    #[ORM\Column({% if fieldName  %}name: '{{ fieldName }}', {% endif %}type: '{{ type.doctrine }}'{% if attribute.type is same as("string") or attribute.type is same as("text")  %}{% if attribute.length %}, length: {{ attribute.length }}{% endif %}{% endif %}{% if attribute.type is same as("decimal") %}{% if attribute.precision is not same as(0) %}, precision: {{ attribute.precision }}{% endif %}{% if attribute.scale is not same as(0) %}, scale: {{ attribute.scale }}{% endif %}{% endif %}, unique: true, nullable: false)]
+    private {{ type.php }} ${{ attributeName }};
+{% endif %}
