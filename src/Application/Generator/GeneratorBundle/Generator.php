@@ -2,6 +2,7 @@
 
 namespace App\Application\Generator\GeneratorBundle;
 
+use App\Application\Generator\GeneratorBundle\Helper\CommandsHelper;
 use App\Application\Generator\GeneratorBundle\Helper\GitHelper;
 use App\Application\Generator\GeneratorBundle\Helper\StringHelper;
 use App\Application\Generator\GeneratorBundle\Helper\TwigHelper;
@@ -43,6 +44,7 @@ class Generator
 
     /** Helpers */
     protected GitHelper $gitHelper;
+    protected CommandsHelper $commandsHelper;
     protected StringHelper $stringHelper;
     protected TwigHelper $twigHelper;
 
@@ -78,7 +80,15 @@ class Generator
         $this->gitHelper = new GitHelper(
             workingDirectory:     $this->workingDirectory,
             projectDirectory:     $this->projectDirectory,
-            projectName:          $this->stringHelper->filterProjectDirName($this->projectName));
+            projectName:          $this->stringHelper->filterProjectDirName($this->projectName)
+        );
+
+        $this->commandsHelper = new CommandsHelper(
+            workingDirectory:     $this->workingDirectory,
+            projectDirectory:     $this->projectDirectory,
+            projectName:          $this->stringHelper->filterProjectDirName($this->projectName)
+        );
+
     }
 
     private function validateClass(): bool
@@ -141,8 +151,8 @@ class Generator
             projectName:         $this->projectName,
             projectDescription:  $this->projectDescription
         );
-        $makeReadme->make();
-        $this->completedProcesses[] = 'MakeReadme - Criar o arquivo de documentação do repositorio. [.README.md] ';
+        //$makeReadme->make();
+        //$this->completedProcesses[] = 'MakeReadme - Criar o arquivo de documentação do repositorio. [.README.md] ';
 
 
         /** Array com definiçaão de todas as bunldes para ser usado para gerar arquivos de registro no final do script */
@@ -187,7 +197,7 @@ class Generator
                 className:        $class->className,
                 twigHelper:       $this->twigHelper,
             );
-            $makeBundleDir->make();
+            //$makeBundleDir->make();
             $this->completedProcesses[] = 'MakeBundleDir - Cria a estrutura de diretórios da bundle da classe atual ';
 
 
@@ -199,7 +209,7 @@ class Generator
                 bundleName:  $bundleName,
                 packageName:  $this->packageName
             );
-            $makeApplicationFileBundle->make();
+            //$makeApplicationFileBundle->make();
             $this->completedProcesses[] = 'MakeApplicationFileBundle - Cria o arquivo de registro da bundle atual ';
 
 
@@ -211,7 +221,7 @@ class Generator
                 bundleName:  $bundleName,
                 packageName: $this->packageName
             );
-            $makeRouterFileBundle->make();
+            //$makeRouterFileBundle->make();
             $this->completedProcesses[] = 'MakeRouterFileBundle - Gera o arquivo de rota da bundle ';
 
 
@@ -222,7 +232,7 @@ class Generator
                 baseNamespace:  $baseNamespace,
                 class:  $class,
             );
-            $makeRepository->make();
+            //$makeRepository->make();
             $this->completedProcesses[] = 'MakeRepository - Gera o arquivo de Repositório';
 
 
@@ -233,7 +243,7 @@ class Generator
                 baseNamespace:  $baseNamespace,
                 class:  $class,
             );
-            $makeAdminController->make();
+            //$makeAdminController->make();
             $this->completedProcesses[] = 'MakeAdminController - Gera o arquivo da controladora Administrativa ';
 
 
@@ -244,7 +254,7 @@ class Generator
                 baseNamespace:  $baseNamespace,
                 class:  $class
             );
-            $makeEntity->make();
+            //$makeEntity->make();
 
 
 
@@ -275,7 +285,7 @@ class Generator
             projectDirectory: $this->projectDirectory,
             registerBundle: $registerBundle,
         );
-        $makeRegisterBundle->make();
+        //$makeRegisterBundle->make();
         $this->completedProcesses[] = 'MakeRegisterBundle - Registra a bundle no arquivo de bundles [bundles.php] ';
 
 
@@ -285,7 +295,7 @@ class Generator
             projectDirectory: $this->projectDirectory,
             registerBundle: $registerBundle,
         );
-        $makeRegisterDoctrine->make();
+        //$makeRegisterDoctrine->make();
         $this->completedProcesses[] = 'MakeRegisterDoctrine - Registra a bundle no arquivo do doctrine [doctrine.yaml] ';
 
 
@@ -295,7 +305,7 @@ class Generator
             projectDirectory: $this->projectDirectory,
             registerBundle: $registerBundle,
         );
-        $makeRegisterRoute->make();
+        //$makeRegisterRoute->make();
         $this->completedProcesses[] = 'MakeRegisterRoute - Registra a bundle no arquivo de rotas [routes.yaml] ';
 
 
@@ -305,8 +315,18 @@ class Generator
             projectDirectory: $this->projectDirectory,
             registerBundle: $registerBundle,
         );
-        $makeRegisterService->make();
+        //$makeRegisterService->make();
         $this->completedProcesses[] = 'MakeRegisterService - Registra o serviço da bundle no arquivo de serviços [services.yaml] ';
+
+
+
+
+
+        $this->commandsHelper->runCommands();
+        //$this->commandsHelper->startContainer();
+        //$this->commandsHelper->installDependencies();
+
+
 
 
         dd($this->completedProcesses);
