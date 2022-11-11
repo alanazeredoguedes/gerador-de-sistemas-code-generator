@@ -28,7 +28,6 @@ class {{ className }}AdminController extends BaseAdminController
         return parent::showAction($request);
     }
 
-
     #[ACL\Admin(enable: true, title: 'Criar', description: 'Criar {{ className }}')]
     public function createAction(Request $request): Response
     {
@@ -97,6 +96,5 @@ class {{ className }}AdminController extends BaseAdminController
 
         return parent::historyCompareRevisionsAction($request, $baseRevision, $compareRevision);
     }
-    
 
 }

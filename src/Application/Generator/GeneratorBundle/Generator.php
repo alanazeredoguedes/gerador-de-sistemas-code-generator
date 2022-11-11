@@ -158,10 +158,9 @@ class Generator
 
 
         /** REMOVER DEPOIS */
-        $packageDir = $this->projectDirectory . "/src/Application/" . $this->packageName;
-        if ( file_exists($packageDir) )
-            $this->commandsHelper->recursiveRemoveDir($packageDir);
-
+        $packageDir = $this->projectDirectory . "/src/Application/" . $this->packageName . '/';
+        $this->commandsHelper->recursiveRemoveDir($packageDir);
+        sleep(3);
 
         /** Percorre todas as classe e cria outros arquivos do projeto */
         foreach ($this->class as $class){
@@ -188,7 +187,6 @@ class Generator
                 "bundleName" => $bundleName,
                 "className" => $class->className,
             ];
-
 
             /** Cria a estrutura de diretórios da bundle da classe atual  */
             $makeBundleDir = new MakeBundleDir(
@@ -242,7 +240,7 @@ class Generator
                 baseNamespace:  $baseNamespace,
                 class:  $class,
             );
-            //$makeAdminController->make();
+            $makeAdminController->make();
             $this->completedProcesses[] = 'MakeAdminController - Gera o arquivo da controladora Administrativa ';
 
 
@@ -256,6 +254,9 @@ class Generator
             //$makeEntity->make();
 
 
+            /** Gera o arquivo Admin */
+            $makeAdmin = new MakeAdmin();
+
 
 
 
@@ -266,11 +267,8 @@ class Generator
             /** Gera o arquivo da controladora Api */
             $makeApiController = new MakeApiController();
 
-            /** Gera o arquivo Admin */
-            $makeAdmin = new MakeAdmin();
-
             /** Gera o arquivo Form Type */
-            //$makeMake = new MakeFormType();
+            //$makeForm = new MakeFormType();
 
 
 
