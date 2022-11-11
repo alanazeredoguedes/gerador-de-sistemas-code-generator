@@ -17,7 +17,6 @@ use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeGetter;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeSetter;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\MakeApplicationFileBundle;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\MakeBundleDir;
-use App\Application\Generator\GeneratorBundle\Maker\Bundle\Repository\MakeMethod;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Repository\MakeRepository;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Resources\Config\Routes\MakeRouterFileBundle;
 use App\Application\Generator\GeneratorBundle\Maker\Config\MakeRegisterBundle;
@@ -109,10 +108,9 @@ class Generator
         $isValid = $this->validateClass();
         $isValid = $this->validateRelationships();
 
-
         /** Clona o repositório base e troca o nome do diretório conforme o projeto atual */
-        $this->gitHelper->cloneBaseRepository();
-        $this->completedProcesses[] = 'cloneBaseRepository - Clona o repositório base e troca o nome do diretório conforme o projeto atual';
+        //$this->gitHelper->cloneBaseRepository();
+        //$this->completedProcesses[] = 'cloneBaseRepository - Clona o repositório base e troca o nome do diretório conforme o projeto atual';
 
         /** Cria o arquivo docker-compose */
         $makeDockerCompose = new MakeDockerCompose(
@@ -156,9 +154,13 @@ class Generator
 
 
         /** Array com definiçaão de todas as bunldes para ser usado para gerar arquivos de registro no final do script */
-        $registerBundle = [
-            //"packageName" => "", //"bundleName" => "", //"className" => "",
-        ];
+        $registerBundle = [ /* "packageName" => "", //"bundleName" => "", //"className" => "" */ ];
+
+
+        /** REMOVER DEPOIS */
+        $packageDir = $this->projectDirectory . "/src/Application/" . $this->packageName;
+        if ( file_exists($packageDir) )
+            $this->commandsHelper->recursiveRemoveDir($packageDir);
 
 
         /** Percorre todas as classe e cria outros arquivos do projeto */
@@ -167,8 +169,6 @@ class Generator
             /** Ignora a criação das tabelas assosiativas e das classes do sistemas */
             if($class->associativeModel || $class->systemModel)
                 continue;
-
-           // dd($class);
 
             /** Bundle Name = ExemploBundle */
             $bundleName = $this->stringHelper->createBundleName($class->className);
@@ -197,7 +197,7 @@ class Generator
                 className:        $class->className,
                 twigHelper:       $this->twigHelper,
             );
-            //$makeBundleDir->make();
+            $makeBundleDir->make();
             $this->completedProcesses[] = 'MakeBundleDir - Cria a estrutura de diretórios da bundle da classe atual ';
 
 
@@ -209,7 +209,7 @@ class Generator
                 bundleName:  $bundleName,
                 packageName:  $this->packageName
             );
-            //$makeApplicationFileBundle->make();
+            $makeApplicationFileBundle->make();
             $this->completedProcesses[] = 'MakeApplicationFileBundle - Cria o arquivo de registro da bundle atual ';
 
 
@@ -221,9 +221,8 @@ class Generator
                 bundleName:  $bundleName,
                 packageName: $this->packageName
             );
-            //$makeRouterFileBundle->make();
+            $makeRouterFileBundle->make();
             $this->completedProcesses[] = 'MakeRouterFileBundle - Gera o arquivo de rota da bundle ';
-
 
             /** Gera o arquivo de Repositório */
             $makeRepository = new MakeRepository(
@@ -232,7 +231,7 @@ class Generator
                 baseNamespace:  $baseNamespace,
                 class:  $class,
             );
-            //$makeRepository->make();
+            $makeRepository->make();
             $this->completedProcesses[] = 'MakeRepository - Gera o arquivo de Repositório';
 
 
@@ -322,11 +321,9 @@ class Generator
 
 
 
-        $this->commandsHelper->runCommands();
+        //$this->commandsHelper->runCommands();
         //$this->commandsHelper->startContainer();
         //$this->commandsHelper->installDependencies();
-
-
 
 
         dd($this->completedProcesses);

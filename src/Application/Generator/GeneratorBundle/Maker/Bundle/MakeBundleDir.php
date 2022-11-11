@@ -37,7 +37,7 @@ class MakeBundleDir
             '/Entity/',
             '/Repository/',
             '/Form/',
-            '/test/',
+            '/Tests/',
 
             // Resources Directory
             '/Resources/config/routes/',
@@ -52,8 +52,10 @@ class MakeBundleDir
             '/Resources/views/' . strtolower($this->className) . '/components/',
         ];
 
+
         foreach ($registerDirectory as $register)
         {
+
             if ( !file_exists($this->bundleDirectory . $register) )
             {
 

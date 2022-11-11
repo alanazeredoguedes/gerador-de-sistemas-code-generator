@@ -9,8 +9,8 @@ use Twig\Error\SyntaxError;
 
 class MakeSonataAdmin
 {
-    protected string $filePath = "/README.md";
-    protected string $template = "/readme.md.twig";
+    protected string $filePath = "/config/packages/sonata_admin.yaml";
+    protected string $template = "/config/packages/sonata_admin.yaml.twig";
 
     public function __construct(
         protected string $projectDirectory,
@@ -36,8 +36,8 @@ class MakeSonataAdmin
 
     public function make()
     {
-        //chmod( $this->filePath, 0777);
-        //file_put_contents($this->filePath, $this->getTemplate());
+        chmod( $this->filePath, 0777);
+        file_put_contents($this->filePath, $this->getTemplate());
     }
 
     /**

@@ -9,8 +9,9 @@ use Twig\Error\SyntaxError;
 
 class MakeReadme
 {
-    protected string $filePath = "/config/packages/sonata_admin.yaml";
-    protected string $template = "/config/packages/sonata_admin.yaml.twig";
+
+    protected string $filePath = "/README.md";
+    protected string $template = "/readme.md.twig";
 
     public function __construct(
         protected string $projectDirectory,
