@@ -1,0 +1,5 @@
+{% if attribute.typeDoctrine == ""  %}
+{% endif %}
+        $list->addIdentifier('{{ attribute.attributeName|raw }}', null, [
+            'label' => '{{ attribute.attributeName|capitalize }}',
+        ]);

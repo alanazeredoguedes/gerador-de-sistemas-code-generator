@@ -125,7 +125,7 @@ class ValidateDiagram
             'attributeName' => $attribute->attributeName,
             'typeDoctrine' => $attribute->type,
             'typePhp' => $this->getPhpType($attribute->type),
-            'SonataType' => $this->getSonataType($attribute->type),
+            'sonataType' => $this->getSonataType($attribute->type),
             'autoGenerate' => $attribute->autoGenerate,
             'precision' => $this->retunrNullOrFloat($attribute->precision),
             'scale' => $this->retunrNullOrFloat($attribute->scale),
@@ -149,7 +149,7 @@ class ValidateDiagram
             'attributeName' => $attribute->attributeName,
             'typeDoctrine' => $attribute->type,
             'typePhp' => $this->getPhpType($attribute->type),
-            'SonataType' => $this->getSonataType($attribute->type),
+            'sonataType' => $this->getSonataType($attribute->type),
             'Symfony' => '',
             'nullable' => $attribute->nullable,
             'unique' => $attribute->unique,
@@ -312,10 +312,268 @@ class ValidateDiagram
         };
     }
 
-    protected function getSonataType(string $type): bool|string
+    protected function getSonataType(string $type): object
+    {
+        return match ($type) {
+            'smallint', 'integer', 'bigint' => (object) [
+                'type' => 'IntegerType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\IntegerType',
+            ],
+            'decimal', 'float' => (object) [
+                'type' => 'NumberType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\NumberType',
+            ],
+            'boolean' => (object) [
+                'type' => 'CheckboxType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\CheckboxType',
+            ],
+            'text', 'json', 'array', 'simple_array', 'object'  => (object) [
+                'type' => 'TextareaType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\TextareaType',
+            ],
+            'date' => (object) [
+                'type' => 'DateType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\DateType',
+            ],
+            'datetime', 'datetimetz' => (object) [
+                'type' => 'DateTimeType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\DateTimeType',
+            ],
+            'time' => (object) [
+                'type' => 'TimeType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\TimeType',
+            ],
+            //'guid' => 'guid',
+            //'binary' => 'binary',
+            //'blob' => 'blob',
+            default => (object) [
+                'type' => 'TextType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\TextType',
+            ],
+        };
+    }
+
+    protected function getSymfonyType($type): string
     {
 
-        return $type;
+    }
+
+
+
+
+
+
+    protected function allSonataTypes()
+    {
+        $types = [
+            'AclMatrixType' => (object) [
+                'type' => 'AclMatrixType',
+                'namespace' => 'Sonata\AdminBundle\Form\Type\AclMatrixType',
+            ],
+            'AdminType' => (object) [
+                'type' => 'AdminType',
+                'namespace' => 'Sonata\AdminBundle\Form\Type\AdminType',
+            ],
+            'ChoiceFieldMaskType' => (object) [
+                'type' => 'ChoiceFieldMaskType',
+                'namespace' => 'Sonata\AdminBundle\Form\Type\ChoiceFieldMaskType',
+            ],
+            'CollectionType' => (object) [
+                'type' => 'CollectionType',
+                'namespace' => 'Sonata\AdminBundle\Form\Type\CollectionType',
+            ],
+            'ModelAutocompleteType' => (object) [
+                'type' => 'ModelAutocompleteType',
+                'namespace' => 'Sonata\AdminBundle\Form\Type\ModelAutocompleteType',
+            ],
+            'ModelHiddenType' => (object) [
+                'type' => 'ModelHiddenType',
+                'namespace' => 'Sonata\AdminBundle\Form\Type\ModelHiddenType',
+            ],
+            'ModelListType' => (object) [
+                'type' => 'ModelListType',
+                'namespace' => 'Sonata\AdminBundle\Form\Type\ModelListType',
+            ],
+            'ModelReferenceType' => (object) [
+                'type' => 'ModelReferenceType',
+                'namespace' => 'Sonata\AdminBundle\Form\Type\ModelReferenceType',
+            ],
+            'ModelType' => (object) [
+                'type' => 'ModelType',
+                'namespace' => 'Sonata\AdminBundle\Form\Type\ModelType',
+            ],
+            'TemplateType' => (object) [
+                'type' => 'TemplateType',
+                'namespace' => 'Sonata\AdminBundle\Form\Type\TemplateType',
+            ],
+        ];
+    }
+
+    protected function allSymfonyTypes()
+    {
+        $types = [
+            'BaseType' => (object) [
+                'type' => 'BaseType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\BaseType',
+            ],
+            'BirthdayType' => (object) [
+                'type' => 'BirthdayType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\BirthdayType',
+            ],
+            'ButtonType' => (object) [
+                'type' => 'ButtonType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\ButtonType',
+            ],
+            'CheckboxType' => (object) [
+                'type' => 'CheckboxType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\CheckboxType',
+            ],
+            'ChoiceType' => (object) [
+                'type' => 'ChoiceType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\ChoiceType',
+            ],
+            'CollectionType' => (object) [
+                'type' => 'CollectionType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\CollectionType',
+            ],
+            'ColorType' => (object) [
+                'type' => 'ColorType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\ColorType',
+            ],
+            'CountryType' => (object) [
+                'type' => 'CountryType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\CountryType',
+            ],
+            'CurrencyType' => (object) [
+                'type' => 'CurrencyType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\CurrencyType',
+            ],
+            'DateIntervalType' => (object) [
+                'type' => 'DateIntervalType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\DateIntervalType',
+            ],
+            'DateTimeType' => (object) [
+                'type' => 'DateTimeType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\DateTimeType',
+            ],
+            'DateType' => (object) [
+                'type' => 'DateType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\DateType',
+            ],
+            'EmailType' => (object) [
+                'type' => 'EmailType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\EmailType',
+            ],
+            'EnumType' => (object) [
+                'type' => 'EnumType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\EnumType',
+            ],
+            'FileType' => (object) [
+                'type' => 'FileType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\FileType',
+            ],
+            'FormType' => (object) [
+                'type' => 'FormType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\FormType',
+            ],
+            'HiddenType' => (object) [
+                'type' => 'HiddenType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\HiddenType',
+            ],
+            'IntegerType' => (object) [
+                'type' => 'IntegerType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\IntegerType',
+            ],
+            'LanguageType' => (object) [
+                'type' => 'LanguageType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\LanguageType',
+            ],
+            'LocaleType' => (object) [
+                'type' => 'LocaleType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\LocaleType',
+            ],
+            'MoneyType' => (object) [
+                'type' => 'MoneyType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\MoneyType',
+            ],
+            'NumberType' => (object) [
+                'type' => 'NumberType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\NumberType',
+            ],
+            'PasswordType' => (object) [
+                'type' => 'PasswordType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\PasswordType',
+            ],
+            'PercentType' => (object) [
+                'type' => 'PercentType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\PercentType',
+            ],
+            'RadioType' => (object) [
+                'type' => 'RadioType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\RadioType',
+            ],
+            'RangeType' => (object) [
+                'type' => 'RangeType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\RangeType',
+            ],
+            'RepeatedType' => (object) [
+                'type' => 'RepeatedType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\RepeatedType',
+            ],
+            'ResetType' => (object) [
+                'type' => 'ResetType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\ResetType',
+            ],
+            'SearchType' => (object) [
+                'type' => 'SearchType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\SearchType',
+            ],
+            'SubmitType' => (object) [
+                'type' => 'SubmitType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\SubmitType',
+            ],
+            'TelType' => (object) [
+                'type' => 'TelType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\TelType',
+            ],
+            'TextareaType' => (object) [
+                'type' => 'TextareaType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\TextareaType',
+            ],
+            'TextType' => (object) [
+                'type' => 'TextType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\TextType',
+            ],
+            'TimeType' => (object) [
+                'type' => 'TimeType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\TimeType',
+            ],
+            'TimezoneType' => (object) [
+                'type' => 'TimezoneType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\TimezoneType',
+            ],
+            'TransformationFailureExtension' => (object) [
+                'type' => 'TransformationFailureExtension',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\TransformationFailureExtension',
+            ],
+            'UlidType' => (object) [
+                'type' => 'UlidType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\UlidType',
+            ],
+            'UrlType' => (object) [
+                'type' => 'UrlType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\UrlType',
+            ],
+            'UuidType' => (object) [
+                'type' => 'UuidType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\UuidType',
+            ],
+            'WeekType' => (object) [
+                'type' => 'WeekType',
+                'namespace' => 'Symfony\Component\Form\Extension\Core\Type\WeekType',
+            ],
+        ];
+
     }
 
 

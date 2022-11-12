@@ -14,8 +14,6 @@ use App\Application\Generator\GeneratorBundle\Maker\Bundle\Controller\MakeFrontC
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeAttribute;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeConstructor;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeEntity;
-use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeGetter;
-use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeSetter;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\MakeApplicationFileBundle;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\MakeBundleDir;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Repository\MakeRepository;
@@ -317,8 +315,7 @@ class Generator
 
 
 
-
-        $this->commandsHelper->runCommands();
+        //$this->commandsHelper->runCommands();
         //$this->commandsHelper->startContainer();
         //$this->commandsHelper->installDependencies();
 

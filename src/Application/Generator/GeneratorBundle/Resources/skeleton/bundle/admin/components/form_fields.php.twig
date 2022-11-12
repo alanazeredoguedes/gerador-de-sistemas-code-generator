@@ -1,0 +1,14 @@
+{% if type == "primaryKey" %}
+{% if not attribute.autoGenerate %}
+                $form->add('{{ attribute.attributeName|raw }}', {{ attribute.sonataType.type }}::class, [
+                    'label' => '{{ attribute.attributeName|capitalize }}',
+                ]);
+{% endif %}
+{% endif %}
+{% if type == "default" %}
+{% if not attribute.autoGenerate %}
+                $form->add('{{ attribute.attributeName|raw }}',  {{ attribute.sonataType.type }}::class, [
+                    'label' => '{{ attribute.attributeName|capitalize }}',
+                ]);
+{% endif %}
+{% endif %}

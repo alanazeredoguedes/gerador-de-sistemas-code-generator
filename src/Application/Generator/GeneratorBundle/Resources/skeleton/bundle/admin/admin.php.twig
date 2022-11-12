@@ -10,7 +10,9 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 
 /** Components Form */
-
+{% for type in typeForm %}
+use {{ type }};
+{% endfor %}
 
 final class {{ className }}Admin extends BaseAdmin
 {
@@ -25,8 +27,9 @@ final class {{ className }}Admin extends BaseAdmin
         $form->tab('Geral');
             $form->with('Informações Gerais');
 
-
-
+{% for ff in formFields %}
+{{ ff|raw }}
+{% endfor %}
             $form->end();
         $form->end();
     }
@@ -34,15 +37,36 @@ final class {{ className }}Admin extends BaseAdmin
     protected function configureDatagridFilters(DatagridMapper $datagrid): void
     {
 
+{% for datagrid in datagridFilters %}
+{{ datagrid|raw }}
+
+{% endfor %}
     }
 
     protected function configureListFields(ListMapper $list): void
     {
 
+{% for list in listFields %}
+{{ list|raw }}
+
+{% endfor %}
+        $list->add(ListMapper::NAME_ACTIONS, ListMapper::TYPE_ACTIONS, [
+            'actions' => [
+                'show'   => [],
+                'edit'   => [],
+                'delete' => [],
+            ]
+        ]);
+
     }
 
     protected function configureShowFields(ShowMapper $show): void
     {
+
+{% for show in showFields %}
+{{ show|raw }}
+
+{% endfor %}
 
     }
 

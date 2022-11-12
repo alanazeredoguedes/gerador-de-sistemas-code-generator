@@ -15,14 +15,15 @@ class CommandsHelper
     {}
 
     protected $listCommands = [
+        //'./run bin/console doctrine:schema:update --force'
         //'composer install',
         //'bin/console lexik:jwt:generate-keypair',
         //'chmod 777 /var/ -R',
         //'bin/console doctrine:database:create',
-        'bin/console doctrine:schema:update --force',
+        //'bin/console doctrine:schema:update --force',
         //'bin/console security:create-admin admin admin@email.com admin',
         //'bin/console security:create-user user user@email.com user',
-        'bin/console assets:install --symlink',
+        //'bin/console assets:install --symlink',
         //'bin/console cache:clear',
     ];
 
