@@ -6,6 +6,7 @@ use App\Application\Generator\GeneratorBundle\Helper\CommandsHelper;
 use App\Application\Generator\GeneratorBundle\Helper\GitHelper;
 use App\Application\Generator\GeneratorBundle\Helper\StringHelper;
 use App\Application\Generator\GeneratorBundle\Helper\TwigHelper;
+use App\Application\Generator\GeneratorBundle\Helper\ValidateDiagram;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Admin\MakeAdmin;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Controller\MakeAdminController;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Controller\MakeApiController;
@@ -46,7 +47,7 @@ class Generator
     protected CommandsHelper $commandsHelper;
     protected StringHelper $stringHelper;
     protected TwigHelper $twigHelper;
-
+    protected ValidateDiagram $validateDiagram;
 
     public function __construct(
         protected string $projectName,
@@ -88,25 +89,22 @@ class Generator
             projectName:          $this->stringHelper->filterProjectDirName($this->projectName)
         );
 
+        $this->validateDiagram = new ValidateDiagram(
+            class:                $this->class,
+            relationships:        $this->relationships
+        );
+
     }
-
-    private function validateClass(): bool
-    {
-
-        return false;
-    }
-
-    private function validateRelationships(): bool
-    {
-
-        return false;
-    }
-
 
     public final function startGenerator(): bool
     {
-        $isValid = $this->validateClass();
-        $isValid = $this->validateRelationships();
+//        $validate = $this->validateDiagram->checkIntegrity();
+//        if(!$validate->status)
+//            dd($validate);
+
+        $this->validateDiagram->transformData();
+        $this->class = $this->validateDiagram->classValidate;
+
 
         /** Clona o repositório base e troca o nome do diretório conforme o projeto atual */
         //$this->gitHelper->cloneBaseRepository();
@@ -165,10 +163,6 @@ class Generator
         /** Percorre todas as classe e cria outros arquivos do projeto */
         foreach ($this->class as $class){
 
-            /** Ignora a criação das tabelas assosiativas e das classes do sistemas */
-            if($class->associativeModel || $class->systemModel)
-                continue;
-
             /** Bundle Name = ExemploBundle */
             $bundleName = $this->stringHelper->createBundleName($class->className);
 
@@ -222,6 +216,7 @@ class Generator
             $makeRouterFileBundle->make();
             $this->completedProcesses[] = 'MakeRouterFileBundle - Gera o arquivo de rota da bundle ';
 
+
             /** Gera o arquivo de Repositório */
             $makeRepository = new MakeRepository(
                 twigHelper:  $this->twigHelper,
@@ -244,6 +239,25 @@ class Generator
             $this->completedProcesses[] = 'MakeAdminController - Gera o arquivo da controladora Administrativa ';
 
 
+            /** Gera o arquivo da controladora FrontEnd */
+            $makeFrontController = new MakeFrontController();
+
+
+            /** Gera o arquivo da controladora Api */
+            $makeApiController = new MakeApiController();
+
+
+            /** Gera o arquivo Admin */
+            $makeAdmin = new MakeAdmin(
+                twigHelper:  $this->twigHelper,
+                bundleDirectory:  $bundleDirectory,
+                baseNamespace:  $baseNamespace,
+                class:  $class,
+            );
+            $makeAdmin->make();
+            $this->completedProcesses[] = 'MakeAdmin - Gera o arquivo Admin do Sonata';
+
+
             /** Gera o arquivo da Entidade */
             $makeEntity = new MakeEntity(
                 twigHelper:  $this->twigHelper,
@@ -251,29 +265,14 @@ class Generator
                 baseNamespace:  $baseNamespace,
                 class:  $class
             );
-            //$makeEntity->make();
+            $makeEntity->make();
 
 
-            /** Gera o arquivo Admin */
-            $makeAdmin = new MakeAdmin();
-
-
-
-
-
-            /** Gera o arquivo da controladora FrontEnd */
-            $makeFrontController = new MakeFrontController();
-
-            /** Gera o arquivo da controladora Api */
-            $makeApiController = new MakeApiController();
 
             /** Gera o arquivo Form Type */
             //$makeForm = new MakeFormType();
 
-
-
         }
-
 
 
         /** Registra a bundle no arquivo de bundles [bundles.php] */
@@ -282,7 +281,7 @@ class Generator
             projectDirectory: $this->projectDirectory,
             registerBundle: $registerBundle,
         );
-        //$makeRegisterBundle->make();
+        $makeRegisterBundle->make();
         $this->completedProcesses[] = 'MakeRegisterBundle - Registra a bundle no arquivo de bundles [bundles.php] ';
 
 
@@ -292,7 +291,7 @@ class Generator
             projectDirectory: $this->projectDirectory,
             registerBundle: $registerBundle,
         );
-        //$makeRegisterDoctrine->make();
+        $makeRegisterDoctrine->make();
         $this->completedProcesses[] = 'MakeRegisterDoctrine - Registra a bundle no arquivo do doctrine [doctrine.yaml] ';
 
 
@@ -302,7 +301,7 @@ class Generator
             projectDirectory: $this->projectDirectory,
             registerBundle: $registerBundle,
         );
-        //$makeRegisterRoute->make();
+        $makeRegisterRoute->make();
         $this->completedProcesses[] = 'MakeRegisterRoute - Registra a bundle no arquivo de rotas [routes.yaml] ';
 
 
@@ -312,14 +311,14 @@ class Generator
             projectDirectory: $this->projectDirectory,
             registerBundle: $registerBundle,
         );
-        //$makeRegisterService->make();
+        $makeRegisterService->make();
         $this->completedProcesses[] = 'MakeRegisterService - Registra o serviço da bundle no arquivo de serviços [services.yaml] ';
 
 
 
 
 
-        //$this->commandsHelper->runCommands();
+        $this->commandsHelper->runCommands();
         //$this->commandsHelper->startContainer();
         //$this->commandsHelper->installDependencies();
 

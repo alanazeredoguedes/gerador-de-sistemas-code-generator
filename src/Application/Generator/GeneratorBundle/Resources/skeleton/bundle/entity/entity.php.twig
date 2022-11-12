@@ -2,7 +2,7 @@
 
 namespace {{ baseNamespace }}\Entity;
 
-namespace {{ baseNamespace }}\Repository\{{ className }}Repository;
+use {{ baseNamespace }}\Repository\{{ className }}Repository;
 use Doctrine\ORM\Mapping as ORM;
 
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -29,9 +29,8 @@ class {{ className }}
 {{ construct }}
 
 {% for getSet in gettersAndSetters %}
-    {{ getSet }}
+{{ getSet|raw }}
 
 {% endfor %}
-
 
 }

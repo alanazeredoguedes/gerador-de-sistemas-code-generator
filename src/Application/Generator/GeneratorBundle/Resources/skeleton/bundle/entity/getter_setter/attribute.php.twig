@@ -1,0 +1,9 @@
+    public function get{{ attribute.attributeName|capitalize }}(): {% if attribute.nullable %}?{% endif %}{{ attribute.typePhp }}
+    {
+        return $this->{{ attribute.attributeName }};
+    }
+
+    public function set{{ attribute.attributeName|capitalize }}({% if attribute.nullable %}?{% endif %}{{ attribute.typePhp }} ${{ attribute.attributeName }}): void
+    {
+        $this->{{ attribute.attributeName }} = ${{ attribute.attributeName }};
+    }

@@ -42,33 +42,69 @@ class MakeEntity
 
     public function make()
     {
-
         //dd($this->class);
 
-      foreach ($this->class->attributes as $attribute) {
+        /** Create Primary Key */
+        $makeAttribute = new MakeAttribute(
+            twigHelper: $this->twigHelper,
+            attribute: $this->class->attributes->primaryKey,
+            typeAttribute: 'primaryKey'
+        );
+        $this->attributes[] = $makeAttribute->make();
+        $this->uniqueAttributes[] = $this->class->attributes->primaryKey->attributeName;
+
+        /** Primary Key Getter and Setter */
+        $makeGetterSetter = new MakeGetterSetter(
+            twigHelper: $this->twigHelper,
+            attribute: $this->class->attributes->primaryKey,
+            typeAttribute: 'primaryKey'
+        );
+        $this->gettersAndSetters[] = $makeGetterSetter->make();
 
 
-          if($attribute->unique)
-              $this->uniqueAttributes[] = ($attribute->fieldName) ?
-                  str_replace(' ', '',  $attribute->fieldName) :
-                  str_replace(' ', '',  $attribute->attributeName);
+
+        /** Create Default Attributes */
+        foreach ($this->class->attributes->default as $attribute){
+
+            if($attribute->unique)
+                $this->uniqueAttributes[] = $attribute->attributeName;
+
+            /** Create Default Attributes */
+            $makeAttribute = new MakeAttribute(
+                twigHelper: $this->twigHelper,
+                attribute: $attribute,
+                typeAttribute: 'default'
+            );
+            $this->attributes[] = $makeAttribute->make();
+
+            /** Default Attributes Getter and Setter */
+            $makeGetterSetter = new MakeGetterSetter(
+                twigHelper: $this->twigHelper,
+                attribute: $attribute,
+                typeAttribute: 'default'
+            );
+            $this->gettersAndSetters[] = $makeGetterSetter->make();
+
+        }
 
 
-          $makeAttribute = new MakeAttribute(
-              twigHelper: $this->twigHelper,
-              attribute: $attribute,
-          );
+        /** Create ForeignKey Key */
+        /*foreach ($this->class->attributes->foreignKey as $foreignKey){
 
-          $this->attributes[] = $makeAttribute->make();
+            if($attribute->unique)
+                $this->uniqueAttributes[] = $attribute->attributeName;
 
-      }
+            $makeAttribute = new MakeAttribute(
+                twigHelper: $this->twigHelper,
+                attribute: $foreignKey,
+                typeAttribute: 'foreignKey'
+            );
+            $this->attributes[] = $makeAttribute->make();
+        }*/
 
 
 
-/*        $makeGetter = new MakeGetter();
-        $makeSetter = new MakeSetter();
-
-        $makeConstructor = new MakeConstructor();*/
+/*      $makeConstructor = new MakeConstructor();*/
 
 
         if (!file_exists($this->filePath))
@@ -91,13 +127,12 @@ class MakeEntity
         return $this->twigHelper->getTwig()->render($this->template,[
             'baseNamespace' => $this->baseNamespace,
             'className' => $this->class->className,
-            'description' => $this->class->description,
             'tableName' => $this->class->tableName,
-            'attributes' => $this->attributes,
+            'description' => $this->class->description,
             'construct' => $this->construct,
+            'attributes' => $this->attributes,
             'gettersAndSetters' => $this->gettersAndSetters,
             'uniqueAttributes' => $this->uniqueAttributes,
-
         ]);
     }
 }

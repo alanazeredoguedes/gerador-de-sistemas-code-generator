@@ -1,0 +1,16 @@
+{% if attribute.autoGenerate %}
+    public function get{{ attribute.attributeName|capitalize }}(): ?int
+    {
+        return $this->{{ attribute.attributeName }};
+    }
+{% else %}
+    public function get{{ attribute.attributeName|capitalize }}(): {{ attribute.typePhp }}
+    {
+        return $this->{{ attribute.attributeName }};
+    }
+
+    public function set{{ attribute.attributeName|capitalize }}({{ attribute.typePhp }} ${{ attribute.attributeName }}): void
+    {
+        $this->{{ attribute.attributeName }} = ${{ attribute.attributeName }};
+    }
+{% endif %}

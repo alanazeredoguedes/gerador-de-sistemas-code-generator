@@ -7,7 +7,7 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-class MakeAttribute
+class MakeGetterSetter
 {
     protected string $filePath;
     protected string $template = "/bundle/entity/";
@@ -39,7 +39,7 @@ class MakeAttribute
         if($this->typeAttribute === 'primaryKey'){
 
             /** Generate Primary Key */
-            return $this->getTemplate('primary_key.php.twig', [
+            return $this->getTemplate('getter_setter/primary_key.php.twig', [
                 'attribute' => $this->attribute
             ]);
 
@@ -51,7 +51,7 @@ class MakeAttribute
         }elseif ($this->typeAttribute === 'default') {
 
             /** Generate Default Attribute */
-            return $this->getTemplate('attribute.php.twig', [
+            return $this->getTemplate('getter_setter/attribute.php.twig', [
                 'attribute' => $this->attribute
             ]);
 

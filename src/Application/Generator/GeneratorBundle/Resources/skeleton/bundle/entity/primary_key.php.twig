@@ -1,14 +1,14 @@
     #[ORM\Id]
-{% if atrribute.autoGenerate %}
+{% if attribute.autoGenerate %}
     #[ORM\GeneratedValue]
-    #[ORM\Column({% if fieldName  %}name: '{{ fieldName }}', {% endif %}type: 'integer')]
-    private ?int ${{ attributeName }} = null;
+    #[ORM\Column(name: '{{ attribute.attributeName }}', type: 'integer', unique: true, nullable: false)]
+    private ?int ${{ attribute.attributeName }} = null;
 {% else %}
     #[Assert\NotNull]
     #[Assert\NotBlank]
-{% if ( attribute.type is same as("string") or attribute.type is same as("text") ) and ( attribute.lengthMin is not same as(0) or attribute.lengthMax is not same as(0) ) %}
-    #[Assert\Length({% if attribute.lengthMin is not same as(0) %}min: {{ attribute.lengthMin }}{% endif %}{% if attribute.lengthMax is not same as(0) %}, max: {{ attribute.lengthMax }}{% endif %})]
+{% if ( attribute.typeDoctrine is same as("string") or attribute.typeDoctrine is same as("text") ) and ( attribute.lengthMin or attribute.lengthMax ) %}
+    #[Assert\Length({% if attribute.lengthMin %}min: {{ attribute.lengthMin }}{% endif %}{% if attribute.lengthMax %}, max: {{ attribute.lengthMax }}{% endif %})]
 {% endif %}
-    #[ORM\Column({% if fieldName  %}name: '{{ fieldName }}', {% endif %}type: '{{ type.doctrine }}'{% if attribute.type is same as("string") or attribute.type is same as("text")  %}{% if attribute.length %}, length: {{ attribute.length }}{% endif %}{% endif %}{% if attribute.type is same as("decimal") %}{% if attribute.precision is not same as(0) %}, precision: {{ attribute.precision }}{% endif %}{% if attribute.scale is not same as(0) %}, scale: {{ attribute.scale }}{% endif %}{% endif %}, unique: true, nullable: false)]
-    private {{ type.php }} ${{ attributeName }};
+    #[ORM\Column(name: '{{ attribute.attributeName }}', type: '{{ attribute.typeDoctrine }}'{% if attribute.typeDoctrine is same as("string") or attribute.typeDoctrine is same as("text")  %}{% if attribute.lengthMax %}, length: {{ attribute.lengthMax }}{% endif %}{% endif %}{% if attribute.typeDoctrine is same as("decimal") %}{% if attribute.precision %}, precision: {{ attribute.precision }}{% endif %}{% if attribute.scale %}, scale: {{ attribute.scale }}{% endif %}{% endif %}, unique: true, nullable: false)]
+    private {{ attribute.typePhp }} ${{ attribute.attributeName }};
 {% endif %}

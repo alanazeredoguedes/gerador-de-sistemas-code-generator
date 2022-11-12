@@ -2,17 +2,17 @@
     #[Assert\NotNull]
     #[Assert\NotBlank]
 {% endif %}
-{% if ( attribute.type is same as("string") or attribute.type is same as("text") ) and ( attribute.lengthMin is not same as(0) or attribute.lengthMax is not same as(0) ) %}
-    #[Assert\Length({% if attribute.lengthMin is not same as(0) %}min: {{ attribute.lengthMin }}{% endif %}{% if attribute.lengthMax is not same as(0) %}, max: {{ attribute.lengthMax }}{% endif %})]
+{% if ( attribute.typeDoctrine is same as("string") or attribute.type is same as("text") ) and ( ( attribute.lengthMin ) or ( attribute.lengthMax ) ) %}
+    #[Assert\Length({% if attribute.lengthMin %}min: {{ attribute.lengthMin }}{% endif %}{% if attribute.lengthMax  %}, max: {{ attribute.lengthMax }}{% endif %})]
 {% endif %}
-{% if attribute.type is same as("date") %}
+{% if attribute.typeDoctrine is same as("date") %}
     #[Assert\Date]
 {% endif %}
-{% if attribute.type is same as("datetime") or attribute.type is same as("datetimetz") %}
+{% if attribute.typeDoctrine is same as("datetime") or attribute.typeDoctrine is same as("datetimetz") %}
     #[Assert\DateTime]
 {% endif %}
-{% if attribute.type is same as("time") %}
+{% if attribute.typeDoctrine is same as("time") %}
     #[Assert\Time]
 {% endif %}
-    #[ORM\Column({% if fieldName  %}name: '{{ fieldName }}', {% endif %}type: '{{ type.doctrine }}'{% if attribute.type is same as("string") or attribute.type is same as("text")  %}{% if attribute.length %}, length: {{ attribute.length }}{% endif %}{% endif %}{% if attribute.type is same as("decimal") %}{% if attribute.precision is not same as(0) %}, precision: {{ attribute.precision }}{% endif %}{% if attribute.scale is not same as(0) %}, scale: {{ attribute.scale }}{% endif %}{% endif %}{% if attribute.unique %}, unique: true{% else %}, unique: false{% endif %}{% if attribute.nullable %}, nullable: true{% else %}, nullable: false{% endif %})]
-    private {% if attribute.nullable %}?{% endif %}{{ type.php }} ${{ attributeName }};
+    #[ORM\Column(name: '{{ attribute.attributeName }}', type: '{{ attribute.typeDoctrine }}'{% if attribute.typeDoctrine is same as("string") or attribute.typeDoctrine is same as("text")  %}{% if attribute.lengthMax %}, length: {{ attribute.lengthMax }}{% endif %}{% endif %}{% if attribute.typeDoctrine is same as("decimal") %}{% if attribute.precision %}, precision: {{ attribute.precision }}{% endif %}{% if attribute.scale %}, scale: {{ attribute.scale }}{% endif %}{% endif %}{% if attribute.unique %}, unique: true{% else %}, unique: false{% endif %}{% if attribute.nullable %}, nullable: true{% else %}, nullable: false{% endif %})]
+    private {% if attribute.nullable %}?{% endif %}{{ attribute.typePhp }} ${{ attribute.attributeName }}{% if attribute.nullable %} = null{% endif %};
