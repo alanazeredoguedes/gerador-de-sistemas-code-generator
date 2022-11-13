@@ -46,8 +46,6 @@ class MakeAdmin
     {
         //dd($this->class);
 
-        //dd($this->class->attributes->primaryKey);
-
         $this->sonataTypeForms[] = $this->class->attributes->primaryKey->sonataType->namespace;
 
         $this->formFields[] = $this->getBaseTemplate('components/form_fields.php.twig', [
@@ -96,7 +94,45 @@ class MakeAdmin
             ]);
 
         }
-        $this->sonataTypeForms = array_values( array_unique($this->sonataTypeForms) );
+
+        //dd($this->class->attributes);
+
+        foreach ($this->class->attributes->foreignKey as $foreignKey){
+
+            $this->sonataTypeForms[] = $foreignKey->sonataType->namespace;
+
+            //dd($foreignKey);
+
+            /*$this->formFields[] = $this->getBaseTemplate('components/form_fields.php.twig', [
+                'attribute' => $attribute,
+                'type' => 'foreignKey'
+            ]);*/
+
+            $this->formFields[] = $this->getBaseTemplate('components/form_fields.php.twig', [
+                'attribute' => $foreignKey,
+                'type' => 'foreignKey'
+            ]);
+
+            /*$this->listFields[] = $this->getBaseTemplate('components/list_fields.php.twig', [
+                'attribute' => $attribute,
+                'type' => 'foreignKey'
+            ]);
+
+            $this->showFields[] = $this->getBaseTemplate('components/show_fields.php.twig', [
+                'attribute' =>$attribute,
+                'type' => 'foreignKey'
+            ]);*/
+        }
+
+
+
+
+
+
+
+
+
+            $this->sonataTypeForms = array_values( array_unique($this->sonataTypeForms) );
 
         //dd($this->sonataTypeForms);
 

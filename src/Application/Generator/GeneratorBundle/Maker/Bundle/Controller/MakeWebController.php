@@ -7,19 +7,20 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-class MakeApiController
+class MakeWebController
 {
     protected string $filePath;
-    protected string $template = "/bundle/controller/api_controller.php.twig";
+    protected string $template = "/bundle/controller/web_controller.php.twig";
 
     public function __construct(
         protected TwigHelper $twigHelper,
         protected string $bundleDirectory,
         protected string $baseNamespace,
         protected mixed $class,
+        protected string $packageName,
     )
     {
-        $this->filePath = $this->bundleDirectory . "/Controller/" . $this->class->className . "ApiController.php";
+        $this->filePath = $this->bundleDirectory . "/Controller/" . $this->class->className . "WebController.php";
 
         $this->validate();
         $this->filter();
@@ -59,6 +60,7 @@ class MakeApiController
         return $this->twigHelper->getTwig()->render($this->template,[
             'baseNamespace' => $this->baseNamespace,
             'className' => $this->class->className,
+            'packageName' => $this->packageName,
         ]);
     }
 }

@@ -2,6 +2,7 @@
 {% if not attribute.autoGenerate %}
                 $form->add('{{ attribute.attributeName|raw }}', {{ attribute.sonataType.type }}::class, [
                     'label' => '{{ attribute.attributeName|capitalize }}',
+                    'required' => true,
                 ]);
 {% endif %}
 {% endif %}
@@ -9,6 +10,35 @@
 {% if not attribute.autoGenerate %}
                 $form->add('{{ attribute.attributeName|raw }}',  {{ attribute.sonataType.type }}::class, [
                     'label' => '{{ attribute.attributeName|capitalize }}',
+                    'required' => {% if attribute.nullable %} false {% else %} true {% endif %},
+                ]);
+{% endif %}
+{% endif %}
+{% if type == "foreignKey" %}
+{% if attribute.typeForeingKey == "inverseSide" %}
+{% elseif attribute.typeForeingKey == "owningSide" %}
+                $form->add('{{ attribute.attributeName }}', ModelAutocompleteType::class, [
+                    'property' => '{{ attribute.inverseSide.primaryKey }}',
+                    'placeholder' => 'Escolha o {{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:]  }}',
+                    'help' => 'Filtros para pesquisa: [ {% for field in attribute.inverseSide.allAttributes %}{{ field }}, {% endfor %} ] - Exemplo de utilização: [ filtro=texto_pesquisa ]',
+                    'minimum_input_length' => 0,
+                    'items_per_page' => 10,
+                    'quiet_millis' => 100,
+                    'multiple' => {% if attribute.multiple %} true {% else %} false {% endif %},
+                    'required' => {% if attribute.nullable %} false {% else %} true {% endif %},
+                    'to_string_callback' => function($entity, $property) {
+                        return $entity->get{{ attribute.inverseSide.primaryKey[:1]|upper ~ attribute.inverseSide.primaryKey[1:]  }}() {% for attributeSearch in attribute.inverseSide.attributeSearch %}.' - '.$entity->get{{ attributeSearch[:1]|upper ~ attributeSearch[1:] }}(){% endfor %}; // .' - '.$entity->getTitulo();
+                    },
+                    'callback' => static function (AdminInterface $admin, string $property, string $value): void {
+                        $property = strtolower($property);
+                        $value = strtolower($value);
+                        $datagrid = $admin->getDatagrid();
+                        $valueParts = explode('=', $value);
+                        if (count($valueParts) === 2 && in_array($valueParts[0], [ {% for field in attribute.inverseSide.allAttributes %}"{{ field }}",{% endfor %} ]))
+                        [$property, $value] = $valueParts;
+
+                        $datagrid->setValue($datagrid->getFilter($property)->getFormName(), null, $value);
+                    },
                 ]);
 {% endif %}
 {% endif %}

@@ -1,0 +1,88 @@
+<?php
+
+namespace {{ baseNamespace }}\Controller;
+
+use {{ baseNamespace }}\Entity\{{ className }};
+use {{ baseNamespace }}\Form\{{ className }}Type;
+
+use App\Application\Project\ContentBundle\Controller\Base\BaseWebController;
+use App\Application\Project\ContentBundle\Attributes\Acl as ACL;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
+use Doctrine\Persistence\ManagerRegistry;
+
+
+#[Route('/web/{{ className[:1]|lower ~ className[1:]  }}', name: 'web_{{ className[:1]|lower ~ className[1:]  }}_', methods: ['GET'])]
+#[ACL\Web(enable: true, title: '{{ className }}', description: 'Permissões do modulo {{ className }}')]
+class {{ className }}WebController extends BaseWebController
+{
+    public function getBaseRouter(): string
+    {
+        return 'web_{{ className[:1]|lower ~ className[1:]  }}_';
+    }
+
+    public function getRepository(): string
+    {
+        return {{ className }}::class;
+    }
+
+    public function getBaseTemplate(): string
+    {
+        return "@Application{{ packageName }}{{ className }}/{{ className[:1]|lower ~ className[1:]  }}/";
+    }
+
+    #[Route('', name: 'list', methods: ['GET'])]
+    #[ACL\Web(enable: true, title: 'Listar', description: 'Lista {{ className }}')]
+    public function listAction(ManagerRegistry $doctrine, Request $request): Response
+    {
+        $this->validateAccess(actionName: 'listAction');
+
+        return $this->render($this->getBaseTemplate() . 'list.html.twig', [
+            'title' => 'Listar {{ className }}',
+        ]);
+    }
+
+    #[Route('/create', name: 'create', methods: ['GET', 'POST'])]
+    #[ACL\Web(enable: true, title: 'Criar', description: 'Cria {{ className }}')]
+    public function createAction(ManagerRegistry $doctrine, Request $request): Response
+    {
+        $this->validateAccess(actionName: 'createAction');
+
+        return $this->render($this->getBaseTemplate() . 'list.html.twig', [
+            'title' => 'Criar {{ className }}',
+        ]);
+    }
+
+    #[Route('/{id}/show', name: 'show', methods: ['GET'])]
+    #[ACL\Web(enable: true, title: 'Visualizar', description: 'Visualiza {{ className }}')]
+    public function showAction(ManagerRegistry $doctrine, Request $request, int $id): Response
+    {
+        $this->validateAccess(actionName: 'showAction');
+
+
+        return $this->render($this->getBaseTemplate() . 'list.html.twig', [
+            'title' => 'Visualizar {{ className }}',
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
+    #[ACL\Web(enable: true, title: 'Editar', description: 'Edita {{ className }}')]
+    public function editAction(ManagerRegistry $doctrine, Request $request, int $id): Response
+    {
+        $this->validateAccess(actionName: 'editAction');
+
+        return $this->render($this->getBaseTemplate() . 'list.html.twig', [
+            'title' => 'Editar {{ className }}',
+        ]);
+    }
+
+    #[Route('/{id}/delete', name: 'delete', methods: ['GET'])]
+    #[ACL\Web(enable: true, title: 'Deletar', description: 'Deleta {{ className }}')]
+    public function deleteAction(ManagerRegistry $doctrine, Request $request, int $id): Response
+    {
+        $this->validateAccess(actionName: 'deleteAction');
+
+    }
+
+}

@@ -3,7 +3,7 @@
     #[Assert\NotBlank]
 {% endif %}
 {% if ( attribute.typeDoctrine is same as("string") or attribute.type is same as("text") ) and ( ( attribute.lengthMin ) or ( attribute.lengthMax ) ) %}
-    #[Assert\Length({% if attribute.lengthMin %}min: {{ attribute.lengthMin }}{% endif %}{% if attribute.lengthMax  %}, max: {{ attribute.lengthMax }}{% endif %})]
+    #[Assert\Length({% if attribute.lengthMin %}min: {{ attribute.lengthMin }},{% endif %}{% if attribute.lengthMax  %} max: {{ attribute.lengthMax }}{% endif %})]
 {% endif %}
 {% if attribute.typeDoctrine is same as("date") %}
     #[Assert\Date]

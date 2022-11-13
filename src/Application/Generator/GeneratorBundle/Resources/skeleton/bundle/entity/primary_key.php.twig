@@ -7,8 +7,8 @@
     #[Assert\NotNull]
     #[Assert\NotBlank]
 {% if ( attribute.typeDoctrine is same as("string") or attribute.typeDoctrine is same as("text") ) and ( attribute.lengthMin or attribute.lengthMax ) %}
-    #[Assert\Length({% if attribute.lengthMin %}min: {{ attribute.lengthMin }}{% endif %}{% if attribute.lengthMax %}, max: {{ attribute.lengthMax }}{% endif %})]
+    #[Assert\Length({% if attribute.lengthMin %}min: {{ attribute.lengthMin }},{% endif %}{% if attribute.lengthMax %} max: {{ attribute.lengthMax }}{% endif %})]
 {% endif %}
     #[ORM\Column(name: '{{ attribute.attributeName }}', type: '{{ attribute.typeDoctrine }}'{% if attribute.typeDoctrine is same as("string") or attribute.typeDoctrine is same as("text")  %}{% if attribute.lengthMax %}, length: {{ attribute.lengthMax }}{% endif %}{% endif %}{% if attribute.typeDoctrine is same as("decimal") %}{% if attribute.precision %}, precision: {{ attribute.precision }}{% endif %}{% if attribute.scale %}, scale: {{ attribute.scale }}{% endif %}{% endif %}, unique: true, nullable: false)]
-    private {{ attribute.typePhp }} ${{ attribute.attributeName }};
+    private ?{{ attribute.typePhp }} ${{ attribute.attributeName }} = null;
 {% endif %}

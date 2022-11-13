@@ -10,7 +10,8 @@ use App\Application\Generator\GeneratorBundle\Helper\ValidateDiagram;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Admin\MakeAdmin;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Controller\MakeAdminController;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Controller\MakeApiController;
-use App\Application\Generator\GeneratorBundle\Maker\Bundle\Controller\MakeFrontController;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\Controller\MakeAuthController;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\Controller\MakeWebController;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeAttribute;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeConstructor;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeEntity;
@@ -18,6 +19,7 @@ use App\Application\Generator\GeneratorBundle\Maker\Bundle\MakeApplicationFileBu
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\MakeBundleDir;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Repository\MakeRepository;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Resources\Config\Routes\MakeRouterFileBundle;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\Resources\Views\MakeWebViews;
 use App\Application\Generator\GeneratorBundle\Maker\Config\MakeRegisterBundle;
 use App\Application\Generator\GeneratorBundle\Maker\Config\MakeRegisterRoute;
 use App\Application\Generator\GeneratorBundle\Maker\Config\MakeRegisterService;
@@ -236,13 +238,39 @@ class Generator
             $makeAdminController->make();
             $this->completedProcesses[] = 'MakeAdminController - Gera o arquivo da controladora Administrativa ';
 
+            /** Gera o arquivo da controladora Api */
+            $makeApiController = new MakeApiController(
+                twigHelper:  $this->twigHelper,
+                bundleDirectory:  $bundleDirectory,
+                baseNamespace:  $baseNamespace,
+                class:  $class,
+            );
+            $makeApiController->make();
+
+
+            /** Gera o arquivo da controladora Auth — Caso seja uma classe provedora de usuário */
+//            $makeAuthController = new MakeAuthController();
+//            $makeAuthController->make();
+
 
             /** Gera o arquivo da controladora FrontEnd */
-            $makeFrontController = new MakeFrontController();
+            $makeWebController = new MakeWebController(
+                twigHelper:  $this->twigHelper,
+                bundleDirectory:  $bundleDirectory,
+                baseNamespace:  $baseNamespace,
+                class:  $class,
+                packageName: $this->packageName,
+            );
+            $makeWebController->make();
 
-
-            /** Gera o arquivo da controladora Api */
-            $makeApiController = new MakeApiController();
+            /** Gera o arquivo de visualização web - [ create, edit, show, list ] */
+            $makeWebViews = new MakeWebViews(
+                twigHelper:  $this->twigHelper,
+                bundleDirectory:  $bundleDirectory,
+                baseNamespace:  $baseNamespace,
+                class:  $class,
+            );
+            $makeWebViews->make();
 
 
             /** Gera o arquivo Admin */
@@ -258,13 +286,13 @@ class Generator
 
             /** Gera o arquivo da Entidade */
             $makeEntity = new MakeEntity(
-                twigHelper:  $this->twigHelper,
-                bundleDirectory:  $bundleDirectory,
-                baseNamespace:  $baseNamespace,
-                class:  $class
+                twigHelper: $this->twigHelper,
+                bundleDirectory: $bundleDirectory,
+                packageName: $this->packageName,
+                baseNamespace: $baseNamespace,
+                class: $class,
             );
             $makeEntity->make();
-
 
 
             /** Gera o arquivo Form Type */

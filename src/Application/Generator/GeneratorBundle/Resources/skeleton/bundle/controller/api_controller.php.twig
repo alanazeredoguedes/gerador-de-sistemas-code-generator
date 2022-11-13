@@ -1,0 +1,75 @@
+<?php
+
+namespace {{ baseNamespace }}\Controller;
+
+use {{ baseNamespace }}\Repository\{{ className }}Repository;
+use {{ baseNamespace }}\Entity\{{ className }};
+
+use App\Application\Project\ContentBundle\Controller\Base\BaseApiController;
+use App\Application\Project\ContentBundle\Attributes\Acl as ACL;
+use Doctrine\ORM\Query\QueryException;
+use Doctrine\Persistence\ManagerRegistry;
+use OpenApi\Attributes as OA;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+
+#[Route('/api/{{ className[:1]|lower ~ className[1:]  }}', name: 'api_{{ className[:1]|lower ~ className[1:]  }}_')]
+#[OA\Tag(name: '{{ className[:1]|lower ~ className[1:]  }}', description: 'Acesso ao {{ className[:1]|lower ~ className[1:]  }}')]
+#[ACL\Api(enable: true, title: '{{ className }}', description: 'Permissões do modulo {{ className }}')]
+class {{ className }}ApiController extends BaseApiController
+{
+
+    public function getRepository(): string
+    {
+        return {{ className }}::class;
+    }
+
+
+    #[Route('', name: 'list', methods: ['GET'])]
+    #[ACL\Api(enable: true, title: 'Listar', description: 'Listar todos os {{ className }}')]
+    public function listAction(): Response
+    {
+        $this->validateAccess(actionName: "listAction");
+
+    }
+
+
+    #[Route('', name: 'create', methods: ['POST'])]
+    #[ACL\Api(enable: true, title: 'Criar', description: 'Cria novo {{ className }}')]
+    public function createAction(): Response
+    {
+        $this->validateAccess("createAction");
+
+    }
+
+
+    #[Route('/{id}', name: 'show', methods: ['GET'])]
+    #[ACL\Api(enable: true, title: 'Visualizar', description: 'Visualiza um {{ className }}')]
+    public function showAction(): Response
+    {
+        $this->validateAccess("showAction");
+
+
+    }
+
+
+    #[Route('/{id}', name: 'edit', methods: ['PUT','PATCH'])]
+    #[ACL\Api(enable: true, title: 'Editar', description: 'Edita um {{ className }}')]
+    public function editAction(): Response
+    {
+        $this->validateAccess("editAction");
+
+
+    }
+
+    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    #[ACL\Api(enable: true, title: 'Deletar', description: 'Deleta um {{ className }}')]
+    public function deleteAction(): Response
+    {
+        $this->validateAccess("deleteAction");
+
+    }
+
+}

@@ -1,15 +1,17 @@
 {
     "name": "Documentos Academicos",
     "description": "Diagrama de um sistema de documentos academicos",
-    "class": [{
+    "class": [
+        {
             "key": "1",
-            "location": "-129.99999999999977 -69.5",
+            "location": "-1116.5255937499999 -129.72753125000003",
             "associativeModel": false,
             "systemModel": true,
             "className": "Media (Sistema)",
             "tableName": "media",
             "description": "Classe de Media",
-            "attributes": [{
+            "attributes": [
+                {
                     "key": "1",
                     "ico": "pk",
                     "attributeName": "id",
@@ -82,13 +84,14 @@
         },
         {
             "key": "2",
-            "location": "-97 181",
+            "location": "-779.2237187500001 9.298750000000155",
             "associativeModel": false,
             "systemModel": true,
             "className": "Galeria (Sistema)",
             "tableName": "galeria",
             "description": "Classe de Galeria de Medias",
-            "attributes": [{
+            "attributes": [
+                {
                     "key": "1",
                     "ico": "pk",
                     "attributeName": "id",
@@ -144,13 +147,14 @@
         },
         {
             "key": "3",
-            "location": "-562 34",
+            "location": "-1150.49903125 187.84144375000005",
             "associativeModel": true,
             "systemModel": true,
             "className": "media_galeria (Sistema)",
             "tableName": "media_galeria (Sistema)",
             "description": "Medias em Galeria",
-            "attributes": [{
+            "attributes": [
+                {
                     "key": "1",
                     "ico": "fk",
                     "attributeName": "media_id",
@@ -223,13 +227,14 @@
         },
         {
             "key": "69d6b99c-0d8a-4b94-b7b6-b0efcd125ba9",
-            "location": "240.2380952380953 520.6666666666664",
+            "location": "-1121.4045985119049 -636.1336395833335",
             "associativeModel": false,
             "systemModel": false,
             "className": "Autor",
             "tableName": "autor",
             "description": "",
-            "attributes": [{
+            "attributes": [
+                {
                     "key": "e3924eec-536f-42cd-bdfd-1c1b5b335f9c",
                     "ico": "pk",
                     "attributeName": "cpf",
@@ -241,11 +246,12 @@
                     "autoGenerate": false,
                     "nullable": false,
                     "unique": false,
-                    "precision": 0.4,
+                    "precision": false,
                     "scale": false,
                     "length": false,
-                    "lengthMax": 11,
-                    "lengthMin": 11
+                    "lengthMax": false,
+                    "lengthMin": false,
+                    "attributeSearch": false
                 },
                 {
                     "key": "a096a167-7f6c-421d-b9d6-eb6a6ce1725f",
@@ -263,7 +269,8 @@
                     "scale": false,
                     "length": false,
                     "lengthMax": false,
-                    "lengthMin": false
+                    "lengthMin": false,
+                    "attributeSearch": true
                 },
                 {
                     "key": "cf2c3cd8-b4ce-47ab-9ac2-cf524bc58818",
@@ -281,7 +288,8 @@
                     "scale": false,
                     "length": false,
                     "lengthMax": false,
-                    "lengthMin": false
+                    "lengthMin": false,
+                    "attributeSearch": true
                 },
                 {
                     "key": "6c4407d1-8d59-4fe1-a77a-3ed417e5f542",
@@ -294,7 +302,27 @@
                     "typeForeingKey": false,
                     "autoGenerate": false,
                     "nullable": false,
-                    "unique": true,
+                    "unique": false,
+                    "precision": false,
+                    "scale": false,
+                    "length": false,
+                    "lengthMax": false,
+                    "lengthMin": false,
+                    "attributeSearch": false
+                },
+                {
+                    "key": "fcd66346-a1d3-4f9a-8da1-25d7f763fd77",
+                    "ico": "fk",
+                    "attributeName": "artigos",
+                    "fieldName": "",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "foreingKey": true,
+                    "typeForeingKey": "inverseSide",
+                    "attributeSearch": false,
+                    "autoGenerate": false,
+                    "nullable": true,
+                    "unique": false,
                     "precision": false,
                     "scale": false,
                     "length": false,
@@ -302,16 +330,17 @@
                     "lengthMin": false
                 },
                 {
-                    "key": "92ea5248-98fb-4966-b85c-f04b93d7ba2d",
-                    "ico": "fk",
-                    "attributeName": "documentos",
+                    "key": "c01bdd4f-8baf-485b-a5a4-4ed009359ebb",
+                    "ico": "fkOwning",
+                    "attributeName": "tutor",
                     "fieldName": "",
                     "type": "integer",
                     "primaryKey": false,
                     "foreingKey": true,
-                    "typeForeingKey": "inverseSide",
+                    "typeForeingKey": "owningSide",
+                    "attributeSearch": false,
                     "autoGenerate": false,
-                    "nullable": false,
+                    "nullable": true,
                     "unique": false,
                     "precision": false,
                     "scale": false,
@@ -323,15 +352,16 @@
             "methods": []
         },
         {
-            "key": "e4208d86-9feb-4bd4-9ece-01eff6e66abe",
-            "location": "528.2380952380952 -21.571428571428555",
+            "key": "39a6ff53-cb12-4734-8068-e75a6021ed4b",
+            "location": "-673.9999999999998 -341",
             "associativeModel": false,
             "systemModel": false,
-            "className": "Documentos",
-            "tableName": "documentos",
-            "description": "",
-            "attributes": [{
-                    "key": "7348ab0e-ac71-4ce8-9d80-ea10dec9934b",
+            "className": "Artigo",
+            "tableName": "artigo",
+            "description": "Classe reponsavel por cadastrar artigos",
+            "attributes": [
+                {
+                    "key": "8653b228-6f00-4c32-8e12-e9e863d350df",
                     "ico": "pk",
                     "attributeName": "id",
                     "fieldName": "id",
@@ -346,10 +376,11 @@
                     "scale": false,
                     "length": false,
                     "lengthMax": false,
-                    "lengthMin": false
+                    "lengthMin": false,
+                    "attributeSearch": false
                 },
                 {
-                    "key": "b2318913-c05b-4a0c-9aa6-81892f1f47c7",
+                    "key": "62a0dc16-6299-4cbf-855e-242c24d8a4c7",
                     "ico": "",
                     "attributeName": "titulo",
                     "fieldName": "",
@@ -359,19 +390,20 @@
                     "typeForeingKey": false,
                     "autoGenerate": false,
                     "nullable": false,
-                    "unique": false,
+                    "unique": true,
                     "precision": false,
                     "scale": false,
                     "length": false,
-                    "lengthMax": false,
-                    "lengthMin": false
+                    "lengthMax": 100,
+                    "lengthMin": false,
+                    "attributeSearch": true
                 },
                 {
-                    "key": "97a88e98-8e64-4c8f-9495-7778d20ee9bd",
+                    "key": "2e581047-7f17-4233-a044-4f554b136dd7",
                     "ico": "nulo",
                     "attributeName": "descricao",
                     "fieldName": "",
-                    "type": "text",
+                    "type": "string",
                     "primaryKey": false,
                     "foreingKey": false,
                     "typeForeingKey": false,
@@ -382,46 +414,11 @@
                     "scale": false,
                     "length": false,
                     "lengthMax": false,
-                    "lengthMin": false
+                    "lengthMin": false,
+                    "attributeSearch": false
                 },
                 {
-                    "key": "07ab15c7-f922-4210-89f1-11c25f460f10",
-                    "ico": "fkOwning",
-                    "attributeName": "documentos",
-                    "fieldName": "",
-                    "type": "integer",
-                    "primaryKey": false,
-                    "foreingKey": true,
-                    "typeForeingKey": "owningSide",
-                    "autoGenerate": false,
-                    "nullable": false,
-                    "unique": false,
-                    "precision": false,
-                    "scale": false,
-                    "length": false,
-                    "lengthMax": false,
-                    "lengthMin": false
-                },
-                {
-                    "key": "abd2a30a-478c-40c7-977e-f2146d28c5f2",
-                    "ico": "fkOwning",
-                    "attributeName": "tipo",
-                    "fieldName": "",
-                    "type": "integer",
-                    "primaryKey": false,
-                    "foreingKey": true,
-                    "typeForeingKey": "owningSide",
-                    "autoGenerate": false,
-                    "nullable": false,
-                    "unique": false,
-                    "precision": false,
-                    "scale": false,
-                    "length": false,
-                    "lengthMax": false,
-                    "lengthMin": false
-                },
-                {
-                    "key": "aef2be40-dc3f-42e8-b05c-1abb41e663a1",
+                    "key": "fd042398-37e2-4c52-bf8b-ce905c016ff0",
                     "ico": "fkOwning",
                     "attributeName": "autor",
                     "fieldName": "",
@@ -429,8 +426,28 @@
                     "primaryKey": false,
                     "foreingKey": true,
                     "typeForeingKey": "owningSide",
+                    "attributeSearch": false,
                     "autoGenerate": false,
-                    "nullable": false,
+                    "nullable": true,
+                    "unique": false,
+                    "precision": false,
+                    "scale": false,
+                    "length": false,
+                    "lengthMax": false,
+                    "lengthMin": false
+                },
+                {
+                    "key": "1295d9bb-bac9-4f63-9254-1eaab8541296",
+                    "ico": "fkOwning",
+                    "attributeName": "tipoArtigo",
+                    "fieldName": "",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "foreingKey": true,
+                    "typeForeingKey": "owningSide",
+                    "attributeSearch": false,
+                    "autoGenerate": false,
+                    "nullable": true,
                     "unique": false,
                     "precision": false,
                     "scale": false,
@@ -442,15 +459,16 @@
             "methods": []
         },
         {
-            "key": "79b6b83f-ae66-4a2e-a7a4-e90474ec4c5c",
-            "location": "344.19047619047603 -328.9047619047617",
+            "key": "411fe82b-89a6-464f-9749-33cb898ec496",
+            "location": "-482 -767",
             "associativeModel": false,
             "systemModel": false,
-            "className": "TipoDocumento",
-            "tableName": "tipo_documento",
+            "className": "TipoArtigo",
+            "tableName": "tipo_artigo",
             "description": "",
-            "attributes": [{
-                    "key": "38ce16e1-6b25-4200-986f-151761dd8664",
+            "attributes": [
+                {
+                    "key": "55e1975e-6577-4538-aefc-af7d319b1d49",
                     "ico": "pk",
                     "attributeName": "id",
                     "fieldName": "id",
@@ -465,10 +483,11 @@
                     "scale": false,
                     "length": false,
                     "lengthMax": false,
-                    "lengthMin": false
+                    "lengthMin": false,
+                    "attributeSearch": false
                 },
                 {
-                    "key": "f4509c0b-8757-46f8-9bbc-1ef8db1c6177",
+                    "key": "e8d2b273-5f55-4068-9755-0a59f90b0f7a",
                     "ico": "",
                     "attributeName": "tipo",
                     "fieldName": "",
@@ -483,10 +502,11 @@
                     "scale": false,
                     "length": false,
                     "lengthMax": false,
-                    "lengthMin": false
+                    "lengthMin": false,
+                    "attributeSearch": true
                 },
                 {
-                    "key": "5737b127-b810-48a5-a015-cfae7d93faad",
+                    "key": "0374b911-728c-4983-9d98-8c39c0ad5b3e",
                     "ico": "nulo",
                     "attributeName": "descricao",
                     "fieldName": "",
@@ -501,60 +521,15 @@
                     "scale": false,
                     "length": false,
                     "lengthMax": false,
-                    "lengthMin": false
-                }
-            ],
-            "methods": []
-        },
-        {
-            "key": "83e41d86-6233-41de-9ef6-c979d610a59a",
-            "location": "606.5714285714284 313.6190476190475",
-            "associativeModel": true,
-            "systemModel": false,
-            "className": "autor_documento",
-            "tableName": "autor_documento",
-            "description": "",
-            "attributes": [{
-                    "key": "84955ce2-432e-4028-afc3-ee7dbd0ae6c9",
-                    "ico": "fk",
-                    "attributeName": "documento_id",
-                    "fieldName": "documento_id",
-                    "type": "integer",
-                    "primaryKey": false,
-                    "foreingKey": true,
-                    "typeForeingKey": false,
-                    "autoGenerate": false,
-                    "nullable": false,
-                    "unique": false,
-                    "precision": false,
-                    "scale": false,
-                    "length": false,
-                    "lengthMax": false,
-                    "lengthMin": false
-                },
-                {
-                    "key": "8f9d9dc1-4755-4d56-8689-ca3605644896",
-                    "ico": "fk",
-                    "attributeName": "autor_id",
-                    "fieldName": "autor_id",
-                    "type": "integer",
-                    "primaryKey": false,
-                    "foreingKey": true,
-                    "typeForeingKey": false,
-                    "autoGenerate": false,
-                    "nullable": false,
-                    "unique": false,
-                    "precision": false,
-                    "scale": false,
-                    "length": false,
-                    "lengthMax": false,
-                    "lengthMin": false
+                    "lengthMin": false,
+                    "attributeSearch": false
                 }
             ],
             "methods": []
         }
     ],
-    "relationships": [{
+    "relationships": [
+        {
             "from": "1",
             "to": "3",
             "attributeTo": "",
@@ -578,40 +553,31 @@
             "attributeinverseSide": "a21c56fa-c101-4189-a906-5034dead4ad3"
         },
         {
-            "key": "8a7ea2a1-1687-4c09-affc-66ebe95be915",
-            "from": "2",
-            "to": "e4208d86-9feb-4bd4-9ece-01eff6e66abe",
-            "typeRelationship": "one-to-many",
-            "typeAssociation": "unidirectional",
-            "attributeOwningSide": "07ab15c7-f922-4210-89f1-11c25f460f10",
-            "attributeinverseSide": ""
-        },
-        {
-            "key": "8192f90a-cd62-42cc-9c3f-c472613bc7ee",
-            "from": "79b6b83f-ae66-4a2e-a7a4-e90474ec4c5c",
-            "to": "e4208d86-9feb-4bd4-9ece-01eff6e66abe",
-            "typeRelationship": "one-to-many",
-            "typeAssociation": "unidirectional",
-            "attributeOwningSide": "abd2a30a-478c-40c7-977e-f2146d28c5f2",
-            "attributeinverseSide": ""
-        },
-        {
-            "key": "8b648fb2-9761-4f42-b191-37b82704b668",
-            "from": "e4208d86-9feb-4bd4-9ece-01eff6e66abe",
-            "to": "83e41d86-6233-41de-9ef6-c979d610a59a",
-            "typeRelationship": "many-to-many",
-            "typeAssociation": "bidirectional",
-            "attributeOwningSide": "aef2be40-dc3f-42e8-b05c-1abb41e663a1",
-            "attributeinverseSide": "84955ce2-432e-4028-afc3-ee7dbd0ae6c9"
-        },
-        {
-            "key": "e036bcef-b5f3-42bb-ae34-633423b9aad4",
+            "key": "bcfa2ace-9572-40ff-baf7-778b5c79bad7",
             "from": "69d6b99c-0d8a-4b94-b7b6-b0efcd125ba9",
-            "to": "83e41d86-6233-41de-9ef6-c979d610a59a",
-            "typeRelationship": "many-to-many",
+            "to": "39a6ff53-cb12-4734-8068-e75a6021ed4b",
+            "typeRelationship": "one-to-many",
             "typeAssociation": "bidirectional",
-            "attributeOwningSide": "92ea5248-98fb-4966-b85c-f04b93d7ba2d",
-            "attributeinverseSide": "8f9d9dc1-4755-4d56-8689-ca3605644896"
+            "attributeOwningSide": "fd042398-37e2-4c52-bf8b-ce905c016ff0",
+            "attributeinverseSide": "fcd66346-a1d3-4f9a-8da1-25d7f763fd77"
+        },
+        {
+            "key": "962f60d6-44ce-4b94-a918-482c5deb2ecb",
+            "from": "69d6b99c-0d8a-4b94-b7b6-b0efcd125ba9",
+            "to": "69d6b99c-0d8a-4b94-b7b6-b0efcd125ba9",
+            "typeRelationship": "one-to-many",
+            "typeAssociation": "self-referencing",
+            "attributeOwningSide": "c01bdd4f-8baf-485b-a5a4-4ed009359ebb",
+            "attributeinverseSide": ""
+        },
+        {
+            "key": "8c9c5703-2bae-4e2c-9792-da71001e90e6",
+            "from": "411fe82b-89a6-464f-9749-33cb898ec496",
+            "to": "39a6ff53-cb12-4734-8068-e75a6021ed4b",
+            "typeRelationship": "one-to-many",
+            "typeAssociation": "unidirectional",
+            "attributeOwningSide": "1295d9bb-bac9-4f63-9254-1eaab8541296",
+            "attributeinverseSide": ""
         }
     ]
 }

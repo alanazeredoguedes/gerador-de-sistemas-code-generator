@@ -3,16 +3,15 @@
 namespace {{ baseNamespace }}\Entity;
 
 use {{ baseNamespace }}\Repository\{{ className }}Repository;
-use Doctrine\ORM\Mapping as ORM;
-
+{% for relationshipClass in namespaceRelationships %}
+use App\Application\{{ packageName }}\{{ relationshipClass }}Bundle\Entity\{{ relationshipClass }};
+{% endfor %}
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\Mapping as ORM;
 use DateTime;
 
-/**
-* Descrição
-* {{ description }}
-*/
+/** Descrição: {{ description }} */
 #[ORM\Table(name: '{{ tableName }}')]
 #[ORM\Entity(repositoryClass: {{ className }}Repository::class)]
 {% for attribute in uniqueAttributes  %}

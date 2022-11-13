@@ -1,0 +1,21 @@
+{% if attribute.typeForeingKey == "inverseSide" %}
+    public function get{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(): ?{{ attribute.owningSide.className }}
+    {
+        return $this->{{ attribute.attributeName }};
+    }
+
+    public function set{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(?{{ attribute.owningSide.className }} ${{ attribute.attributeName }}): void
+    {
+        $this->{{ attribute.attributeName }} = ${{ attribute.attributeName }};
+    }
+{% elseif attribute.typeForeingKey == "owningSide" %}
+    public function get{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(): ?{{ attribute.inverseSide.className }}
+    {
+        return $this->{{ attribute.attributeName }};
+    }
+
+    public function set{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(?{{ attribute.inverseSide.className }} ${{ attribute.attributeName }}): void
+    {
+        $this->{{ attribute.attributeName }} = ${{ attribute.attributeName }};
+    }
+{% endif %}

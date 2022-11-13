@@ -46,6 +46,23 @@ class MakeAttribute
         }elseif ($this->typeAttribute === 'foreignKey') {
 
             /** Generate Foreign Key */
+            //dd($this->attribute);
+
+            if($this->attribute->typeRelationship === "one-to-one"){
+
+                $template = $this->getTemplate('relationships/one_to_one.php.twig', [
+                    'attribute' => $this->attribute
+                ]);
+
+                return $template;
+                //dd($template);
+
+            }else if( $this->attribute->typeRelationship === "one-to-many" ){
+
+            }else if ( $this->attribute->typeRelationship === "many-to-many" )
+            {
+
+            }
 
 
         }elseif ($this->typeAttribute === 'default') {

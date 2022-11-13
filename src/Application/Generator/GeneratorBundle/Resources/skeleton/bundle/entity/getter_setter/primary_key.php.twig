@@ -4,12 +4,12 @@
         return $this->{{ attribute.attributeName }};
     }
 {% else %}
-    public function get{{ attribute.attributeName|capitalize }}(): {{ attribute.typePhp }}
+    public function get{{ attribute.attributeName|capitalize }}(): ?{{ attribute.typePhp }}
     {
         return $this->{{ attribute.attributeName }};
     }
 
-    public function set{{ attribute.attributeName|capitalize }}({{ attribute.typePhp }} ${{ attribute.attributeName }}): void
+    public function set{{ attribute.attributeName|capitalize }}(?{{ attribute.typePhp }} ${{ attribute.attributeName }}): void
     {
         $this->{{ attribute.attributeName }} = ${{ attribute.attributeName }};
     }

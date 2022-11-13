@@ -16,10 +16,12 @@ class MakeEntity
     protected array $attributes = [];
     protected string $construct = '';
     protected array $gettersAndSetters = [];
+    protected array $namespaceRelationships = [];
 
     public function __construct(
         protected TwigHelper $twigHelper,
         protected string $bundleDirectory,
+        protected string $packageName,
         protected string $baseNamespace,
         protected mixed $class,
     )
@@ -89,10 +91,23 @@ class MakeEntity
 
 
         /** Create ForeignKey Key */
-        /*foreach ($this->class->attributes->foreignKey as $foreignKey){
+        foreach ($this->class->attributes->foreignKey as $foreignKey){
 
-            if($attribute->unique)
-                $this->uniqueAttributes[] = $attribute->attributeName;
+            if($foreignKey->typeForeingKey === "inverseSide"){
+
+                if($this->class->className !== $foreignKey->owningSide->className)
+                    $this->namespaceRelationships[] = $foreignKey->owningSide->className;
+
+            }elseif($foreignKey->typeForeingKey === "owningSide"){
+
+                if($foreignKey->unique || $foreignKey->typeRelationship === "one-to-one" ){
+                    $this->uniqueAttributes[] = $foreignKey->attributeName;
+                }
+
+                if($this->class->className !== $foreignKey->inverseSide->className)
+                    $this->namespaceRelationships[] = $foreignKey->inverseSide->className;
+
+            }
 
             $makeAttribute = new MakeAttribute(
                 twigHelper: $this->twigHelper,
@@ -100,8 +115,23 @@ class MakeEntity
                 typeAttribute: 'foreignKey'
             );
             $this->attributes[] = $makeAttribute->make();
-        }*/
 
+
+            /** ForeignKey Attributes Getter and Setter */
+            $makeGetterSetter = new MakeGetterSetter(
+                twigHelper: $this->twigHelper,
+                attribute: $foreignKey,
+                typeAttribute: 'foreignKey'
+            );
+            $this->gettersAndSetters[] = $makeGetterSetter->make();
+
+
+        }
+
+       // dd($this->uniqueAttributes);
+
+        $this->namespaceRelationships = array_values(array_unique($this->namespaceRelationships));
+        //dd($this->attributes);
 
 
 /*      $makeConstructor = new MakeConstructor();*/
@@ -133,6 +163,8 @@ class MakeEntity
             'attributes' => $this->attributes,
             'gettersAndSetters' => $this->gettersAndSetters,
             'uniqueAttributes' => $this->uniqueAttributes,
+            'packageName' => $this->packageName,
+            'namespaceRelationships' => $this->namespaceRelationships,
         ]);
     }
 }

@@ -46,7 +46,20 @@ class MakeGetterSetter
         }elseif ($this->typeAttribute === 'foreignKey') {
 
             /** Generate Foreign Key */
+            if($this->attribute->typeRelationship === "one-to-one"){
 
+                //dd($this->attribute);
+                return $this->getTemplate('getter_setter/one_to_one.php.twig', [
+                    'attribute' => $this->attribute
+                ]);
+                //dd($template);
+
+            }else if( $this->attribute->typeRelationship === "one-to-many" ){
+
+            }else if ( $this->attribute->typeRelationship === "many-to-many" )
+            {
+
+            }
 
         }elseif ($this->typeAttribute === 'default') {
 

@@ -150,35 +150,35 @@ services:
     # por favor, note que as últimas definições sao da estrutura padrão do projeto
     # adicione mais definições de serviço quando for necessária abaixo
 
-    internit.cursobundle.curso:
-        class: App\Application\Internit\CursoBundle\Admin\CursoAdmin
-        tags:
-            - {
-                name: sonata.admin,
-                manager_type: orm,
-                model_class: App\Application\Internit\CursoBundle\Entity\Curso,
-                controller: App\Application\Internit\CursoBundle\Controller\CursoAdminController,
-                show_in_dashboard: true,
-                on_top: true,
-                group: "Curso",
-                label: Curso,
-                icon: 'fa fa-solid fa-book',
-            }
+{#    internit.cursobundle.curso:#}
+{#        class: App\Application\Internit\CursoBundle\Admin\CursoAdmin#}
+{#        tags:#}
+{#            - {#}
+{#                name: sonata.admin,#}
+{#                manager_type: orm,#}
+{#                model_class: App\Application\Internit\CursoBundle\Entity\Curso,#}
+{#                controller: App\Application\Internit\CursoBundle\Controller\CursoAdminController,#}
+{#                show_in_dashboard: true,#}
+{#                on_top: true,#}
+{#                group: "Curso",#}
+{#                label: Curso,#}
+{#                icon: 'fa fa-solid fa-book',#}
+{#            }#}
 
-    internit.documentobundle.documento:
-        class: App\Application\Internit\DocumentoBundle\Admin\DocumentoAdmin
-        tags:
-            - {
-                name: sonata.admin,
-                manager_type: orm,
-                model_class: App\Application\Internit\DocumentoBundle\Entity\Documento,
-                controller: App\Application\Internit\DocumentoBundle\Controller\DocumentoAdminController,
-                show_in_dashboard: true,
-                on_top: true,
-                group: "Documento",
-                label: Documento,
-                icon: 'fa fa-solid fa-book',
-            }
+{#    internit.documentobundle.documento:#}
+{#        class: App\Application\Internit\DocumentoBundle\Admin\DocumentoAdmin#}
+{#        tags:#}
+{#            - {#}
+{#                name: sonata.admin,#}
+{#                manager_type: orm,#}
+{#                model_class: App\Application\Internit\DocumentoBundle\Entity\Documento,#}
+{#                controller: App\Application\Internit\DocumentoBundle\Controller\DocumentoAdminController,#}
+{#                show_in_dashboard: true,#}
+{#                on_top: true,#}
+{#                group: "Documento",#}
+{#                label: Documento,#}
+{#                icon: 'fa fa-solid fa-book',#}
+{#            }#}
 
 #    internit.palavrachavebundle.palavrachave:
 #        class: App\Admin\DocumentoAdmin

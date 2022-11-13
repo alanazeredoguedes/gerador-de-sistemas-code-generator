@@ -37,7 +37,7 @@ class MakeRegisterDoctrine
     public function make()
     {
         //dd($this->registerBundle);
-        $fp = fopen($this->filePath, "r+");
+        $fp = fopen($this->filePath, "w+");
         $template = $this->getTemplate();
         fwrite($fp, $template);
         fclose($fp);
