@@ -56,6 +56,10 @@ class MakeGetterSetter
 
             }else if( $this->attribute->typeRelationship === "one-to-many" ){
 
+                return $this->getTemplate('getter_setter/one_to_many.php.twig', [
+                    'attribute' => $this->attribute
+                ]);
+
             }else if ( $this->attribute->typeRelationship === "many-to-many" )
             {
 

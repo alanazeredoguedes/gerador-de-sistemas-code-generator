@@ -1,0 +1,53 @@
+{% if attribute.typeAssociation == "unidirectional" %}
+    public function get{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(): ?{{ attribute.inverseSide.className }}
+    {
+        return $this->{{ attribute.attributeName }};
+    }
+
+    public function set{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(?{{ attribute.inverseSide.className }} ${{ attribute.attributeName }}): void
+    {
+        $this->{{ attribute.attributeName }} = ${{ attribute.attributeName }};
+    }
+{% elseif attribute.typeAssociation == "self-referencing" %}
+    public function getList{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(): Collection
+    {
+        return $this->list{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }};
+    }
+
+    public function setList{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(Collection $list{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}): void
+    {
+        $this->list{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }} = $list{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }};
+    }
+
+    public function get{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(): ?{{ attribute.className }}
+    {
+        return $this->{{ attribute.attributeName }};
+    }
+
+    public function set{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(?{{ attribute.className }} ${{ attribute.attributeName }}): void
+    {
+        $this->{{ attribute.attributeName }} = ${{ attribute.attributeName }};
+    }
+{% elseif attribute.typeAssociation == "bidirectional" %}
+{% if attribute.typeForeingKey == "owningSide"  %}
+    public function get{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(): ?{{ attribute.inverseSide.className }}
+    {
+        return $this->{{ attribute.attributeName }};
+    }
+
+    public function set{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(?{{ attribute.inverseSide.className }} ${{ attribute.attributeName }}): void
+    {
+        $this->{{ attribute.attributeName }} = ${{ attribute.attributeName }};
+    }
+{% elseif attribute.typeForeingKey == "inverseSide" %}
+    public function get{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(): Collection
+    {
+    return $this->{{ attribute.attributeName }};
+    }
+
+    public function set{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(Collection ${{ attribute.attributeName }}): void
+    {
+    $this->{{ attribute.attributeName }} = ${{ attribute.attributeName }};
+    }
+{% endif %}
+{% endif %}

@@ -32,49 +32,103 @@ class MakeAttribute
 
     }
 
-    public function make(): string
+    public function make(): object
     {
         //dd($this->attribute);
 
+        /** #########################################################################################################
+         * ########## Create Primary Key */
         if($this->typeAttribute === 'primaryKey'){
 
             /** Generate Primary Key */
-            return $this->getTemplate('primary_key.php.twig', [
+            $template = $this->getTemplate('primary_key.php.twig', [
                 'attribute' => $this->attribute
             ]);
 
+            return (object)[
+                'template' => $template,
+                'constructor' => false,
+                'nameSpaceClass' => false,
+                'uniqueAttributes' => false,
+            ];
+
+        /** #########################################################################################################
+         * ########## Create Foreign Key */
         }elseif ($this->typeAttribute === 'foreignKey') {
 
-            /** Generate Foreign Key */
             //dd($this->attribute);
 
+            /** ####################################
+             * Create Relationships one-to-one */
             if($this->attribute->typeRelationship === "one-to-one"){
 
                 $template = $this->getTemplate('relationships/one_to_one.php.twig', [
                     'attribute' => $this->attribute
                 ]);
 
-                return $template;
-                //dd($template);
+                return (object)[
+                    'template' => $template,
+                    'constructor' => false,
+                    'namespaceRelationships' => '',
+                    'uniqueAttributes' => '',
+                ];
 
+            /** ####################################
+             * Create Relationships one-to-many */
             }else if( $this->attribute->typeRelationship === "one-to-many" ){
 
+                $template = $this->getTemplate('relationships/one_to_many.php.twig', [
+                    'attribute' => $this->attribute
+                ]);
+
+
+                if($this->attribute->typeAssociation === "self-referencing")
+                    $constructor = "list". ucfirst( $this->attribute->attributeName );
+
+                if($this->attribute->typeAssociation === "bidirectional")
+                    if($this->attribute->typeForeingKey === "inverseSide")
+                        $constructor = $this->attribute->inverseSide->attributeName;
+
+                if($this->attribute->typeAssociation === "unidirectional")
+                    $constructor = $this->attribute->inverseSide->attributeName;
+
+
+                return (object)[
+                    'template' => $template,
+                    'constructor' => $constructor,
+                ];
+
+            /** ####################################
+             * Create Relationships one-to-many */
             }else if ( $this->attribute->typeRelationship === "many-to-many" )
             {
 
             }
 
-
+        /** #########################################################################################################
+         * ########## Create Defaults Attributes */
         }elseif ($this->typeAttribute === 'default') {
 
             /** Generate Default Attribute */
-            return $this->getTemplate('attribute.php.twig', [
+            $template = $this->getTemplate('attribute.php.twig', [
                 'attribute' => $this->attribute
             ]);
 
+            return (object)[
+                'template' => $template,
+                'constructor' => false,
+                'nameSpaceClass' => false,
+                'uniqueAttributes' => false,
+            ];
+
         }
 
-        return '';
+        return (object)[
+            'template' => '',
+            'constructor' => false,
+            'nameSpaceClass' => false,
+            'uniqueAttributes' => false,
+            ];
     }
 
     /**

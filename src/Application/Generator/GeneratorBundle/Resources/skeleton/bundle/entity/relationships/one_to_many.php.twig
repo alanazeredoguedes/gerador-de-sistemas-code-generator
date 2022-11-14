@@ -1,0 +1,34 @@
+{% if attribute.typeAssociation == "unidirectional" %}
+{% if not attribute.nullable %}
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+{% endif %}
+    #[ORM\ManyToOne(targetEntity: {{ attribute.inverseSide.className }}::class)]
+    #[ORM\JoinColumn(name: '{{ attribute.attributeName }}_id', referencedColumnName: '{{ attribute.inverseSide.primaryKey }}')]
+    private {{ attribute.inverseSide.className }}|null ${{ attribute.attributeName }} = null;
+{% elseif attribute.typeAssociation == "self-referencing" %}
+    /** Um {{ attribute.attributeName }} tem muitos {{ attribute.className }} */
+    #[ORM\OneToMany(mappedBy: '{{ attribute.attributeName }}', targetEntity: {{ attribute.className }}::class)]
+    private Collection $list{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }};
+
+{% if not attribute.nullable %}
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+{% endif %}
+    #[ORM\ManyToOne(targetEntity: {{ attribute.className }}::class, inversedBy: 'list{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}')]
+    #[ORM\JoinColumn(name: '{{ attribute.attributeName }}', referencedColumnName: '{{ attribute.classPrimaryKey }}')]
+    private {{ attribute.className }}|null ${{ attribute.attributeName }} = null;
+{% elseif attribute.typeAssociation == "bidirectional" %}
+{% if attribute.typeForeingKey == "owningSide"  %}
+{% if not attribute.nullable %}
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+{% endif %}
+    #[ORM\ManyToOne(targetEntity: {{ attribute.inverseSide.className }}::class, inversedBy: '{{ attribute.inverseSide.attributeName }}')]
+    #[ORM\JoinColumn(name: '{{ attribute.attributeName }}_{{ attribute.inverseSide.primaryKey }}', referencedColumnName: '{{ attribute.inverseSide.primaryKey }}')]
+    private {{ attribute.inverseSide.className }}|null $autor = null;
+{% elseif attribute.typeForeingKey == "inverseSide" %}
+    #[ORM\OneToMany(mappedBy: '{{ attribute.owningSide.attributeName }}', targetEntity: {{ attribute.owningSide.className }}::class)]
+    private Collection ${{ attribute.attributeName }};
+{% endif %}
+{% endif %}

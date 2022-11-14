@@ -145,7 +145,7 @@ class ValidateDiagram
         $owningSideAttributesSearch = $inverseSideAttributesSearch = [];
 
         /** Pega as informações do lado Proprietario - owningSide */
-        if($relationship->typeRelationship === "one-to-one"){
+        if($relationship->typeRelationship === "one-to-one" || $relationship->typeRelationship === "one-to-many" ){
             $owningSideClass = $this->getClassByKey($relationship->to)->className;
             $owningSideAttribute = $this->getAttributeInClass($relationship->attributeOwningSide, $relationship->to);
             $owningSideAttributeName = ($owningSideAttribute) ? $owningSideAttribute->attributeName : '';

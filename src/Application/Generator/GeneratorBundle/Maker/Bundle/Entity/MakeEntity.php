@@ -14,7 +14,7 @@ class MakeEntity
 
     protected array $uniqueAttributes = [];
     protected array $attributes = [];
-    protected string $construct = '';
+    protected array $construct = [];
     protected array $gettersAndSetters = [];
     protected array $namespaceRelationships = [];
 
@@ -46,13 +46,17 @@ class MakeEntity
     {
         //dd($this->class);
 
+        /** #########################################################################################################
+         * ########## Create Primary Key */
+
         /** Create Primary Key */
         $makeAttribute = new MakeAttribute(
             twigHelper: $this->twigHelper,
             attribute: $this->class->attributes->primaryKey,
             typeAttribute: 'primaryKey'
         );
-        $this->attributes[] = $makeAttribute->make();
+        $data = $makeAttribute->make();
+        $this->attributes[] = $data->template;
         $this->uniqueAttributes[] = $this->class->attributes->primaryKey->attributeName;
 
         /** Primary Key Getter and Setter */
@@ -64,8 +68,8 @@ class MakeEntity
         $this->gettersAndSetters[] = $makeGetterSetter->make();
 
 
-
-        /** Create Default Attributes */
+        /** #########################################################################################################
+         * ########## Create Default Attributes */
         foreach ($this->class->attributes->default as $attribute){
 
             if($attribute->unique)
@@ -77,7 +81,8 @@ class MakeEntity
                 attribute: $attribute,
                 typeAttribute: 'default'
             );
-            $this->attributes[] = $makeAttribute->make();
+            $data = $makeAttribute->make();
+            $this->attributes[] = $data->template;
 
             /** Default Attributes Getter and Setter */
             $makeGetterSetter = new MakeGetterSetter(
@@ -90,10 +95,11 @@ class MakeEntity
         }
 
 
-        /** Create ForeignKey Key */
+        /** #########################################################################################################
+         * ########## Create Foreign Key */
         foreach ($this->class->attributes->foreignKey as $foreignKey){
 
-            if($foreignKey->typeForeingKey === "inverseSide"){
+            /*if($foreignKey->typeForeingKey === "inverseSide"){
 
                 if($this->class->className !== $foreignKey->owningSide->className)
                     $this->namespaceRelationships[] = $foreignKey->owningSide->className;
@@ -107,17 +113,27 @@ class MakeEntity
                 if($this->class->className !== $foreignKey->inverseSide->className)
                     $this->namespaceRelationships[] = $foreignKey->inverseSide->className;
 
-            }
+            }*/
 
             $makeAttribute = new MakeAttribute(
                 twigHelper: $this->twigHelper,
                 attribute: $foreignKey,
                 typeAttribute: 'foreignKey'
             );
-            $this->attributes[] = $makeAttribute->make();
+            $data = $makeAttribute->make();
+            $this->attributes[] = $data->template;
+
+            if($data->constructor)
+                $this->construct[] = $data->constructor;
+
+            if($data->namespaceRelationships)
+                $this->construct[] = $data->namespaceRelationships;
+
+            if($data->uniqueAttributes)
+                $this->construct[] = $data->uniqueAttributes;
 
 
-            /** ForeignKey Attributes Getter and Setter */
+            /** Getter and Setter */
             $makeGetterSetter = new MakeGetterSetter(
                 twigHelper: $this->twigHelper,
                 attribute: $foreignKey,
@@ -125,16 +141,7 @@ class MakeEntity
             );
             $this->gettersAndSetters[] = $makeGetterSetter->make();
 
-
         }
-
-       // dd($this->uniqueAttributes);
-
-        $this->namespaceRelationships = array_values(array_unique($this->namespaceRelationships));
-        //dd($this->attributes);
-
-
-/*      $makeConstructor = new MakeConstructor();*/
 
 
         if (!file_exists($this->filePath))
@@ -164,7 +171,7 @@ class MakeEntity
             'gettersAndSetters' => $this->gettersAndSetters,
             'uniqueAttributes' => $this->uniqueAttributes,
             'packageName' => $this->packageName,
-            'namespaceRelationships' => $this->namespaceRelationships,
+            'namespaceRelationships' => array_values(array_unique( $this->namespaceRelationships )),
         ]);
     }
 }

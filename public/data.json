@@ -311,7 +311,7 @@
                     "attributeSearch": false
                 },
                 {
-                    "key": "fcd66346-a1d3-4f9a-8da1-25d7f763fd77",
+                    "key": "f2f59415-8af2-4bf8-a661-4248f20e0860",
                     "ico": "fk",
                     "attributeName": "artigos",
                     "fieldName": "",
@@ -328,32 +328,13 @@
                     "length": false,
                     "lengthMax": false,
                     "lengthMin": false
-                },
-                {
-                    "key": "c01bdd4f-8baf-485b-a5a4-4ed009359ebb",
-                    "ico": "fkOwning",
-                    "attributeName": "tutor",
-                    "fieldName": "",
-                    "type": "integer",
-                    "primaryKey": false,
-                    "foreingKey": true,
-                    "typeForeingKey": "owningSide",
-                    "attributeSearch": false,
-                    "autoGenerate": false,
-                    "nullable": true,
-                    "unique": false,
-                    "precision": false,
-                    "scale": false,
-                    "length": false,
-                    "lengthMax": false,
-                    "lengthMin": false
                 }
             ],
             "methods": []
         },
         {
             "key": "39a6ff53-cb12-4734-8068-e75a6021ed4b",
-            "location": "-673.9999999999998 -341",
+            "location": "-632.9999999999998 -377",
             "associativeModel": false,
             "systemModel": false,
             "className": "Artigo",
@@ -418,28 +399,9 @@
                     "attributeSearch": false
                 },
                 {
-                    "key": "fd042398-37e2-4c52-bf8b-ce905c016ff0",
+                    "key": "86710d85-272f-4d5f-99c0-253cbd76e682",
                     "ico": "fkOwning",
                     "attributeName": "autor",
-                    "fieldName": "",
-                    "type": "integer",
-                    "primaryKey": false,
-                    "foreingKey": true,
-                    "typeForeingKey": "owningSide",
-                    "attributeSearch": false,
-                    "autoGenerate": false,
-                    "nullable": true,
-                    "unique": false,
-                    "precision": false,
-                    "scale": false,
-                    "length": false,
-                    "lengthMax": false,
-                    "lengthMin": false
-                },
-                {
-                    "key": "1295d9bb-bac9-4f63-9254-1eaab8541296",
-                    "ico": "fkOwning",
-                    "attributeName": "tipoArtigo",
                     "fieldName": "",
                     "type": "integer",
                     "primaryKey": false,
@@ -553,31 +515,13 @@
             "attributeinverseSide": "a21c56fa-c101-4189-a906-5034dead4ad3"
         },
         {
-            "key": "bcfa2ace-9572-40ff-baf7-778b5c79bad7",
+            "key": "014894f1-cd84-4450-b9e2-a40da40a01d5",
             "from": "69d6b99c-0d8a-4b94-b7b6-b0efcd125ba9",
             "to": "39a6ff53-cb12-4734-8068-e75a6021ed4b",
             "typeRelationship": "one-to-many",
             "typeAssociation": "bidirectional",
-            "attributeOwningSide": "fd042398-37e2-4c52-bf8b-ce905c016ff0",
-            "attributeinverseSide": "fcd66346-a1d3-4f9a-8da1-25d7f763fd77"
-        },
-        {
-            "key": "962f60d6-44ce-4b94-a918-482c5deb2ecb",
-            "from": "69d6b99c-0d8a-4b94-b7b6-b0efcd125ba9",
-            "to": "69d6b99c-0d8a-4b94-b7b6-b0efcd125ba9",
-            "typeRelationship": "one-to-many",
-            "typeAssociation": "self-referencing",
-            "attributeOwningSide": "c01bdd4f-8baf-485b-a5a4-4ed009359ebb",
-            "attributeinverseSide": ""
-        },
-        {
-            "key": "8c9c5703-2bae-4e2c-9792-da71001e90e6",
-            "from": "411fe82b-89a6-464f-9749-33cb898ec496",
-            "to": "39a6ff53-cb12-4734-8068-e75a6021ed4b",
-            "typeRelationship": "one-to-many",
-            "typeAssociation": "unidirectional",
-            "attributeOwningSide": "1295d9bb-bac9-4f63-9254-1eaab8541296",
-            "attributeinverseSide": ""
+            "attributeOwningSide": "86710d85-272f-4d5f-99c0-253cbd76e682",
+            "attributeinverseSide": "f2f59415-8af2-4bf8-a661-4248f20e0860"
         }
     ]
 }
