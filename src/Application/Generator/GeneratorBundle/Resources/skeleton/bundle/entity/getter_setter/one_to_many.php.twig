@@ -42,12 +42,12 @@
 {% elseif attribute.typeForeingKey == "inverseSide" %}
     public function get{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(): Collection
     {
-    return $this->{{ attribute.attributeName }};
+        return $this->{{ attribute.attributeName }};
     }
 
     public function set{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(Collection ${{ attribute.attributeName }}): void
     {
-    $this->{{ attribute.attributeName }} = ${{ attribute.attributeName }};
+        $this->{{ attribute.attributeName }} = ${{ attribute.attributeName }};
     }
 {% endif %}
 {% endif %}

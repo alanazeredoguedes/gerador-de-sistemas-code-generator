@@ -57,6 +57,7 @@ class MakeAttribute
         }elseif ($this->typeAttribute === 'foreignKey') {
 
             //dd($this->attribute);
+            $constructor = $nameSpaceClass = $uniqueAttributes = false;;
 
             /** ####################################
              * Create Relationships one-to-one */
@@ -66,11 +67,33 @@ class MakeAttribute
                     'attribute' => $this->attribute
                 ]);
 
+                if($this->attribute->typeAssociation == "unidirectional"){
+
+                    $uniqueAttributes = $this->attribute->attributeName;
+                    $nameSpaceClass = $this->attribute->inverseSide->className;
+
+                }else if($this->attribute->typeAssociation == "self-referencing"){
+
+                    $uniqueAttributes = $this->attribute->attributeName;
+
+                }else if($this->attribute->typeAssociation == "bidirectional"){
+
+                    if($this->attribute->typeForeingKey == "owningSide"){
+
+                        $uniqueAttributes = $this->attribute->attributeName;
+                        $nameSpaceClass = $this->attribute->inverseSide->className;
+
+                    }else if($this->attribute->typeForeingKey == "inverseSide"){
+                        $nameSpaceClass = $this->attribute->owningSide->className;
+
+                    }
+                }
+
                 return (object)[
                     'template' => $template,
-                    'constructor' => false,
-                    'namespaceRelationships' => '',
-                    'uniqueAttributes' => '',
+                    'constructor' => $constructor,
+                    'namespaceRelationships' => $nameSpaceClass,
+                    'uniqueAttributes' => $uniqueAttributes,
                 ];
 
             /** ####################################
@@ -82,20 +105,38 @@ class MakeAttribute
                 ]);
 
 
-                if($this->attribute->typeAssociation === "self-referencing")
+                if($this->attribute->typeAssociation == "unidirectional"){
+
+                    $nameSpaceClass = $this->attribute->inverseSide->className;
+                    if($this->attribute->unique)
+                        $uniqueAttributes = $this->attribute->attributeName;
+
+                }else if($this->attribute->typeAssociation == "self-referencing"){
+
                     $constructor = "list". ucfirst( $this->attribute->attributeName );
+                    if($this->attribute->unique)
+                        $uniqueAttributes = $this->attribute->attributeName;
 
-                if($this->attribute->typeAssociation === "bidirectional")
-                    if($this->attribute->typeForeingKey === "inverseSide")
+                }else if($this->attribute->typeAssociation == "bidirectional"){
+
+                    if($this->attribute->typeForeingKey == "owningSide"){
+                        $nameSpaceClass = $this->attribute->inverseSide->className;
+                        if($this->attribute->unique)
+                            $uniqueAttributes = $this->attribute->attributeName;
+
+                    }else if($this->attribute->typeForeingKey == "inverseSide"){
                         $constructor = $this->attribute->inverseSide->attributeName;
+                        $nameSpaceClass = $this->attribute->owningSide->className;
 
-                if($this->attribute->typeAssociation === "unidirectional")
-                    $constructor = $this->attribute->inverseSide->attributeName;
+                    }
+                }
 
 
-                return (object)[
+                return (object) [
                     'template' => $template,
                     'constructor' => $constructor,
+                    'namespaceRelationships' => $nameSpaceClass,
+                    'uniqueAttributes' => $uniqueAttributes,
                 ];
 
             /** ####################################
@@ -103,6 +144,41 @@ class MakeAttribute
             }else if ( $this->attribute->typeRelationship === "many-to-many" )
             {
 
+                dd($this->attribute);
+
+
+                $template = $this->getTemplate('relationships/many_to_many.php.twig', [
+                    'attribute' => $this->attribute
+                ]);
+
+
+                if($this->attribute->typeAssociation == "unidirectional"){
+
+                    $nameSpaceClass = $this->attribute->inverseSide->className;
+                    if($this->attribute->unique)
+                        $uniqueAttributes = $this->attribute->attributeName;
+
+                }else if($this->attribute->typeAssociation == "self-referencing"){
+
+
+                }else if($this->attribute->typeAssociation == "bidirectional"){
+                    if($this->attribute->typeForeingKey == "owningSide"){
+
+
+                    }else if($this->attribute->typeForeingKey == "inverseSide"){
+
+
+                    }
+                }
+
+
+
+                return (object) [
+                    'template' => $template,
+                    'constructor' => $constructor,
+                    'namespaceRelationships' => $nameSpaceClass,
+                    'uniqueAttributes' => $uniqueAttributes,
+                ];
             }
 
         /** #########################################################################################################
@@ -128,7 +204,7 @@ class MakeAttribute
             'constructor' => false,
             'nameSpaceClass' => false,
             'uniqueAttributes' => false,
-            ];
+        ];
     }
 
     /**

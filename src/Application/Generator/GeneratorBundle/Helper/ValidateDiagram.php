@@ -139,10 +139,14 @@ class ValidateDiagram
         $relationship = $this->getRelationshipByForeingKey($attribute->key);
         //dd($class, $attribute, $relationship);
 
+
         $owningSideClass = $owningSideAttributeName = $owningSideprimaryKey = $inverseSideClass = $inverseSideAttributeName = $inverseSideprimaryKey = '';
         $owningSideAllAttributes = $inverseSideAllAttributes = '';
-
         $owningSideAttributesSearch = $inverseSideAttributesSearch = [];
+        $multiple = false;
+
+
+
 
         /** Pega as informações do lado Proprietario - owningSide */
         if($relationship->typeRelationship === "one-to-one" || $relationship->typeRelationship === "one-to-many" ){
@@ -163,19 +167,41 @@ class ValidateDiagram
             $inverseSideAllAttributes = $this->getAllAttributesOfClass($relationship->from);
             $inverseSideAttributesSearch = $this->getAllAttributesSearch($relationship->from);
 
+
         }
+
+
+        if($relationship->typeRelationship === "many-to-many"){
+            //dd($relationship);
+            $tableAssociative = $this->getClassByKey($relationship->to);
+            dd($tableAssociative);
+
+
+
+
+            $multiple = true;
+
+
+
+
+
+
+
+        }
+
+
 
 
         /** Pega as informações do lado Inverso - inverseSide */
 
-        return (object) [
+        $data = (object) [
             'className'=> $this->filterClassName($class->className),
             'classPrimaryKey'=> $this->getPrimaryKeyInClass($class->key)->attributeName,
 
             'typeForeingKey' => $attribute->typeForeingKey, // [ inverseSide, owningSide ]
             'typeAssociation' => $relationship->typeAssociation,// [ bidirectional, unidirectional, self-referencing ]
             'typeRelationship' => $relationship->typeRelationship, // [ one-to-one, one-to-many, many-to-many ]
-            'multiple' => false,
+            'multiple' => $multiple,
             'attributeName'=> $attribute->attributeName,
             'nullable' => $attribute->nullable,
             'unique' => $attribute->unique,
@@ -201,6 +227,11 @@ class ValidateDiagram
                 'attributeSearch' => $inverseSideAttributesSearch,
             ],
         ];
+
+
+        dd($data);
+
+        return $data;
 
     }
 

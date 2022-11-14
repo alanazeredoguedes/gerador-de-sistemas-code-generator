@@ -1,0 +1,16 @@
+{% if attribute.typeAssociation == "unidirectional" %}
+    /** Muitos usuários têm muitos grupos. */
+    #[JoinTable(name: 'users_groups')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: Group::class)]
+    private Collection $groups;
+{% elseif attribute.typeAssociation == "self-referencing" %}
+
+{% elseif attribute.typeAssociation == "bidirectional" %}
+{% if attribute.typeForeingKey == "owningSide"  %}
+
+{% elseif attribute.typeForeingKey == "inverseSide" %}
+
+{% endif %}
+{% endif %}

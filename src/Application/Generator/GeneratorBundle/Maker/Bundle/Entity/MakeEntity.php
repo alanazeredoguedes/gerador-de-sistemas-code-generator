@@ -99,22 +99,6 @@ class MakeEntity
          * ########## Create Foreign Key */
         foreach ($this->class->attributes->foreignKey as $foreignKey){
 
-            /*if($foreignKey->typeForeingKey === "inverseSide"){
-
-                if($this->class->className !== $foreignKey->owningSide->className)
-                    $this->namespaceRelationships[] = $foreignKey->owningSide->className;
-
-            }elseif($foreignKey->typeForeingKey === "owningSide"){
-
-                if($foreignKey->unique || $foreignKey->typeRelationship === "one-to-one" ){
-                    $this->uniqueAttributes[] = $foreignKey->attributeName;
-                }
-
-                if($this->class->className !== $foreignKey->inverseSide->className)
-                    $this->namespaceRelationships[] = $foreignKey->inverseSide->className;
-
-            }*/
-
             $makeAttribute = new MakeAttribute(
                 twigHelper: $this->twigHelper,
                 attribute: $foreignKey,
@@ -127,11 +111,10 @@ class MakeEntity
                 $this->construct[] = $data->constructor;
 
             if($data->namespaceRelationships)
-                $this->construct[] = $data->namespaceRelationships;
+                $this->namespaceRelationships[] = $data->namespaceRelationships;
 
             if($data->uniqueAttributes)
-                $this->construct[] = $data->uniqueAttributes;
-
+                $this->uniqueAttributes[] = $data->uniqueAttributes;
 
             /** Getter and Setter */
             $makeGetterSetter = new MakeGetterSetter(
