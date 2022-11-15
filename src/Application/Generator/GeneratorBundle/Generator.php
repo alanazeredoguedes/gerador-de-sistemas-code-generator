@@ -170,7 +170,6 @@ class Generator
                 packageName: $this->packageName,
                 projectDirectory: $this->projectDirectory,
                 class: $class,
-
             );
             $configuration = $configurationClass->getAllConfiguration();
 
@@ -258,6 +257,7 @@ class Generator
                 bundleDirectory:  $bundleDirectory,
                 baseNamespace:  $baseNamespace,
                 class:  $class,
+                configuration: $configuration,
             );
             $makeApiController->make();
 

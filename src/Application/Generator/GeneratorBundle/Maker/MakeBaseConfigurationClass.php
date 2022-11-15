@@ -10,7 +10,7 @@ class MakeBaseConfigurationClass
     protected string $bundleName;
     protected string $bundleDirectory;
     protected string $baseNamespace;
-
+    protected array $allAttributes = [];
 
     protected array $nameSpaceRelationships = [];
 
@@ -33,7 +33,7 @@ class MakeBaseConfigurationClass
         $this->createBasePaths();
 
         $this->aux();
-
+        $this->getAllAttributes();
 
        return (object) [
            'bundleName' => $this->bundleName,
@@ -42,6 +42,7 @@ class MakeBaseConfigurationClass
            'packageName' => $this->packageName,
            'projectDirectory' => $this->projectDirectory,
            'nameSpaceRelationships' => array_values(array_unique( $this->nameSpaceRelationships )),
+           'allAttributes' => $this->allAttributes,
        ];
 
 
@@ -54,6 +55,24 @@ class MakeBaseConfigurationClass
         $this->bundleDirectory = $this->projectDirectory . "/src/Application/" . $this->packageName . "/" . $this->bundleName;
         $this->baseNamespace = "App\Application\\" . $this->packageName . "\\" . "$this->bundleName" ;
     }
+
+    protected function getAllAttributes(): void
+    {
+
+       // dd($this->class);
+        foreach ($this->class->attributes as $attribute){
+            //dd($attribute);
+            if(isset($attribute->attributeName)){
+                $this->allAttributes[] = $attribute->attributeName;
+
+            }
+        }
+
+    }
+
+
+
+
 
 
     protected function aux(): void

@@ -6,57 +6,107 @@ use {{ baseNamespace }}\Repository\{{ className }}Repository;
 use {{ baseNamespace }}\Entity\{{ className }};
 
 use App\Application\Project\ContentBundle\Controller\Base\BaseApiController;
+use App\Application\Project\ContentBundle\Service\FilterDoctrine;
 use App\Application\Project\ContentBundle\Attributes\Acl as ACL;
-use Doctrine\ORM\Query\QueryException;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ObjectRepository;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Doctrine\ORM\Query\QueryException;
+use ReflectionException;
 
 #[Route('/api/{{ className[:1]|lower ~ className[1:]  }}', name: 'api_{{ className[:1]|lower ~ className[1:]  }}_')]
-#[OA\Tag(name: '{{ className[:1]|lower ~ className[1:]  }}', description: 'Acesso ao {{ className[:1]|lower ~ className[1:]  }}')]
+#[OA\Tag(name: '{{ className  }}', description: 'Acesso ao {{ className[:1]|lower ~ className[1:]  }}')]
 #[ACL\Api(enable: true, title: '{{ className }}', description: 'Permissões do modulo {{ className }}')]
 class {{ className }}ApiController extends BaseApiController
 {
 
-    public function getRepository(): string
+    public function getClass(): string
     {
         return {{ className }}::class;
     }
 
-
-    #[Route('', name: 'list', methods: ['GET'])]
-    #[ACL\Api(enable: true, title: 'Listar', description: 'Listar todos os {{ className }}')]
-    public function listAction(): Response
+    public function getRepository(ManagerRegistry $doctrine): ObjectRepository
     {
-        $this->validateAccess(actionName: "listAction");
+        return $doctrine->getManager()->getRepository($this->getClass());
+    }
+
+    /**@throws QueryException|ReflectionException */
+    #[OA\Parameter( name: 'pagina', description: 'Número da Página', in: 'query', required: false, allowEmptyValue: true, example: 1)]
+    #[OA\Parameter( name: 'paginaTamanho', description: 'Tamanho da Página', in: 'query', required: false, example: 10)]
+    #[OA\Response(
+            response: 200,
+            description: 'Return list',
+            content: new OA\JsonContent(
+            properties: [
+{% for attribute in allAttributes %}
+                new OA\Property(property: '{{ attribute.attributeName }}', type: '{{ attribute.typeApi }}'),
+{% endfor %}
+            ],
+            type: 'object'
+        )
+    )]
+    #[Route('', name: 'list', methods: ['GET'])]
+    #[ACL\Api(enable: true, title: 'Listar', description: 'Listar {{ className }}')]
+    public function listAction(ManagerRegistry $doctrine, Request $request): Response
+    {
+        //$this->validateAccess(actionName: "listAction");
+
+        $filter = new FilterDoctrine(
+            repository:  $this->getRepository($doctrine),
+            request: $request,
+            attributesFilters: [{% for attribute in allAttributes %}'{{ attribute.attributeName }}',{% endfor %}],
+        );
+
+        $response = $this->serializerObjects->normalizer($filter->getResult()->data, [
+            {% for attribute in allAttributes %}'{{ attribute.attributeName }}',{% endfor %}
+
+        ]);
+
+        return $this->json([
+            '@id' => $request->getPathInfo(),
+            'result' => $response,
+            'paginator' => $filter->getResult()->paginator,
+        ]);
 
     }
 
 
     #[Route('', name: 'create', methods: ['POST'])]
-    #[ACL\Api(enable: true, title: 'Criar', description: 'Cria novo {{ className }}')]
+    #[ACL\Api(enable: true, title: 'Criar', description: 'Criar {{ className }}')]
     public function createAction(): Response
     {
         $this->validateAccess("createAction");
 
     }
 
-
+    /** @throws ReflectionException */
     #[Route('/{id}', name: 'show', methods: ['GET'])]
-    #[ACL\Api(enable: true, title: 'Visualizar', description: 'Visualiza um {{ className }}')]
-    public function showAction(): Response
+    #[ACL\Api(enable: true, title: 'Visualizar', description: 'Visualizar {{ className }}')]
+    public function showAction(ManagerRegistry $doctrine, Request $request, int $id): Response
     {
-        $this->validateAccess("showAction");
+        //$this->validateAccess("showAction");
 
+        $data = $this->getRepository($doctrine)->find($id);
+        if (!$data)
+            return $this->json(['status' => false, 'message' => 'Artigo não encontrado!'], 404);
 
+        $response = $this->serializerObjects->normalizer($data, [
+            {% for attribute in allAttributes %}'{{ attribute.attributeName }}',{% endfor %}
+
+        ]);
+
+        return $this->json([
+            '@id' => $request->getPathInfo(),
+        '   result' => $response,
+        ]);
     }
 
 
     #[Route('/{id}', name: 'edit', methods: ['PUT','PATCH'])]
-    #[ACL\Api(enable: true, title: 'Editar', description: 'Edita um {{ className }}')]
+    #[ACL\Api(enable: true, title: 'Editar', description: 'Editar {{ className }}')]
     public function editAction(): Response
     {
         $this->validateAccess("editAction");
@@ -65,11 +115,20 @@ class {{ className }}ApiController extends BaseApiController
     }
 
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
-    #[ACL\Api(enable: true, title: 'Deletar', description: 'Deleta um {{ className }}')]
-    public function deleteAction(): Response
+    #[ACL\Api(enable: true, title: 'Deletar', description: 'Deletar {{ className }}')]
+    public function deleteAction(ManagerRegistry $doctrine, int $id): Response
     {
-        $this->validateAccess("deleteAction");
+        //$this->validateAccess("deleteAction");
 
+        $data = $this->getRepository($doctrine)->find($id);
+        if (!$data)
+            return $this->json(['status' => false, 'message' => '{{ className }} não encontrado!'], 404);
+
+        $em = $doctrine->getManager();
+        $em->remove($data);
+        $em->flush();
+
+        return $this->json(['status' => true, 'message' => '{{ className }} removido com sucesso!']);
     }
 
 }

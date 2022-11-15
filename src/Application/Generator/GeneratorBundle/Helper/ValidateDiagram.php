@@ -126,6 +126,7 @@ class ValidateDiagram
             'attributeName' => $attribute->attributeName,
             'typeDoctrine' => $attribute->type,
             'typePhp' => $this->getPhpType($attribute->type),
+            'typeApi' => $this->getTypeApi($attribute->type),
             'sonataType' => $this->getSonataType($attribute->type),
             'autoGenerate' => $attribute->autoGenerate,
             'precision' => $this->retunrNullOrFloat($attribute->precision),
@@ -141,9 +142,11 @@ class ValidateDiagram
         //dd($class, $attribute, $relationship);
 
         $owningSideClass = $owningSideAttributeName = $owningSideprimaryKey = $inverseSideClass = $inverseSideAttributeName = $inverseSideprimaryKey = '';
-        $owningSideAllAttributes = $inverseSideAllAttributes = '';
+        $owningSideAllAttributes = $inverseSideAllAttributes = $typeApi = '';
         $owningSideAttributesSearch = $inverseSideAttributesSearch = [];
         $multiple = $tableName = $owningSideForeingKey = $inverseSideForeingKey= false;
+
+
 
         /** Pega as informações do lado Proprietario — owningSide */
         if($relationship->typeRelationship === "one-to-one" || $relationship->typeRelationship === "one-to-many" ){
@@ -156,7 +159,6 @@ class ValidateDiagram
             $owningSideAllAttributes = $this->getAllAttributesOfClass($relationship->to);
             $owningSideAttributesSearch = $this->getAllAttributesSearch($relationship->to);
 
-
             $inverseSideClass = $this->getClassByKey($relationship->from)->className;
             $inverseSideAttribute = $this->getAttributeInClass($relationship->attributeinverseSide, $relationship->from);
             $inverseSideAttributeName = ($inverseSideAttribute) ? $inverseSideAttribute->attributeName : '';
@@ -164,6 +166,8 @@ class ValidateDiagram
             $inverseSideprimaryKey = ($inverseSideprimaryKey) ? $inverseSideprimaryKey->attributeName : '';
             $inverseSideAllAttributes = $this->getAllAttributesOfClass($relationship->from);
             $inverseSideAttributesSearch = $this->getAllAttributesSearch($relationship->from);
+
+            $typeApi = $this->getPrimaryKeyInClass($relationship->from)->type;
 
         }else if($relationship->typeRelationship === "many-to-many"){
 
@@ -199,6 +203,7 @@ class ValidateDiagram
                     $owningSideAttributeName = ($owningSideAttributeName) ? $owningSideAttributeName->attributeName : '';
                 }
 
+                $typeApi = 'object';
 
             }else if ( $attribute->typeForeingKey === "owningSide" ){
 
@@ -220,6 +225,9 @@ class ValidateDiagram
                 $inverseSideForeingKey = $inverseSideForeingKey->fieldName;
                 $inverseSideAllAttributes = $this->getAllAttributesOfClass($inverseSideRelationship->from);
                 $inverseSideAttributesSearch = $this->getAllAttributesSearch($inverseSideRelationship->from);
+
+                $typeApi = $this->getPrimaryKeyInClass($inverseSideRelationship->from)->type;
+
                 if($relationship->typeAssociation !== "self-referencing"){
                     $inverseSideAttributeName = $this->getAttributeInClass($inverseSideRelationship->attributeOwningSide, $inverseSideRelationship->from);
                     $inverseSideAttributeName = ($inverseSideAttributeName) ? $inverseSideAttributeName->attributeName : '';
@@ -253,7 +261,7 @@ class ValidateDiagram
                 'type' => 'ModelAutocompleteType',
                 'namespace' => 'Sonata\AdminBundle\Form\Type\ModelAutocompleteType',
             ],
-
+            'typeApi' => $this->getTypeApi($typeApi),
             'owningSide' => (object) [
                 'className'=> $owningSideClass,
                 'attributeName'=> $owningSideAttributeName,
@@ -289,6 +297,7 @@ class ValidateDiagram
             'typeDoctrine' => $attribute->type,
             'typePhp' => $this->getPhpType($attribute->type),
             'sonataType' => $this->getSonataType($attribute->type),
+            'typeApi' => $this->getTypeApi($attribute->type),
             'Symfony' => '',
             'nullable' => $attribute->nullable,
             'unique' => $attribute->unique,
@@ -515,6 +524,20 @@ class ValidateDiagram
             //'binary' => 'resource',
             //'blob' => 'resource',
             default => false,
+        };
+    }
+
+    protected function getTypeApi(string $type): string
+    {
+        return match ($type) {
+            'smallint', 'integer' => 'integer',
+            'float', 'bigint', 'decimal' => 'number',
+            'boolean' => 'boolean',
+            'array', 'simple_array', 'json',
+            'date', 'datetime', 'datetimetz', 'time',
+            'text', 'string', => 'string',
+            'object' => 'object',
+            default => 'string',
         };
     }
 

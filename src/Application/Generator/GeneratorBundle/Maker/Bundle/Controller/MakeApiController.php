@@ -17,6 +17,7 @@ class MakeApiController
         protected string $bundleDirectory,
         protected string $baseNamespace,
         protected mixed $class,
+        protected mixed $configuration,
     )
     {
         $this->filePath = $this->bundleDirectory . "/Controller/" . $this->class->className . "ApiController.php";
@@ -39,6 +40,8 @@ class MakeApiController
     {
         //dd($this->bundleDirectory, $this->baseNamespace, $this->filePath,  $this->class);
 
+        //dd($this->class);
+
         if (!file_exists($this->filePath))
         {
             $fp = fopen($this->filePath, "a+");
@@ -59,6 +62,7 @@ class MakeApiController
         return $this->twigHelper->getTwig()->render($this->template,[
             'baseNamespace' => $this->baseNamespace,
             'className' => $this->class->className,
+            'allAttributes' => array_merge([$this->class->attributes->primaryKey],$this->class->attributes->default, $this->class->attributes->foreignKey ),
         ]);
     }
 }
