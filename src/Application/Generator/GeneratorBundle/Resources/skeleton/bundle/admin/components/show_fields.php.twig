@@ -1,3 +1,19 @@
-            $show->add('{{ attribute.attributeName|raw }}', null, [
-                'label' => '{{ attribute.attributeName|capitalize }}',
-            ]);
+{% if type == "primaryKey" or type == "default" %}
+                $show->add('{{ attribute.attributeName|raw }}', null, [
+                    'label' => '{{ attribute.attributeName|capitalize }}',
+                ]);
+{% elseif type == "foreignKey" %}
+{% if attribute.typeForeingKey == "inverseSide" %}
+{% elseif attribute.typeForeingKey == "owningSide" %}
+                $show->add('{{ attribute.attributeName }}', null, [
+                    'label' => '{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:]  }}',
+                    'associated_property' => function ({{ attribute.inverseSide.className }} ${{ attribute.attributeName }}) {
+                        return ${{ attribute.attributeName }}->get{{ attribute.inverseSide.primaryKey[:1]|upper ~ attribute.inverseSide.primaryKey[1:] }}()
+{% for field in attribute.inverseSide.attributeSearch %}
+                        .' - '.${{ attribute.attributeName }}->get{{ field[:1]|upper ~ field[1:] }}()
+{% endfor %}
+                        ;
+                    },
+                ]);
+{% endif %}
+{% endif %}

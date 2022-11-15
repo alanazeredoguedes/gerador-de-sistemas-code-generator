@@ -115,7 +115,7 @@ class MakeAdmin
                 'type' => 'foreignKey'
             ]);
 
-            /*$this->listFields[] = $this->getBaseTemplate('components/list_fields.php.twig', [
+            $this->listFields[] = $this->getBaseTemplate('components/list_fields.php.twig', [
                 'attribute' => $foreignKey,
                 'type' => 'foreignKey'
             ]);
@@ -123,7 +123,7 @@ class MakeAdmin
             $this->showFields[] = $this->getBaseTemplate('components/show_fields.php.twig', [
                 'attribute' =>$foreignKey,
                 'type' => 'foreignKey'
-            ]);*/
+            ]);
 
         }
 
