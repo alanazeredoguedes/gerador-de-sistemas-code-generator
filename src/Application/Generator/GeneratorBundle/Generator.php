@@ -25,6 +25,7 @@ use App\Application\Generator\GeneratorBundle\Maker\Config\MakeRegisterRoute;
 use App\Application\Generator\GeneratorBundle\Maker\Config\MakeRegisterService;
 use App\Application\Generator\GeneratorBundle\Maker\Config\Packages\MakeRegisterDoctrine;
 use App\Application\Generator\GeneratorBundle\Maker\Config\Packages\MakeSonataAdmin;
+use App\Application\Generator\GeneratorBundle\Maker\MakeBaseConfigurationClass;
 use App\Application\Generator\GeneratorBundle\Maker\MakeDockerCompose;
 use App\Application\Generator\GeneratorBundle\Maker\MakeEnv;
 use App\Application\Generator\GeneratorBundle\Maker\MakeReadme;
@@ -163,9 +164,22 @@ class Generator
         /** Percorre todas as classe e cria outros arquivos do projeto */
         foreach ($this->class as $class){
 
+
+            $configurationClass = new MakeBaseConfigurationClass(
+                stringHelper: $this->stringHelper,
+                packageName: $this->packageName,
+                projectDirectory: $this->projectDirectory,
+                class: $class,
+
+            );
+            $configuration = $configurationClass->getAllConfiguration();
+
+
+            //dd($configuration);
+
+
             /** Bundle Name = ExemploBundle */
             $bundleName = $this->stringHelper->createBundleName($class->className);
-
 
             /** Bundle Directory = /var/www/public/projects/project-dir/src/Application/Package/ExempleBundle */
             $bundleDirectory = $this->projectDirectory . "/src/Application/" . $this->packageName . "/" . $bundleName;
@@ -279,6 +293,7 @@ class Generator
                 bundleDirectory:  $bundleDirectory,
                 baseNamespace:  $baseNamespace,
                 class:  $class,
+                configuration: $configuration,
             );
             $makeAdmin->make();
             $this->completedProcesses[] = 'MakeAdmin - Gera o arquivo Admin do Sonata';

@@ -1,3 +1,29 @@
+{% if type == "primaryKey" or type == "default" %}
+{% if attribute.doctrineType == "dataaaa" %}
+        $datagrid->add('dataCriacao', null, [], DateType::class, [
+            'label' => 'Data de Criação',
+            'widget' => 'single_text',
+        ]);
+{% endif %}
         $datagrid->add('{{ attribute.attributeName|raw }}', null, [
             'label' => '{{ attribute.attributeName|capitalize }}',
         ]);
+{% endif %}
+{% if type == "foreignKey" %}
+{% if attribute.typeForeingKey == "inverseSide" %}
+{% elseif attribute.typeForeingKey == "owningSide" %}
+        $datagrid->add('{{ attribute.attributeName }}', ModelFilter::class, [
+            'label' => '{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:]  }}',
+            'field_options' => [
+                'multiple' => true,
+                'choice_label'=> function ({{ attribute.inverseSide.className }} ${{ attribute.attributeName }}) {
+                    return ${{ attribute.attributeName }}->get{{ attribute.inverseSide.primaryKey[:1]|upper ~ attribute.inverseSide.primaryKey[1:] }}()
+                    {% for field in attribute.inverseSide.attributeSearch %}
+.' - '.${{ attribute.attributeName }}->get{{ field[:1]|upper ~ field[1:] }}()
+                    {% endfor %}
+;
+                },
+            ],
+        ]);
+{% endif %}
+{% endif %}

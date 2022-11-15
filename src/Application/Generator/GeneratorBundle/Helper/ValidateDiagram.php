@@ -67,6 +67,7 @@ class ValidateDiagram
                 'tableName'     => $this->filterTableName($class->tableName),
                 'description'   => $this->filterClassDescription($class->description),
                 'attributes'    => $this->transformAttributes($class->attributes, $class),
+                'allAttributes' => $class->attributes,
                 'methods'       => $this->transformMethods($class->methods),
             ];
         }
@@ -139,17 +140,14 @@ class ValidateDiagram
         $relationship = $this->getRelationshipByForeingKey($attribute->key);
         //dd($class, $attribute, $relationship);
 
-
         $owningSideClass = $owningSideAttributeName = $owningSideprimaryKey = $inverseSideClass = $inverseSideAttributeName = $inverseSideprimaryKey = '';
         $owningSideAllAttributes = $inverseSideAllAttributes = '';
         $owningSideAttributesSearch = $inverseSideAttributesSearch = [];
-        $multiple = false;
+        $multiple = $tableName = $owningSideForeingKey = $inverseSideForeingKey= false;
 
-
-
-
-        /** Pega as informações do lado Proprietario - owningSide */
+        /** Pega as informações do lado Proprietario — owningSide */
         if($relationship->typeRelationship === "one-to-one" || $relationship->typeRelationship === "one-to-many" ){
+
             $owningSideClass = $this->getClassByKey($relationship->to)->className;
             $owningSideAttribute = $this->getAttributeInClass($relationship->attributeOwningSide, $relationship->to);
             $owningSideAttributeName = ($owningSideAttribute) ? $owningSideAttribute->attributeName : '';
@@ -167,24 +165,68 @@ class ValidateDiagram
             $inverseSideAllAttributes = $this->getAllAttributesOfClass($relationship->from);
             $inverseSideAttributesSearch = $this->getAllAttributesSearch($relationship->from);
 
+        }else if($relationship->typeRelationship === "many-to-many"){
 
-        }
-
-
-        if($relationship->typeRelationship === "many-to-many"){
-            //dd($relationship);
+            $relationship = $this->getRelationshipByForeingKey($attribute->key);
             $tableAssociative = $this->getClassByKey($relationship->to);
-            dd($tableAssociative);
-
-
-
 
             $multiple = true;
+            $tableName = $tableAssociative->tableName;
+
+            if($attribute->typeForeingKey === "inverseSide"){
+
+                $inverseSideClass = $this->getClassByKey($relationship->from)->className;
+                $inverseSideAttributeName = $this->getAttributeInClass($relationship->attributeOwningSide, $relationship->from)->attributeName;
+                $inverseSideprimaryKey = ( $this->getPrimaryKeyInClass($relationship->from) ) ? $this->getPrimaryKeyInClass($relationship->from)->attributeName : '';
+                $inverseSideForeingKey = $this->getAttributeInClass($relationship->attributeinverseSide, $relationship->to)->fieldName;
+                $inverseSideAllAttributes = $this->getAllAttributesOfClass($relationship->from);
+                $inverseSideAttributesSearch = $this->getAllAttributesSearch($relationship->from);
 
 
+                $attr1 = $tableAssociative->attributes[0];
+                $attr2 = $tableAssociative->attributes[1];
+                $owningSideForeingKey = ($inverseSideForeingKey === $attr1->fieldName) ? $attr2 : $attr1;
+                $owningSideRelationship = $this->getRelationshipByForeingKey($owningSideForeingKey->key);
 
 
+                $owningSideClass = $this->getClassByKey($owningSideRelationship->from)->className;
+                $owningSideprimaryKey = ( $this->getPrimaryKeyInClass($owningSideRelationship->from) ) ? $this->getPrimaryKeyInClass($owningSideRelationship->from)->attributeName : '';
+                $owningSideForeingKey = $owningSideForeingKey->fieldName;
+                $owningSideAllAttributes = $this->getAllAttributesOfClass($owningSideRelationship->from);
+                $owningSideAttributesSearch = $this->getAllAttributesSearch($owningSideRelationship->from);
+                if($relationship->typeAssociation !== "self-referencing"){
+                    $owningSideAttributeName = $this->getAttributeInClass($owningSideRelationship->attributeOwningSide, $owningSideRelationship->from);
+                    $owningSideAttributeName = ($owningSideAttributeName) ? $owningSideAttributeName->attributeName : '';
+                }
 
+
+            }else if ( $attribute->typeForeingKey === "owningSide" ){
+
+                $owningSideClass = $this->getClassByKey($relationship->from)->className;
+                $owningSideAttributeName = $this->getAttributeInClass($relationship->attributeOwningSide, $relationship->from)->attributeName;
+                $owningSideprimaryKey = ( $this->getPrimaryKeyInClass($relationship->from) ) ? $this->getPrimaryKeyInClass($relationship->from)->attributeName : '';
+                $owningSideForeingKey = $this->getAttributeInClass($relationship->attributeinverseSide, $relationship->to)->fieldName;
+                $owningSideAllAttributes = $this->getAllAttributesOfClass($relationship->from);
+                $owningSideAttributesSearch = $this->getAllAttributesSearch($relationship->from);
+
+
+                $attr1 = $tableAssociative->attributes[0];
+                $attr2 = $tableAssociative->attributes[1];
+                $inverseSideForeingKey = ($owningSideForeingKey === $attr1->fieldName) ? $attr2 : $attr1;
+                $inverseSideRelationship = $this->getRelationshipByForeingKey($inverseSideForeingKey->key);
+
+                $inverseSideClass = $this->getClassByKey($inverseSideRelationship->from)->className;;
+                $inverseSideprimaryKey = ( $this->getPrimaryKeyInClass($inverseSideRelationship->from) ) ? $this->getPrimaryKeyInClass($inverseSideRelationship->from)->attributeName : '';
+                $inverseSideForeingKey = $inverseSideForeingKey->fieldName;
+                $inverseSideAllAttributes = $this->getAllAttributesOfClass($inverseSideRelationship->from);
+                $inverseSideAttributesSearch = $this->getAllAttributesSearch($inverseSideRelationship->from);
+                if($relationship->typeAssociation !== "self-referencing"){
+                    $inverseSideAttributeName = $this->getAttributeInClass($inverseSideRelationship->attributeOwningSide, $inverseSideRelationship->from);
+                    $inverseSideAttributeName = ($inverseSideAttributeName) ? $inverseSideAttributeName->attributeName : '';
+                }
+
+
+            }
 
 
         }
@@ -201,6 +243,7 @@ class ValidateDiagram
             'typeForeingKey' => $attribute->typeForeingKey, // [ inverseSide, owningSide ]
             'typeAssociation' => $relationship->typeAssociation,// [ bidirectional, unidirectional, self-referencing ]
             'typeRelationship' => $relationship->typeRelationship, // [ one-to-one, one-to-many, many-to-many ]
+            'tableName' => $tableName,
             'multiple' => $multiple,
             'attributeName'=> $attribute->attributeName,
             'nullable' => $attribute->nullable,
@@ -215,6 +258,7 @@ class ValidateDiagram
                 'className'=> $owningSideClass,
                 'attributeName'=> $owningSideAttributeName,
                 'primaryKey'=> $owningSideprimaryKey,
+                'foreingKey'=> $owningSideForeingKey,
                 'allAttributes' => $owningSideAllAttributes,
                 'attributeSearch' => $owningSideAttributesSearch,
                 ],
@@ -223,13 +267,14 @@ class ValidateDiagram
                 'className'=> $inverseSideClass,
                 'attributeName'=> $inverseSideAttributeName,
                 'primaryKey'=> $inverseSideprimaryKey,
+                'foreingKey'=> $inverseSideForeingKey,
                 'allAttributes' => $inverseSideAllAttributes,
                 'attributeSearch' => $inverseSideAttributesSearch,
             ],
         ];
 
 
-        dd($data);
+        //dd($attribute, $relationship,  $tableAssociative, $data);
 
         return $data;
 
@@ -314,8 +359,11 @@ class ValidateDiagram
         return $data;
     }
 
-    protected function getAttributeInClass(string $attributeKey, $classKey)
+    protected function getAttributeInClass($attributeKey, $classKey)
     {
+        if(!$attributeKey || !$classKey)
+            return false;
+
         $data = false;
         foreach ($this->class as $class)
             if($class->key === $classKey)

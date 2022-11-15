@@ -14,7 +14,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use DateTime;
 
-/** Descrição: {{ description }} */
+/** Info: {{ description }} */
 #[ORM\Table(name: '{{ tableName }}')]
 #[ORM\Entity(repositoryClass: {{ className }}Repository::class)]
 {% for attribute in uniqueAttributes  %}

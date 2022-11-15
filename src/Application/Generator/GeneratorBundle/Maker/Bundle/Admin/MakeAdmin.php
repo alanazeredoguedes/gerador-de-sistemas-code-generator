@@ -18,12 +18,14 @@ class MakeAdmin
     protected array $datagridFilters = [];
     protected array $listFields = [];
     protected array $showFields = [];
+    protected array $namespaceRelationships = [];
 
     public function __construct(
         protected TwigHelper $twigHelper,
         protected string $bundleDirectory,
         protected string $baseNamespace,
         protected mixed $class,
+        protected object $configuration,
     )
     {
         $this->filePath = $this->bundleDirectory . "/Admin/" . $this->class->className . "Admin.php";
@@ -103,32 +105,27 @@ class MakeAdmin
 
             //dd($foreignKey);
 
-            /*$this->formFields[] = $this->getBaseTemplate('components/form_fields.php.twig', [
-                'attribute' => $attribute,
-                'type' => 'foreignKey'
-            ]);*/
-
             $this->formFields[] = $this->getBaseTemplate('components/form_fields.php.twig', [
                 'attribute' => $foreignKey,
                 'type' => 'foreignKey'
             ]);
 
+            $this->datagridFilters[] = $this->getBaseTemplate('components/datagrid_filters.php.twig', [
+                'attribute' => $foreignKey,
+                'type' => 'foreignKey'
+            ]);
+
             /*$this->listFields[] = $this->getBaseTemplate('components/list_fields.php.twig', [
-                'attribute' => $attribute,
+                'attribute' => $foreignKey,
                 'type' => 'foreignKey'
             ]);
 
             $this->showFields[] = $this->getBaseTemplate('components/show_fields.php.twig', [
-                'attribute' =>$attribute,
+                'attribute' =>$foreignKey,
                 'type' => 'foreignKey'
             ]);*/
+
         }
-
-
-
-
-
-
 
 
 
@@ -150,15 +147,22 @@ class MakeAdmin
      */
     public function getTemplate(): string
     {
+        //dd($this->configuration, $this->class);
+
+        //dd($this->configuration->nameSpaceRelationships);
+        //dd($this->class->attributes->default);
         return $this->twigHelper->getTwig()->render($this->template,[
             'baseNamespace'    => $this->baseNamespace,
             'className'        => $this->class->className,
             'primaryKey'       => $this->class->attributes->primaryKey->attributeName,
             'typeForm'         => $this->sonataTypeForms,
-            'formFields'      => $this->formFields,
+            'formFields'       => $this->formFields,
             'datagridFilters'  => $this->datagridFilters,
             'listFields'       => $this->listFields,
             'showFields'       => $this->showFields,
+            'allAttributes'    => $this->class->allAttributes,
+            'packageName'       => $this->configuration->packageName,
+            'namespaceRelationships' => $this->configuration->nameSpaceRelationships,
         ]);
     }
 

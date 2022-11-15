@@ -108,13 +108,16 @@ class MakeEntity
             $this->attributes[] = $data->template;
 
             if($data->constructor)
-                $this->construct[] = $data->constructor;
+                foreach ($data->constructor as $constructor)
+                    $this->construct[] = $constructor;
 
             if($data->namespaceRelationships)
-                $this->namespaceRelationships[] = $data->namespaceRelationships;
+                foreach ($data->namespaceRelationships as $namespaceRelationships)
+                    $this->namespaceRelationships[] = $namespaceRelationships;
 
             if($data->uniqueAttributes)
-                $this->uniqueAttributes[] = $data->uniqueAttributes;
+                foreach ($data->uniqueAttributes as $uniqueAttributes)
+                    $this->uniqueAttributes[] = $uniqueAttributes;
 
             /** Getter and Setter */
             $makeGetterSetter = new MakeGetterSetter(

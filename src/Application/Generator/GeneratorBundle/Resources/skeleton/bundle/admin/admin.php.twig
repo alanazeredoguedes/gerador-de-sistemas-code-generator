@@ -2,6 +2,9 @@
 namespace {{ baseNamespace }}\Admin;
 
 use {{ baseNamespace }}\Entity\{{ className }};
+{% for relationshipClass in namespaceRelationships %}
+use App\Application\{{ packageName }}\{{ relationshipClass }}Bundle\Entity\{{ relationshipClass }};
+{% endfor %}
 
 use App\Application\Project\ContentBundle\Admin\Base\BaseAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
@@ -11,6 +14,7 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 
 /** Components Form */
+use Sonata\DoctrineORMAdminBundle\Filter\ModelFilter;
 {% for type in typeForm %}
 use {{ type }};
 {% endfor %}
@@ -20,8 +24,17 @@ final class {{ className }}Admin extends BaseAdmin
 
     public function toString(object $object): string
     {
-        return $object instanceof {{ className }} ? $object->get{{ primaryKey|capitalize }}() . '' : '';
+        return $object instanceof {{ className }} ? $object->get{{ primaryKey[:1]|upper ~ primaryKey[1:] }}()
+        {% for attr in allAttributes %}{% if attr.attributeSearch %}.' - '.$object->get{{ attr.attributeName[:1]|upper ~ attr.attributeName[1:] }}(){% endif %}{% endfor %}
+
+        : '';
     }
+
+{#    public function getExportFields()
+    {
+        return array('Código' => 'codigo', 'Nome' => 'nome', 'Descrição' => 'descricao');
+    }#}
+
 
     protected function configureFormFields(FormMapper $form): void
     {
@@ -37,10 +50,8 @@ final class {{ className }}Admin extends BaseAdmin
 
     protected function configureDatagridFilters(DatagridMapper $datagrid): void
     {
-
 {% for datagrid in datagridFilters %}
 {{ datagrid|raw }}
-
 {% endfor %}
     }
 

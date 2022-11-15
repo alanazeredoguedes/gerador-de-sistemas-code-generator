@@ -62,6 +62,9 @@ class MakeGetterSetter
 
             }else if ( $this->attribute->typeRelationship === "many-to-many" )
             {
+                return $this->getTemplate('getter_setter/many_to_many.php.twig', [
+                    'attribute' => $this->attribute
+                ]);
 
             }
 
