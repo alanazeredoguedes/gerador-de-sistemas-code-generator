@@ -108,7 +108,8 @@ class ValidateDiagram
 
             }else if($attribute->foreingKey){
                 /** Transforma os atributos chaves estrangeiras */
-                $attributesFilter->foreignKey[] = $this->transformAttributeForeingKey($attribute, $class);
+                if($this->transformAttributeForeingKey($attribute, $class))
+                    $attributesFilter->foreignKey[] = $this->transformAttributeForeingKey($attribute, $class);
 
             }else{
                 /** Transforma os atributos normais */
@@ -136,15 +137,22 @@ class ValidateDiagram
         ];
     }
 
-    protected function transformAttributeForeingKey($attribute, $class): object
+    protected function transformAttributeForeingKey($attribute, $class)
     {
         $relationship = $this->getRelationshipByForeingKey($attribute->key);
-        //dd($class, $attribute, $relationship);
+
+        $fromClass = $this->getClassByKey($relationship->from);
+        if($fromClass->systemModel)
+            return false;
+
+
+       // dd($class, $attribute, $relationship);
 
         $owningSideClass = $owningSideAttributeName = $owningSideprimaryKey = $inverseSideClass = $inverseSideAttributeName = $inverseSideprimaryKey = '';
         $owningSideAllAttributes = $inverseSideAllAttributes = $typeApi = '';
         $owningSideAttributesSearch = $inverseSideAttributesSearch = [];
         $multiple = $tableName = $owningSideForeingKey = $inverseSideForeingKey= false;
+
 
 
 
@@ -402,7 +410,7 @@ class ValidateDiagram
         foreach ($this->class as $class)
             if($class->key === $classkey)
                 foreach ($class->attributes as $attribute)
-                    if($attribute->attributeSearch)
+                    if (isset($attribute->attributeSearch) && $attribute->attributeSearch )
                         $data[] = $attribute->attributeName;
 
         return $data;
@@ -502,6 +510,7 @@ class ValidateDiagram
             'array' => 'array',
             'simple_array' => 'simple_array',
             'object' => 'object',
+            'boolean' => 'boolean',
             //'guid' => 'guid',
             //'binary' => 'binary',
             //'blob' => 'blob',

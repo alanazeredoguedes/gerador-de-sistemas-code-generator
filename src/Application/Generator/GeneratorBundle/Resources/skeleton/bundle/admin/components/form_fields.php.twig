@@ -27,7 +27,7 @@
                     'multiple' => {% if attribute.multiple %} true {% else %} false {% endif %},
                     'required' => {% if attribute.nullable %} false {% else %} true {% endif %},
                     'to_string_callback' => function($entity, $property) {
-                        return $entity->get{{ attribute.inverseSide.primaryKey[:1]|upper ~ attribute.inverseSide.primaryKey[1:]  }}() {% for attributeSearch in attribute.inverseSide.attributeSearch %}.' - '.$entity->get{{ attributeSearch[:1]|upper ~ attributeSearch[1:] }}(){% endfor %}; // .' - '.$entity->getTitulo();
+                        return $entity->get{{ attribute.inverseSide.primaryKey[:1]|upper ~ attribute.inverseSide.primaryKey[1:]  }}() {% for attributeSearch in attribute.inverseSide.attributeSearch %}.' - '.$entity->get{{ attributeSearch[:1]|upper ~ attributeSearch[1:] }}(){% endfor %};
                     },
                     'callback' => static function (AdminInterface $admin, string $property, string $value): void {
                         $property = strtolower($property);

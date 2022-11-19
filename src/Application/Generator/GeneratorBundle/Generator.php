@@ -39,7 +39,7 @@ class Generator
     protected string $projectDirectory;
 
     /** @var string Nome do pacote onde será construído as bundles */
-    protected string $packageName = 'Schema';
+    protected string $packageName = 'Internit';
 
     protected array $completedProcesses;
 
@@ -108,8 +108,8 @@ class Generator
 
 
         /** Clona o repositório base e troca o nome do diretório conforme o projeto atual */
-        //$this->gitHelper->cloneBaseRepository();
-        //$this->completedProcesses[] = 'cloneBaseRepository - Clona o repositório base e troca o nome do diretório conforme o projeto atual';
+        $this->gitHelper->cloneBaseRepository();
+        $this->completedProcesses[] = 'cloneBaseRepository - Clona o repositório base e troca o nome do diretório conforme o projeto atual';
 
         /** Cria o arquivo docker-compose */
         $makeDockerCompose = new MakeDockerCompose(
@@ -157,9 +157,9 @@ class Generator
 
 
         /** REMOVER DEPOIS */
-        $packageDir = $this->projectDirectory . "/src/Application/" . $this->packageName . '/';
-        $this->commandsHelper->recursiveRemoveDir($packageDir);
-        sleep(3);
+//        $packageDir = $this->projectDirectory . "/src/Application/" . $this->packageName . '/';
+//        $this->commandsHelper->recursiveRemoveDir($packageDir);
+//        sleep(3);
 
         /** Percorre todas as classe e cria outros arquivos do projeto */
         foreach ($this->class as $class){

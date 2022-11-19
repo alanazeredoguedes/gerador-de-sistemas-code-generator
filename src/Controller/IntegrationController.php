@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Application\Generator\GeneratorBundle\Generator;
+use App\Application\Generator\GeneratorBundle\Helper\AwsHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,7 +38,6 @@ class IntegrationController extends AbstractController
 
         $status = $generator->startGenerator();
 
-
         return $this->json([
             'message' => 'Welcome to your new controller!',
             'status' => $status,
@@ -47,15 +47,24 @@ class IntegrationController extends AbstractController
 
 
 
+    #[Route('/aws', name: 'app_aws')]
+    public function aws(Request $request): JsonResponse
+    {
+
+        $awsHelper = new AwsHelper();
+
+        //$awsHelper->ec2->runInstances();
+
+        $awsHelper->ec2->describeInstances();
 
 
 
 
 
-
-
-
-
+        return $this->json([
+            'ok'
+        ]);
+    }
 
 
 
@@ -66,9 +75,37 @@ class IntegrationController extends AbstractController
     }
 
 
-    /*
 
-     private $queueUrl = "https://url_da_fila_sqs";
+    public function sendSNS()
+    {
+
+        $client = new \Aws\Sns\SnsClient([
+            'profile' => 'default',
+            'region' => 'us-east-1',
+            'version' => '2010-03-31'
+        ]);
+
+        $message = 'This message is sent from a Amazon SNS code sample. PHP';
+        $topic = 'arn:aws:sns:us-east-1:538747456615:notifyGenerator';
+
+        try {
+            $result = $client->publish([
+                'Message' => $message,
+                'TopicArn' => $topic,
+            ]);
+            var_dump($result);
+        } catch (\Aws\Exception\AwsException $e) {
+            // output error message if fails
+            error_log($e->getMessage());
+        }
+
+    }
+
+
+
+
+    private $queueUrl = "https://sqs.us-east-1.amazonaws.com/538747456615/gds-generate-code";
+
 
     public function readSQS(): JsonResponse
     {
@@ -90,13 +127,15 @@ class IntegrationController extends AbstractController
 
                 $message = $result->get('Messages')[0]['Body'];
 
+                dd($message);
+
                 //return $this->json($message);
 
-                /** Remove a menssagem atual da fila *
-                $client->deleteMessage([
+                /** Remove a menssagem atual da fila **/
+                /*$client->deleteMessage([
                     'QueueUrl' => $this->queueUrl,
                     'ReceiptHandle' => $result->get('Messages')[0]['ReceiptHandle']
-                ]);
+                ]);*/
 
             }else{
                 return $this->json('Sem Mensagens na fila');
@@ -108,5 +147,6 @@ class IntegrationController extends AbstractController
         }
 
         return $this->json('Sem Mensagens na fila');
-    }*/
+    }
+
 }

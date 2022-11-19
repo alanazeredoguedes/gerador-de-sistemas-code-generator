@@ -103,7 +103,7 @@ class MakeAdmin
 
             $this->sonataTypeForms[] = $foreignKey->sonataType->namespace;
 
-            //dd($foreignKey);
+          //  dd($foreignKey);
 
             $this->formFields[] = $this->getBaseTemplate('components/form_fields.php.twig', [
                 'attribute' => $foreignKey,
