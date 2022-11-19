@@ -51,14 +51,20 @@ class IntegrationController extends AbstractController
     public function aws(Request $request): JsonResponse
     {
 
-        $awsHelper = new AwsHelper();
+        $awsHelper = new AwsHelper(
+            projectDir: $this->getParameter('kernel.project_dir'),
+        );
 
-        //$awsHelper->ec2->runInstances();
-
-        $awsHelper->ec2->describeInstances();
-
+        //$awsHelper->ec2->makeImage();
+        $awsHelper->codeCommit->make();
 
 
+        //$awsHelper->ec2->describeInstances();
+
+        //$projectDir = $this->getParameter('kernel.project_dir');
+        //$file = file_get_contents($projectDir. '/src/Application/Generator/GeneratorBundle/Helper/Aws/script.txt');
+
+        //dd($file);
 
 
         return $this->json([
