@@ -30,6 +30,7 @@ use App\Application\Generator\GeneratorBundle\Maker\MakeBaseConfigurationClass;
 use App\Application\Generator\GeneratorBundle\Maker\MakeDockerCompose;
 use App\Application\Generator\GeneratorBundle\Maker\MakeEnv;
 use App\Application\Generator\GeneratorBundle\Maker\MakeReadme;
+use App\Application\Generator\GeneratorBundle\Maker\Project\ContentBundle\MakeBaseWebViews;
 use stdClass;
 
 class Generator
@@ -332,10 +333,15 @@ class Generator
         }
 
 
-        $makeBaseWeb = new MakeBaseWeb(
 
+
+        $makeBaseWeb = new MakeBaseWebViews(
+            twigHelper:  $this->twigHelper,
+            projectDirectory: $this->projectDirectory,
+            registerBundle: $registerBundle,
+            projectName: $this->projectName
         );
-
+        $makeBaseWeb->make();
 
 
         /** Registra a bundle no arquivo de bundles [bundles.php] */

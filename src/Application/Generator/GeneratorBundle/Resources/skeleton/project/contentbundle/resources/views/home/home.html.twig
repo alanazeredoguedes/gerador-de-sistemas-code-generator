@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Projeto Base</title>
+    <meta name="description" content="Love UI Kit." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--Bootstrap 4-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!--custom css-->
+    <link rel="stylesheet" href="{{ "{{ asset('bundles/applicationprojectcontent/css/home/components.css') }}" }}" />
+    <link rel="stylesheet" href="{{ "{{ asset('bundles/applicationprojectcontent/css/home/colors.css') }}" }}" />
+    <link rel="stylesheet" href="{{ "{{ asset('bundles/applicationprojectcontent/css/home/demo.css') }}" }}" />
+    <style>
+        .hero-header{
+            background-image: url("{{ "{{ asset('bundles/applicationprojectcontent/images/background/background-66.jpg') }}" }}") !important;
+            height: 100vh !important;
+        }
+    </style>
+</head>
+<body>
+<section class="colored-section hero-header demo-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="brand">
+
+                    <h1 class="text-white">
+                        {{ projectName }}
+                    </h1>
+
+                    <h6 class="text-uppercase mb-5">
+                        Aplicação desenvolvida por
+                        <a target="_blank" href="https://geradordesistemas.com.br">
+                            Gerador de Sistemas!
+                        </a>
+                    </h6>
+
+                    <a href="{{ "{{ path('web_dashboard') }}" }}" target="_blank" class="btn btn-white btn-round mr-3">
+                        <em class="fa fa-eye fa-fw"></em>
+                        Aplicação Web
+                    </a>
+                    <a href="/api" target="_blank" class="btn btn-primary btn-round mr-3" style=" background-color: #3100ea; border-color: #3100ea;">
+                        <em class="fa fa-eye fa-fw"></em>
+                        Swagger Api
+                    </a>
+                    <a href="{{ "{{ path('sonata_admin_dashboard') }}" }}" target="_blank" class="btn btn-danger btn-round">
+                        <em class="fa fa-eye fa-fw"></em>
+                        Painel Administrativo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

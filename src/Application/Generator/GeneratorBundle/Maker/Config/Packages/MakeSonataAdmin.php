@@ -36,7 +36,7 @@ class MakeSonataAdmin
 
     public function make()
     {
-        chmod( $this->filePath, 0777);
+        //chmod( $this->filePath, 0777);
         file_put_contents($this->filePath, $this->getTemplate());
     }
 
