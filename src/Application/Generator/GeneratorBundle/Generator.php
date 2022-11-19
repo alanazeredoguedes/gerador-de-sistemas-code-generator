@@ -2,6 +2,7 @@
 
 namespace App\Application\Generator\GeneratorBundle;
 
+use App\Application\Generator\GeneratorBundle\AwsHelper\AwsHelper;
 use App\Application\Generator\GeneratorBundle\Helper\CommandsHelper;
 use App\Application\Generator\GeneratorBundle\Helper\GitHelper;
 use App\Application\Generator\GeneratorBundle\Helper\StringHelper;
@@ -29,6 +30,7 @@ use App\Application\Generator\GeneratorBundle\Maker\MakeBaseConfigurationClass;
 use App\Application\Generator\GeneratorBundle\Maker\MakeDockerCompose;
 use App\Application\Generator\GeneratorBundle\Maker\MakeEnv;
 use App\Application\Generator\GeneratorBundle\Maker\MakeReadme;
+use stdClass;
 
 class Generator
 {
@@ -39,7 +41,7 @@ class Generator
     protected string $projectDirectory;
 
     /** @var string Nome do pacote onde será construído as bundles */
-    protected string $packageName = 'Internit';
+    protected string $packageName = 'Schema';
 
     protected array $completedProcesses;
 
@@ -49,19 +51,34 @@ class Generator
     protected StringHelper $stringHelper;
     protected TwigHelper $twigHelper;
     protected ValidateDiagram $validateDiagram;
+    protected AwsHelper $awsHelper;
+
+    protected string $projectName;
+    protected string $projectNameBuild;
+    protected string $projectDescription;
+    protected array  $class;
+    protected array  $relationships;
 
     public function __construct(
-        protected string $projectName,
-        protected string $projectDescription,
-        protected array  $class,
-        protected array  $relationships,
+        protected $projectData,
         protected string $kernelDirectory,
     )
     {
+
+        $this->projectName = $this->projectData->app->name;
+        $this->projectDescription = $this->projectData->app->description;
+        $this->class = $this->projectData->app->diagram->structure->class;
+        $this->relationships = $this->projectData->app->diagram->structure->relationships;
+
+
+
         $this->initDependencies();
 
+        $this->projectNameBuild = $this->projectData->user->id . $this->projectData->app->id . "-" . $this->stringHelper->filterProjectDirName($this->projectName);
+
+
         $this->workingDirectory = $this->kernelDirectory . "/public/projects/";
-        $this->projectDirectory =  $this->workingDirectory . $this->stringHelper->filterProjectDirName($projectName);
+        $this->projectDirectory =  $this->workingDirectory .  $this->projectNameBuild;
 
         $this->initDependencies2();
     }
@@ -81,7 +98,8 @@ class Generator
         $this->gitHelper = new GitHelper(
             workingDirectory:     $this->workingDirectory,
             projectDirectory:     $this->projectDirectory,
-            projectName:          $this->stringHelper->filterProjectDirName($this->projectName)
+            projectName:          $this->stringHelper->filterProjectDirName($this->projectName),
+            projectNameBuild: $this->projectNameBuild,
         );
 
         $this->commandsHelper = new CommandsHelper(
@@ -95,6 +113,9 @@ class Generator
             relationships:        $this->relationships
         );
 
+
+        $this->awsHelper = new AwsHelper();
+
     }
 
     public final function startGenerator(): bool
@@ -105,7 +126,6 @@ class Generator
 
         $this->validateDiagram->transformData();
         $this->class = $this->validateDiagram->classValidate;
-
 
         /** Clona o repositório base e troca o nome do diretório conforme o projeto atual */
         $this->gitHelper->cloneBaseRepository();
@@ -146,10 +166,10 @@ class Generator
             projectDirectory:    $this->projectDirectory,
             twigHelper:          $this->twigHelper,
             projectName:         $this->projectName,
-            projectDescription:  $this->projectDescription
+            projectDescription:  $this->projectDescription,
         );
-        //$makeReadme->make();
-        //$this->completedProcesses[] = 'MakeReadme - Criar o arquivo de documentação do repositorio. [.README.md] ';
+        $makeReadme->make();
+        $this->completedProcesses[] = 'MakeReadme - Criar o arquivo de documentação do repositorio. [.README.md] ';
 
 
         /** Array com definiçaão de todas as bunldes para ser usado para gerar arquivos de registro no final do script */
@@ -164,7 +184,6 @@ class Generator
         /** Percorre todas as classe e cria outros arquivos do projeto */
         foreach ($this->class as $class){
 
-
             $configurationClass = new MakeBaseConfigurationClass(
                 stringHelper: $this->stringHelper,
                 packageName: $this->packageName,
@@ -172,10 +191,7 @@ class Generator
                 class: $class,
             );
             $configuration = $configurationClass->getAllConfiguration();
-
-
             //dd($configuration);
-
 
             /** Bundle Name = ExemploBundle */
             $bundleName = $this->stringHelper->createBundleName($class->className);
@@ -316,6 +332,12 @@ class Generator
         }
 
 
+        $makeBaseWeb = new MakeBaseWeb(
+
+        );
+
+
+
         /** Registra a bundle no arquivo de bundles [bundles.php] */
         $makeRegisterBundle = new MakeRegisterBundle(
             twigHelper:  $this->twigHelper,
@@ -356,6 +378,12 @@ class Generator
         $this->completedProcesses[] = 'MakeRegisterService - Registra o serviço da bundle no arquivo de serviços [services.yaml] ';
 
 
+
+        $repositoryUrl = $this->gitHelper->commitProject();
+        dd($repositoryUrl);
+
+
+        //$this->awsHelper->ec2->makeImage();
 
 
         //$this->commandsHelper->runCommands();

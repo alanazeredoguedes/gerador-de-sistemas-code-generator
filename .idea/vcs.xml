@@ -10,5 +10,6 @@
     <mapping directory="$PROJECT_DIR$/public/projects/gerador-de-sistemas-base" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/public/projects/symfony-jwtauth-php8" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/public/projects/symfonySonata7.2" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/public/projects/teste-repository" vcs="Git" />
   </component>
 </project>

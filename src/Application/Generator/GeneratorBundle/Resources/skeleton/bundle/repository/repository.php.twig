@@ -22,13 +22,15 @@ class {{ className }}Repository extends ServiceEntityRepository
     }
 
 {% for method in methods %}
+{% if method is defined and method != '' %}
+
     /**
-    * Descrição do método
+    * Descrição do método:
     * {{ method.description }}
     */
     public function {{ method.name|replace({'(': ''})|replace({')': ''}) }}(): void
     {}
-
+{% endif %}
 {% endfor %}
 
 }

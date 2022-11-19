@@ -1,5 +1,5 @@
 sonata_admin:
-    title: 'Painel Admin'
+    title: 'Admin'
     dashboard:
         blocks:
             - { type: sonata.admin.block.admin_list, position: center }
@@ -12,7 +12,7 @@ sonata_admin:
                     content: >
                         <div class="jumbotron" style="background-color: #2b2c2d; background-size: 100%;">
                             <div class="conteiner" >
-                                
+
                                 <h1 class="text-center" style="color:white">
                                     {{ projectName }}
                                 </h1>
@@ -22,17 +22,17 @@ sonata_admin:
                                 <br><br>
                                 <h4 class="text-right" style="color:white; margin-right: 50px;">
                                     Sistema Desenvolvido Por:
-                                    <a style="color:white;" target="_blank" href="https://www.linkedin.com/in/alan-azeredo-guedes-786575191/" aria-hidden="true">
-                                        <b>Alan Guedes</b>
+                                    <a style="color:white;" target="_blank" href="https://geradordesistemas.com.br/" aria-hidden="true">
+                                        <b>Gerador de Sistemas</b>
                                     </a>
                                 </h4>
                             </div>
                         </div>
                         <br>
-                        
 
-#####################################################################################################
-#####################################################################################################
+
+    #####################################################################################################
+    #####################################################################################################
 
     #default_controller: App\Application\Project\AdminBundle\Controller\DefaultCRUDController
 
@@ -86,7 +86,7 @@ sonata_admin:
         #- bundles/sonatacore/js/base.js
 
         extra_stylesheets:
-            #- bundles/applicationsonatauser/css/styles.css
+        #- bundles/applicationsonatauser/css/styles.css
 
         extra_javascripts:
             - bundles/applicationprojectcontent/js/config-roles.js
@@ -98,10 +98,3 @@ sonata_block:
     blocks:
         sonata.admin.block.admin_list:
             contexts: [admin]
-
-
-
-
-
-
-

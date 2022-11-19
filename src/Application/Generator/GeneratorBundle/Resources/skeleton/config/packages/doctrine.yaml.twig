@@ -44,26 +44,13 @@ doctrine:
                 alias: App
 
             SonataMediaBundle: ~
+            ApplicationProjectSettingBundle: ~
             ApplicationProjectSecurityAdminBundle: ~
             ApplicationProjectSecurityUserBundle: ~
-
-
-            # Model Bundles
-            ###########################################################
-
-            ApplicationInternitCursoBundle: ~
-            ApplicationInternitDocumentoBundle: ~
-#           ApplicationInternitPalavraChaveBundle: ~
-#           ApplicationInternitTipoDocumentoBundle: ~
 
             # Register Schema Project
             ###########################################################
 {% for bundle in bundles %}
             Application{{ bundle['packageName'] }}{{ bundle['bundleName'] }}: ~
 {% endfor %}
-
-
-
-
-
 

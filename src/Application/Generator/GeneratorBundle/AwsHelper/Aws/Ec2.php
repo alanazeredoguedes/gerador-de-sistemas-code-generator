@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Application\Generator\GeneratorBundle\Helper\Aws;
+namespace App\Application\Generator\GeneratorBundle\AwsHelper\Aws;
 
-use \Aws\Ec2\Ec2Client as Ec2Client;
-use \Aws\Result as AwsResult;
+use Aws\Ec2\Ec2Client;
+use Aws\Result as AwsResult;
 
 class Ec2
 {
@@ -12,11 +12,8 @@ class Ec2
 
     public function __construct(
         protected array $credentials,
-        protected string $projectDir,
     )
     {
-        $this->scriptUserData = file_get_contents( $this->projectDir. '/src/Application/Generator/GeneratorBundle/Helper/Aws/script.txt');
-
         $this->client = new Ec2Client([
             'region' => 'us-east-1',
             'version' => '2016-11-15',
@@ -25,8 +22,10 @@ class Ec2
     }
 
 
-    public function makeImage()
+    public function makeImage(string $scriptUserData = "")
     {
+
+        $this->scriptUserData = $scriptUserData;
 
         $result = $this->runInstances();
         $instanceId = $result['Instances'][0]['InstanceId'];

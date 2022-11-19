@@ -10,6 +10,10 @@ application.project.content:
     resource: '@ApplicationProjectContentBundle/Resources/config/routes/routes.yaml'
     prefix: /
 
+application.project.setting:
+    resource: '@ApplicationProjectSettingBundle/Resources/config/routes/routes.yaml'
+    prefix: /
+
 media:
     resource: '@SonataMediaBundle/Resources/config/routing/media.xml'
     prefix: /media
@@ -35,27 +39,7 @@ app.swagger:
     methods: GET
     defaults: { _controller: nelmio_api_doc.controller.swagger }
 
-
-
-
 ###############################################################################
-#application.internit.cursobundle.curso:
-#    resource: '@ApplicationInternitCursoBundle/Resources/config/routes/routes.yaml'
-#    prefix: /
-#
-application.internit.documentobundle.documento:
-    resource: '@ApplicationInternitDocumentoBundle/Resources/config/routes/routes.yaml'
-    prefix: /
-
-#application.internit.palavrachavebundle.palavrachave:
-#    resource: '@ApplicationInternitPalavraChaveBundle/Resources/config/routes/routes.yaml'
-#    prefix: /
-#
-#application.internit.tipodocumentobundle.tipodocumento:
-#    resource: '@ApplicationInternitTipoDocumentoBundle/Resources/config/routes/routes.yaml'
-#    prefix: /
-#
-
 # Schema Bundles Routes
 ###############################################################################
 
@@ -65,20 +49,3 @@ application.{{ bundle['packageName']|lower }}.{{ bundle['bundleName']|lower }}:
     prefix: /
 
 {% endfor %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
