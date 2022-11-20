@@ -61,7 +61,7 @@ class AwsHelper
     {
         return [
             'key' => 'REDACTED_AWS_KEY',
-            'secret' => 'REDACTED_AWS_SECRET',
+            'secret' => 'No08qKH1ntfsXRO219qtEkUy/NNB8BhbT26af9Cm',
         ];
     }
 

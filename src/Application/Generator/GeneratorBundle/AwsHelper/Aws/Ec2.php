@@ -31,12 +31,36 @@ class Ec2
 
         $this->scriptUserData = $scriptUserData;
 
+        /** Faz consulta para saber se instancia existe */
+        $instance = $this->getInstanceByTagName($projectNameBuild);
 
-        /** Sobre uma instancia */
+        $elastictIp = false;
+
+        /** Caso exista instancia, dessasocia ip elastico e remove instancia! */
+        if($instance){
+            //dd($instance['PublicIpAddress']);
+
+            $elastictIp = $this->findElastiIpByPublicIp($instance['PublicIpAddress']);
+
+            $this->dissociateElasticIpFromEc2($elastictIp['AssociationId']);
+
+            $this->terminateInstance($instance['InstanceId']);
+
+           // dd($instance);
+        }
+
+        if(!$elastictIp)
+            $elastictIp = $this->AllocateElasticIpAddress();
+
+
+        $elasticIpId = $elastictIp['AllocationId'];
+        $publicIp = $elastictIp['PublicIp'];
+
+
+        /** Cria uma nova Instancia EC2 */
         $result = $this->runInstances($projectNameBuild);
         $instanceId = $result['Instances'][0]['InstanceId'];
 
-        //dd($result, $instanceId);
 
         /** Consulta status da instancia a cada 20s durante 2m */
         $count = 0;
@@ -49,31 +73,47 @@ class Ec2
                 $count = 6;
         }
 
-        $result =$this->AllocateElasticIpAddress();
-
-        $elasticIpId = $result['AllocationId'];
-        $publicIp = $result['PublicIp'];
-
         //dd($result, $elasticIpId);
 
-       $result = $this->associateElasticIpAddressInInstance(elasticIp: $elasticIpId, instanceId: $instanceId);
+       $result = $this->associateElasticIpAddressInInstance(elasticIpId: $elasticIpId, instanceId: $instanceId);
 
        return $publicIp;
        //dd($result, $publicIp);
     }
 
 
+    /** Aloca um novo ip elastico */
     protected function allocateElasticIpAddress(): AwsResult
     {
         return $this->client->allocateAddress([]);
     }
 
+    /** Busca ip elastico pelo publicIP */
+    protected function findElastiIpByPublicIp($publicIp)
+    {
+        $data = $this->client->describeAddresses([
+            'PublicIps' => [ $publicIp ],
+        ]);
+
+        return $data['Addresses'][0];
+    }
+
+    /** Dessasocia ip elastico de uma ec2 */
+    protected function dissociateElasticIpFromEc2($associationId): void
+    {
+        $this->client->disassociateAddress([
+            'AssociationId' => $associationId,
+        ]);
+    }
 
 
-    protected function associateElasticIpAddressInInstance(string $elasticIp, string $instanceId): AwsResult
+
+
+    /** Associa ip elastico a uma instancia ec2 */
+    protected function associateElasticIpAddressInInstance(string $elasticIpId, string $instanceId): AwsResult
     {
         return $this->client->associateAddress([
-            'AllocationId' => $elasticIp,
+            'AllocationId' => $elasticIpId,
             'InstanceId' => $instanceId,
             'AllowReassociation' => false,
         ]);
@@ -117,6 +157,14 @@ class Ec2
         ]);
     }
 
+    public function terminateInstance($instanceId)
+    {
+        $result = $this->client->terminateInstances([
+            'InstanceIds' => [$instanceId], // REQUIRED
+        ]);
+        //dd($result);
+    }
+
     public function describeInstances($instanceId = ''): AwsResult
     {
         if( $instanceId )
@@ -127,23 +175,24 @@ class Ec2
         return $this->client->describeInstances([]);
     }
 
-    public function getInstanceByTagName()
+    public function getInstanceByTagName($name)
     {
         $instances = $this->client->describeInstances([]);
 
-        //dd($instances);
-        foreach ($instances as $instance) {
+        foreach ($instances['Reservations'] as $instance) {
             $instance = $instance['Instances'][0];
-            foreach ($instance['Tags'] as $tag){
 
-            }
+            /** Se instancia não estiver rodando continua */
+            if($instance['State']['Code'] !== 16) // running
+                continue;
+
+            /** Retorna instacia com name igual */
+            foreach ($instance['Tags'] as $tag)
+               if ( $tag['Key'] === 'Name' && $tag['Value'] === $name)
+                   return $instance;
         }
 
-
-
-
-
-
+        return null;
     }
 
 

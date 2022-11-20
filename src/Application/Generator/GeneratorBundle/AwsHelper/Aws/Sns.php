@@ -31,6 +31,16 @@ class Sns
     }
 
 
+    public function notifyGeneratorCompletion($message): bool
+    {
+        $topic = 'arn:aws:sns:us-east-1:538747456615:notifyGeneratorCompletion';
+        $response = $this->sendMenssage(message: $message, topic: $topic);
+        $statusCode = $response['@metadata']['statusCode'];
+
+        return $statusCode === 200;
+    }
+
+
 
     public function sendMenssage($message, $topic): AwsResult
     {

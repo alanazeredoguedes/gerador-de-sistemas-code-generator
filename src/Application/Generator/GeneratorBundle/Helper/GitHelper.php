@@ -46,6 +46,8 @@ class GitHelper
     {
         $dir = $this->projectDirectory;
 
+        //dd($dir);
+
         $commands = [
             ['rm', '-rf', '.git'],
             ['git', 'init'],

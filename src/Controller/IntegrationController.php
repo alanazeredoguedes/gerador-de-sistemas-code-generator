@@ -25,7 +25,6 @@ class IntegrationController extends AbstractController
         //$requestBody =  $request->getContent();
         //$requestBody = json_decode($requestBody);
 
-
         $awsHelper = new AwsHelper();
 
         $message = $awsHelper->sqs->getMessageCodeGenetate(false);
@@ -44,9 +43,7 @@ class IntegrationController extends AbstractController
         $status = $generator->startGenerator();
 
         return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'status' => $status,
-            //'request' => $requestBody,
+            'status' => $status
         ]);
     }
 

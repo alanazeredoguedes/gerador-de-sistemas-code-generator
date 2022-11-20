@@ -30,6 +30,7 @@ use App\Application\Generator\GeneratorBundle\Maker\MakeBaseConfigurationClass;
 use App\Application\Generator\GeneratorBundle\Maker\MakeDockerCompose;
 use App\Application\Generator\GeneratorBundle\Maker\MakeEnv;
 use App\Application\Generator\GeneratorBundle\Maker\MakeReadme;
+use App\Application\Generator\GeneratorBundle\Maker\MakeStartProjectScript;
 use App\Application\Generator\GeneratorBundle\Maker\Project\ContentBundle\MakeBaseWebViews;
 use stdClass;
 
@@ -75,13 +76,14 @@ class Generator
 
         $this->initDependencies();
 
-        $this->projectNameBuild = $this->projectData->user->id . $this->projectData->app->id . "-" . $this->stringHelper->filterProjectDirName($this->projectName);
-
+        $this->projectNameBuild = $this->projectData->user->id . $this->projectData->app->id;
+        $this->projectNameBuild = $this->stringHelper->cleanString( hash('md5', $this->projectNameBuild) );
 
         $this->workingDirectory = $this->kernelDirectory . "/public/projects/";
         $this->projectDirectory =  $this->workingDirectory .  $this->projectNameBuild;
 
         $this->initDependencies2();
+
     }
 
     private function initDependencies(): void
@@ -203,7 +205,6 @@ class Generator
 
             /** Bundle Namespace = App\Application\Package\ExempleBundle */
             $baseNamespace = "App\Application\\" . $this->packageName . "\\" . "$bundleName" ;
-
 
             /** Utilizado para Realizar registro em arquivos de configuração no final do script */
             $registerBundle[] = [
@@ -332,7 +333,16 @@ class Generator
 
         }
 
-
+        /** Registra a bundle no arquivo de bundles [bundles.php] */
+        $makeStartProjectScript = new MakeStartProjectScript(
+            twigHelper:  $this->twigHelper,
+            projectDirectory: $this->projectDirectory,
+            registerBundle: $registerBundle,
+            userName: $this->projectData->user->username,
+            email: $this->projectData->user->email,
+            password: $this->projectNameBuild
+        );
+        $makeStartProjectScript->make();
 
 
         $makeBaseWeb = new MakeBaseWebViews(
@@ -384,40 +394,35 @@ class Generator
         $this->completedProcesses[] = 'MakeRegisterService - Registra o serviço da bundle no arquivo de serviços [services.yaml] ';
 
 
-
-        $this->awsHelper->ec2->getInstanceByTagName();
-
-        dd('aqui');
+        /** DEPLOY Integracao */
 
 
-        exit;
-
+        /** Faz commit do projeto no gitHub e retorna url do repositório */
         $repositoryUrl = $this->gitHelper->commitProject();
-        //dd($repositoryUrl);
 
 
-        $scriptUserData = $this->twigHelper->getTwig()->render('/script_start_ec2.txt.twig',
-            [ 'repositoryUrl' => $repositoryUrl ]
-        );
-
-
-       $publicIp = $this->awsHelper->ec2->makeImage(
-           $this->projectNameBuild,
-           $scriptUserData,
+        /** Cria instancia da ec2 e coloca o projeto em produção  */
+        $publicIp = $this->awsHelper->ec2->makeImage(
+           projectNameBuild:  $this->projectNameBuild,
+            scriptUserData:  $this->twigHelper->getTwig()->render('/script_start_ec2.txt.twig',
+                [ 'repositoryUrl' => $repositoryUrl ]
+            ),
        );
 
-       dd([
-           'repository' => $repositoryUrl,
-           'url' => $publicIp,
-       ]);
+        /** Notifica sistema - informando os procedimentos que foram realizados .*/
+        $this->awsHelper->sns->notifyGeneratorCompletion(json_encode([
+            'client' => $this->projectData->user->id,
+            'app' => $this->projectData->app->id,
+            'repository' => $repositoryUrl,
+            'url' => $publicIp,
+            'email' => $this->projectData->user->email,
+            'password' => $this->projectNameBuild,
+        ]));
 
 
-        //$this->commandsHelper->runCommands();
-        //$this->commandsHelper->startContainer();
-        //$this->commandsHelper->installDependencies();
 
+        //dd($this->completedProcesses);
 
-        dd($this->completedProcesses);
         return true;
     }
 
