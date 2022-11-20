@@ -82,8 +82,8 @@ class ValidateDiagram
         foreach ($methods as $method)
         {
             $methodsFilter[] = (object)[
-                'name' => '',
-                'description' => ''
+                'name' => $method->name,
+                'description' => $method->description
             ];
         }
 

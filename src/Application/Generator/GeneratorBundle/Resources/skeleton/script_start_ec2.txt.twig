@@ -19,11 +19,13 @@ Content-Disposition: attachment; filename="userdata.txt"
 
 #!/bin/bash
 
-(cd home/ubuntu/ && git clone https://github.com/alanazeredoguedes/clean-project.git app )
+(cd home/ubuntu/ && git clone {{ repositoryUrl }} app )
 
 sleep 10
 
-( cd home/ubuntu/app/ && ./start.sh )
+( cd home/ubuntu/app/ && ./start_container.sh )
+
+( cd home/ubuntu/app/ && ./start_project.sh )
 
 
 

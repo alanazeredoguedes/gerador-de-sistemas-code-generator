@@ -54,6 +54,7 @@ class MakeRepository
      */
     public function getTemplate(): string
     {
+        //dd($this->class);
         return $this->twigHelper->getTwig()->render($this->template, [
             'baseNamespace' => $this->baseNamespace,
             'className' => $this->class->className,

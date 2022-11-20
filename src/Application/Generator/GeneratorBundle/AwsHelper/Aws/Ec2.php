@@ -22,12 +22,18 @@ class Ec2
     }
 
 
-    public function makeImage(string $scriptUserData = "")
+
+
+
+
+    public function makeImage(string $projectNameBuild, string $scriptUserData = "")
     {
 
         $this->scriptUserData = $scriptUserData;
 
-        $result = $this->runInstances();
+
+        /** Sobre uma instancia */
+        $result = $this->runInstances($projectNameBuild);
         $instanceId = $result['Instances'][0]['InstanceId'];
 
         //dd($result, $instanceId);
@@ -52,8 +58,8 @@ class Ec2
 
        $result = $this->associateElasticIpAddressInInstance(elasticIp: $elasticIpId, instanceId: $instanceId);
 
-       dd($result, $publicIp);
-
+       return $publicIp;
+       //dd($result, $publicIp);
     }
 
 
@@ -74,7 +80,7 @@ class Ec2
     }
 
 
-    protected function runInstances(): AwsResult
+    protected function runInstances($projectNameBuild): AwsResult
     {
 
         return $this->client->runInstances([
@@ -89,8 +95,12 @@ class Ec2
                     'ResourceType' => 'instance',
                     'Tags' => [
                         [
-                            'Key' => 'Name',
+                            'Key' => 'Group',
                             'Value' => 'generate-instance',
+                        ],
+                        [
+                            'Key' => 'Name',
+                            'Value' => "$projectNameBuild",
                         ],
                     ],
                 ],
@@ -107,19 +117,39 @@ class Ec2
         ]);
     }
 
-    public function describeInstances($instanceId): AwsResult
+    public function describeInstances($instanceId = ''): AwsResult
     {
+        if( $instanceId )
+            return $this->client->describeInstances([
+               'InstanceIds' => [ $instanceId ],
+            ]);
 
-        return $this->client->describeInstances([
-           'InstanceIds' => [$instanceId],
-           /*'Filters' => [
-               [
-                   'Name' => '',
-                   'Values' => ['',''],
-               ],
-           ],*/
-        ]);
+        return $this->client->describeInstances([]);
+    }
+
+    public function getInstanceByTagName()
+    {
+        $instances = $this->client->describeInstances([]);
+
+        //dd($instances);
+        foreach ($instances as $instance) {
+            $instance = $instance['Instances'][0];
+            foreach ($instance['Tags'] as $tag){
+
+            }
+        }
+
+
+
+
+
 
     }
+
+
+
+
+
+
 
 }

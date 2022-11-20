@@ -385,11 +385,31 @@ class Generator
 
 
 
+        $this->awsHelper->ec2->getInstanceByTagName();
+
+        dd('aqui');
+
+
+        exit;
+
         $repositoryUrl = $this->gitHelper->commitProject();
-        dd($repositoryUrl);
+        //dd($repositoryUrl);
 
 
-        //$this->awsHelper->ec2->makeImage();
+        $scriptUserData = $this->twigHelper->getTwig()->render('/script_start_ec2.txt.twig',
+            [ 'repositoryUrl' => $repositoryUrl ]
+        );
+
+
+       $publicIp = $this->awsHelper->ec2->makeImage(
+           $this->projectNameBuild,
+           $scriptUserData,
+       );
+
+       dd([
+           'repository' => $repositoryUrl,
+           'url' => $publicIp,
+       ]);
 
 
         //$this->commandsHelper->runCommands();
