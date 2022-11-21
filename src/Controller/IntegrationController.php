@@ -45,7 +45,7 @@ class IntegrationController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function home(Request $request): JsonResponse
     {
-        $this->json('home');
+        return $this->json('home');
     }
 
 
