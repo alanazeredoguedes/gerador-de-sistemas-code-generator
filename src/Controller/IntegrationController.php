@@ -15,19 +15,13 @@ use Symfony\Component\Serializer\Serializer;
 class IntegrationController extends AbstractController
 {
 
-    #[Route('/', name: 'app_integration')]
+    #[Route('/generate', name: 'app_integration')]
     public function index(Request $request): JsonResponse
     {
-        //$jsonStructureDir = $this->getParameter('kernel.project_dir') . '/public/data.json';
-        //$jsonStructure = json_decode( file_get_contents($jsonStructureDir) );
-
-
-        //$requestBody =  $request->getContent();
-        //$requestBody = json_decode($requestBody);
 
         $awsHelper = new AwsHelper();
 
-        $message = $awsHelper->sqs->getMessageCodeGenetate(false);
+        $message = $awsHelper->sqs->getMessageCodeGenetate(true);
         if(!$message['status'])
             return $this->json(['status' => false, 'message' => 'Sem dados para processar!' ]);
 
@@ -46,6 +40,14 @@ class IntegrationController extends AbstractController
             'status' => $status
         ]);
     }
+
+
+    #[Route('/', name: 'app_home')]
+    public function home(Request $request): JsonResponse
+    {
+        $this->json('home');
+    }
+
 
     public function convertJsonProject($json)
     {
