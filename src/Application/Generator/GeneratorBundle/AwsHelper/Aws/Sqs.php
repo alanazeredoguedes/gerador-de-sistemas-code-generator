@@ -2,6 +2,7 @@
 
 namespace App\Application\Generator\GeneratorBundle\AwsHelper\Aws;
 
+
 use Aws\Sqs\SqsClient;
 use Aws\Result as AwsResult;
 use \Aws\Exception\AwsException;;
@@ -14,24 +15,34 @@ class Sqs
         protected array $credentials,
     ){
         $this->client = new SqsClient([
-            'region' => 'us-east-1',
+            'region' => 'sa-east-1',
             'version' => '2012-11-05',
             'credentials' => $credentials,
         ]);
     }
 
-
-
-    public function getMessageCodeGenetate(bool $deleteMessage = true): array
+    public function getMessageGdsGerarSistema(bool $deleteMessage = true): object
     {
-        $queueUrl = "https://sqs.us-east-1.amazonaws.com/538747456615/gds-generate-code";
+        $queueUrl = "https://sqs.sa-east-1.amazonaws.com/538747456615/gds-gerar-sistema";
 
         return $this->getMessage(queueUrl: $queueUrl, deleteMessage: $deleteMessage);
     }
 
+    public function getMessageGdsSistemaGeradoRepositorio(bool $deleteMessage = true): object
+    {
+        $queueUrl = "https://sqs.sa-east-1.amazonaws.com/538747456615/gds-sistema-gerado-repositorio";
 
+        return $this->getMessage(queueUrl: $queueUrl, deleteMessage: $deleteMessage);
+    }
 
-    public function getMessage(string $queueUrl, bool $deleteMessage = true): array
+    public function getMessageGdsSistemaGeradoServidor(bool $deleteMessage = true): object
+    {
+        $queueUrl = "https://sqs.sa-east-1.amazonaws.com/538747456615/gds-sistema-gerado-servidor";
+
+        return $this->getMessage(queueUrl: $queueUrl, deleteMessage: $deleteMessage);
+    }
+
+    public function getMessage(string $queueUrl, bool $deleteMessage = true): object
     {
 
         try{
@@ -40,28 +51,24 @@ class Sqs
             ]);
 
             if( empty( $result->get('Messages') ) )
-                return [ 'status' => false, 'message' => 'Sem mensagens'];;
+                return (object) [ 'status' => false, 'message' => 'Sem mensagens'];
 
-            $message = $result->get('Messages')[0]['Body'];
+            $message = json_decode( $result->get('Messages')[0]['Body'] );
 
             if($deleteMessage)
-                $response = $this->client->deleteMessage([
+                $this->client->deleteMessage([
                     'QueueUrl' => $queueUrl,
                     'ReceiptHandle' => $result->get('Messages')[0]['ReceiptHandle']
                 ]);
 
-            return [
-                'status' => true,
-                'message' => $message
-            ];
+            return (object) [ 'status' => true, 'message' => $message];
 
         }catch (AwsException $exception){
-            return [
-                'status' => false,
-                'message' => 'Erro ao consultar mensagens'
-            ];
+            return (object) [ 'status' => false, 'message' => 'Erro ao consultar mensagens'];
         }
 
     }
+
+
 
 }

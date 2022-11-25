@@ -4,6 +4,7 @@ namespace App\Application\Generator\GeneratorBundle\AwsHelper\Aws;
 
 use Aws\Sns\SnsClient;
 use Aws\Result as AwsResult;
+use Symfony\Component\HttpFoundation\Request;
 
 
 class Sns
@@ -14,32 +15,54 @@ class Sns
         protected array $credentials,
     ){
         $this->client = new SnsClient([
-            'region' => 'us-east-1',
+            'region' => 'sa-east-1',
             'version' => '2010-03-31',
             'credentials' => $credentials,
         ]);
     }
 
-
-    public function sentToNotifyGenerator($message): bool
+    public function confirmSubscribe(Request $request): void
     {
-        $topic = 'arn:aws:sns:us-east-1:538747456615:notifyGenerator';
+        $content =  json_decode( $request->getContent() );
+
+        if(!isset($content) || !isset($content->Type))
+            return;
+
+        if($content->Type !== "SubscriptionConfirmation")
+            return;
+
+        $this->client->confirmSubscription([
+            'Token' => $content->Token,
+            'TopicArn' => $content->TopicArn,
+        ]);
+    }
+
+    public function sendMessageGdsGerarSistema($message): bool
+    {
+        $topic = 'arn:aws:sns:sa-east-1:538747456615:gds-gerar-sistema';
         $response = $this->sendMenssage(message: $message, topic: $topic);
         $statusCode = $response['@metadata']['statusCode'];
 
         return $statusCode === 200;
     }
 
-
-    public function notifyGeneratorCompletion($message): bool
+    public function sendMessageGdsSistemaGeradoRepositorio($message): bool
     {
-        $topic = 'arn:aws:sns:us-east-1:538747456615:notifyGeneratorCompletion';
+        $topic = 'arn:aws:sns:sa-east-1:538747456615:gds-sistema-gerado-repositorio';
         $response = $this->sendMenssage(message: $message, topic: $topic);
         $statusCode = $response['@metadata']['statusCode'];
 
         return $statusCode === 200;
     }
 
+    public function sendMessageGdsSistemaGeradoServidor($message): bool
+    {
+        $topic = 'arn:aws:sns:sa-east-1:538747456615:gds-sistema-gerado-servidor';
+        $response = $this->sendMenssage(message: $message, topic: $topic);
+        $statusCode = $response['@metadata']['statusCode'];
+
+        return $statusCode === 200;
+    }
 
 
     public function sendMenssage($message, $topic): AwsResult
@@ -49,6 +72,5 @@ class Sns
             'TopicArn' => $topic,
         ]);
     }
-
 
 }

@@ -6,6 +6,9 @@ use App\Application\Generator\GeneratorBundle\AwsHelper\Aws\CodeCommit;
 use App\Application\Generator\GeneratorBundle\AwsHelper\Aws\Ec2;
 use App\Application\Generator\GeneratorBundle\AwsHelper\Aws\Sns;
 use App\Application\Generator\GeneratorBundle\AwsHelper\Aws\Sqs;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
 class AwsHelper
 {
@@ -14,7 +17,9 @@ class AwsHelper
     public Sns $sns;
     public Sqs $sqs;
 
-    public function __construct()
+    public function __construct(
+        protected ContainerBagInterface $containerInterface,
+    )
     {
 
         $this->ec2 = new Ec2(
@@ -36,35 +41,18 @@ class AwsHelper
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     protected function getCredentials(): array
     {
         return [
-            'key' => 'REDACTED_AWS_KEY',
-            'secret' => 'No08qKH1ntfsXRO219qtEkUy/NNB8BhbT26af9Cm',
+            'key' => $this->containerInterface->get('aws.key') ?
+                $this->containerInterface->get('aws.key') : '',
+            'secret' => $this->containerInterface->get('aws.secret') ?
+                $this->containerInterface->get('aws.secret') : '',
         ];
     }
-
-
 
 }

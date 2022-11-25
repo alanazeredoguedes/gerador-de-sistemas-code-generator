@@ -45,15 +45,12 @@ class Generator
     /** @var string Nome do pacote onde será construído as bundles */
     protected string $packageName = 'Schema';
 
-    protected array $completedProcesses;
-
     /** Helpers */
     protected GitHelper $gitHelper;
     protected CommandsHelper $commandsHelper;
     protected StringHelper $stringHelper;
     protected TwigHelper $twigHelper;
     protected ValidateDiagram $validateDiagram;
-    protected AwsHelper $awsHelper;
 
     protected string $projectName;
     protected string $projectNameBuild;
@@ -64,14 +61,13 @@ class Generator
     public function __construct(
         protected $projectData,
         protected string $kernelDirectory,
+        protected AwsHelper $awsHelper,
     )
     {
-
         $this->projectName = $this->projectData->app->name;
         $this->projectDescription = $this->projectData->app->description;
         $this->class = $this->projectData->app->diagram->structure->class;
         $this->relationships = $this->projectData->app->diagram->structure->relationships;
-
 
 
         $this->initDependencies();
@@ -116,9 +112,6 @@ class Generator
             relationships:        $this->relationships
         );
 
-
-        $this->awsHelper = new AwsHelper();
-
     }
 
     public final function startGenerator(): bool
@@ -132,7 +125,6 @@ class Generator
 
         /** Clona o repositório base e troca o nome do diretório conforme o projeto atual */
         $this->gitHelper->cloneBaseRepository();
-        $this->completedProcesses[] = 'cloneBaseRepository - Clona o repositório base e troca o nome do diretório conforme o projeto atual';
 
         /** Cria o arquivo docker-compose */
         $makeDockerCompose = new MakeDockerCompose(
@@ -141,8 +133,6 @@ class Generator
             projectName: $this->stringHelper->filterProjectDirName($this->projectName)
         );
         $makeDockerCompose->make();
-        $this->completedProcesses[] = 'MakeDockerCompose - Cria o arquivo docker-compose';
-
 
         /** Cria o arquivo .env */
         $makeEnvFile = new MakeEnv(
@@ -150,8 +140,6 @@ class Generator
             twigHelper: $this->twigHelper,
         );
         $makeEnvFile->make();
-        $this->completedProcesses[] = 'MakeEnv - Cria o arquivo .env';
-
 
         /** Criar o arquivo de configuração do Sonata Admin. [sonata_admin.yaml] */
         $makeSonataAdmin = new MakeSonataAdmin(
@@ -161,8 +149,6 @@ class Generator
             projectDescription:  $this->projectDescription
         );
         $makeSonataAdmin->make();
-        $this->completedProcesses[] = 'MakeSonataAdmin - Criar o arquivo de configuração do Sonata Admin. [sonata_admin.yaml]';
-
 
         /** Criar o arquivo de documentação do repositorio. [.README.md] */
         $makeReadme = new MakeReadme(
@@ -172,8 +158,6 @@ class Generator
             projectDescription:  $this->projectDescription,
         );
         $makeReadme->make();
-        $this->completedProcesses[] = 'MakeReadme - Criar o arquivo de documentação do repositorio. [.README.md] ';
-
 
         /** Array com definiçaão de todas as bunldes para ser usado para gerar arquivos de registro no final do script */
         $registerBundle = [ /* "packageName" => "", //"bundleName" => "", //"className" => "" */ ];
@@ -202,9 +186,11 @@ class Generator
             /** Bundle Directory = /var/www/public/projects/project-dir/src/Application/Package/ExempleBundle */
             $bundleDirectory = $this->projectDirectory . "/src/Application/" . $this->packageName . "/" . $bundleName;
 
-
             /** Bundle Namespace = App\Application\Package\ExempleBundle */
             $baseNamespace = "App\Application\\" . $this->packageName . "\\" . "$bundleName" ;
+
+
+
 
             /** Utilizado para Realizar registro em arquivos de configuração no final do script */
             $registerBundle[] = [
@@ -221,8 +207,6 @@ class Generator
                 twigHelper:       $this->twigHelper,
             );
             $makeBundleDir->make();
-            $this->completedProcesses[] = 'MakeBundleDir - Cria a estrutura de diretórios da bundle da classe atual ';
-
 
             /** Cria o arquivo de registro da bundle atual */
             $makeApplicationFileBundle = new MakeApplicationFileBundle(
@@ -233,8 +217,6 @@ class Generator
                 packageName:  $this->packageName
             );
             $makeApplicationFileBundle->make();
-            $this->completedProcesses[] = 'MakeApplicationFileBundle - Cria o arquivo de registro da bundle atual ';
-
 
             /** Gera o arquivo de rota da bundle */
             $makeRouterFileBundle = new MakeRouterFileBundle(
@@ -245,8 +227,6 @@ class Generator
                 packageName: $this->packageName
             );
             $makeRouterFileBundle->make();
-            $this->completedProcesses[] = 'MakeRouterFileBundle - Gera o arquivo de rota da bundle ';
-
 
             /** Gera o arquivo de Repositório */
             $makeRepository = new MakeRepository(
@@ -256,8 +236,6 @@ class Generator
                 class:  $class,
             );
             $makeRepository->make();
-            $this->completedProcesses[] = 'MakeRepository - Gera o arquivo de Repositório';
-
 
             /** Gera o arquivo da controladora Administrativa */
             $makeAdminController = new MakeAdminController(
@@ -267,7 +245,6 @@ class Generator
                 class:  $class,
             );
             $makeAdminController->make();
-            $this->completedProcesses[] = 'MakeAdminController - Gera o arquivo da controladora Administrativa ';
 
             /** Gera o arquivo da controladora Api */
             $makeApiController = new MakeApiController(
@@ -278,7 +255,6 @@ class Generator
                 configuration: $configuration,
             );
             $makeApiController->make();
-
 
             /** Gera o arquivo da controladora Auth — Caso seja uma classe provedora de usuário */
 //            $makeAuthController = new MakeAuthController();
@@ -304,7 +280,6 @@ class Generator
             );
             $makeWebViews->make();
 
-
             /** Gera o arquivo Admin */
             $makeAdmin = new MakeAdmin(
                 twigHelper:  $this->twigHelper,
@@ -314,8 +289,6 @@ class Generator
                 configuration: $configuration,
             );
             $makeAdmin->make();
-            $this->completedProcesses[] = 'MakeAdmin - Gera o arquivo Admin do Sonata';
-
 
             /** Gera o arquivo da Entidade */
             $makeEntity = new MakeEntity(
@@ -327,10 +300,8 @@ class Generator
             );
             $makeEntity->make();
 
-
             /** Gera o arquivo Form Type */
             //$makeForm = new MakeFormType();
-
         }
 
         /** Registra a bundle no arquivo de bundles [bundles.php] */
@@ -344,7 +315,6 @@ class Generator
         );
         $makeStartProjectScript->make();
 
-
         $makeBaseWeb = new MakeBaseWebViews(
             twigHelper:  $this->twigHelper,
             projectDirectory: $this->projectDirectory,
@@ -353,7 +323,6 @@ class Generator
         );
         $makeBaseWeb->make();
 
-
         /** Registra a bundle no arquivo de bundles [bundles.php] */
         $makeRegisterBundle = new MakeRegisterBundle(
             twigHelper:  $this->twigHelper,
@@ -361,8 +330,6 @@ class Generator
             registerBundle: $registerBundle,
         );
         $makeRegisterBundle->make();
-        $this->completedProcesses[] = 'MakeRegisterBundle - Registra a bundle no arquivo de bundles [bundles.php] ';
-
 
         /** Registra a bundle no arquivo do doctrine [doctrine.yaml] */
         $makeRegisterDoctrine = new MakeRegisterDoctrine(
@@ -371,8 +338,6 @@ class Generator
             registerBundle: $registerBundle,
         );
         $makeRegisterDoctrine->make();
-        $this->completedProcesses[] = 'MakeRegisterDoctrine - Registra a bundle no arquivo do doctrine [doctrine.yaml] ';
-
 
         /** Registra a bundle no arquivo de rotas [routes.yaml] */
         $makeRegisterRoute = new MakeRegisterRoute(
@@ -381,8 +346,6 @@ class Generator
             registerBundle: $registerBundle,
         );
         $makeRegisterRoute->make();
-        $this->completedProcesses[] = 'MakeRegisterRoute - Registra a bundle no arquivo de rotas [routes.yaml] ';
-
 
         /** Registra o serviço da bundle no arquivo de serviços [services.yaml] */
         $makeRegisterService = new MakeRegisterService(
@@ -391,37 +354,45 @@ class Generator
             registerBundle: $registerBundle,
         );
         $makeRegisterService->make();
-        $this->completedProcesses[] = 'MakeRegisterService - Registra o serviço da bundle no arquivo de serviços [services.yaml] ';
 
 
-        /** DEPLOY Integracao */
+
+
+        /** ************************************************************************
+         * Integração Do Projeto Gerado */
 
 
         /** Faz commit do projeto no gitHub e retorna url do repositório */
         $repositoryUrl = $this->gitHelper->commitProject();
 
+        /** Notifica sistema sobre geração do repositório */
+        $this->awsHelper->sns->sendMessageGdsSistemaGeradoRepositorio(json_encode([
+            'client' => $this->projectData->user->id,
+            'app' => $this->projectData->app->id,
+            'repository' => $repositoryUrl,
+        ]));
+
 
         /** Cria instancia da ec2 e coloca o projeto em produção  */
-        $publicIp = $this->awsHelper->ec2->makeImage(
+        /*$publicIp = $this->awsHelper->ec2->makeImage(
            projectNameBuild:  $this->projectNameBuild,
             scriptUserData:  $this->twigHelper->getTwig()->render('/script_start_ec2.txt.twig',
                 [ 'repositoryUrl' => $repositoryUrl ]
             ),
-       );
+        );*/
 
-        /** Notifica sistema - informando os procedimentos que foram realizados .*/
-        $this->awsHelper->sns->notifyGeneratorCompletion(json_encode([
+
+        /** Notifica sistema sobre geração do servidor */
+        /*$this->awsHelper->sns->sendMessageGdsSistemaGeradoServidor(json_encode([
             'client' => $this->projectData->user->id,
             'app' => $this->projectData->app->id,
-            'repository' => $repositoryUrl,
             'url' => $publicIp,
             'email' => $this->projectData->user->email,
             'password' => $this->projectNameBuild,
-        ]));
+        ]));*/
 
 
-
-        //dd($this->completedProcesses);
+        dd($repositoryUrl);
 
         return true;
     }

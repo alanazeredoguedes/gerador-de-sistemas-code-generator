@@ -38,7 +38,7 @@ services:
     container_name: nginx-gerador-de-sistemas-code-generator
     restart: unless-stopped
     ports:
-      - "9002:80"
+      - "9003:80"
     volumes:
       - ./:/var/www
       - ./docker/nginx:/etc/nginx/conf.d

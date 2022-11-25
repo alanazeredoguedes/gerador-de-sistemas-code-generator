@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Application\Generator\GeneratorBundle\AwsHelper\AwsHelper;
 use App\Application\Generator\GeneratorBundle\Generator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,26 +15,27 @@ use Symfony\Component\Serializer\Serializer;
 
 class IntegrationController extends AbstractController
 {
+    protected AwsHelper $awsHelper;
+
+    public function __construct(
+        protected ContainerBagInterface $containerInterface,
+    )
+    {
+        $this->awsHelper = new AwsHelper($this->containerInterface);
+    }
 
     #[Route('/generate', name: 'app_integration')]
     public function index(Request $request): JsonResponse
     {
-
-        $awsHelper = new AwsHelper();
-
-        $message = $awsHelper->sqs->getMessageCodeGenetate(true);
-        if(!$message['status'])
+        $message = $this->awsHelper->sqs->getMessageGdsGerarSistema();
+        if(!$message->status)
             return $this->json(['status' => false, 'message' => 'Sem dados para processar!' ]);
 
-        $project = json_decode($message['message']);
-
-        $kernelDirectory = $this->getParameter('kernel.project_dir');
-
         $generator = new Generator(
-            projectData: $project,
-            kernelDirectory: $kernelDirectory,
+            projectData: $message->message,
+            kernelDirectory: $this->getParameter('kernel.project_dir'),
+            awsHelper: $this->awsHelper,
         );
-
         $status = $generator->startGenerator();
 
         return $this->json([

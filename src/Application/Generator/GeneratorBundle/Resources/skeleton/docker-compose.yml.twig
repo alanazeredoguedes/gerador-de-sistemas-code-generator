@@ -22,7 +22,8 @@ services:
     container_name: {{ projectName }}-nginx
     restart: unless-stopped
     ports:
-      - "80:80"
+      #- "80:80"
+      - "9008:80"
     volumes:
       - ./:/var/www
       - ./docker/nginx:/etc/nginx/conf.d
@@ -36,7 +37,8 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     ports:
-      - "3306:3306"
+      #- "3306:3306"
+      - "3312:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=root
     volumes:
