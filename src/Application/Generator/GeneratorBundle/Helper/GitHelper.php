@@ -45,10 +45,11 @@ class GitHelper
     public function commitProject(): string
     {
 
-
+// git config --global --add safe.directory /var/www/html/public/projects/2b24d495052a8ce66358eb576b8912c8
         $commands = [
             ['rm', '-rf', '.git'],
             ['git', 'init'],
+            ['git', 'config', '--global', '--add', 'safe.directory', $this->projectDirectory ],
             ['git', 'add', '.'],
             ['git', 'commit', '-m', 'First Commit - By Gerador de Sistemas'],
             ['git', 'branch', '-M', 'main'],
