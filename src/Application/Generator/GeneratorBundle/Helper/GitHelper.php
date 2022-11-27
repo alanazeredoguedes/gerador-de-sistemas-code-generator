@@ -44,9 +44,7 @@ class GitHelper
 
     public function commitProject(): string
     {
-        $dir = $this->projectDirectory;
 
-        //dd($dir);
 
         $commands = [
             ['rm', '-rf', '.git'],
@@ -61,8 +59,10 @@ class GitHelper
 
         $status = [];
         foreach ($commands as $command){
-            $status[] = $this->runCommand(commands: $command, directory: $dir);
+            $status[] = $this->runCommand(commands: $command, directory: $this->projectDirectory);
         }
+
+       $this->removeDir($this->projectDirectory);
 
         return "https://github.com/$this->organization/$this->projectNameBuild.git";
         //dd($status);

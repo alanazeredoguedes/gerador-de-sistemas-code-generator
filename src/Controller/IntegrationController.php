@@ -27,9 +27,13 @@ class IntegrationController extends AbstractController
     #[Route('/generate', name: 'app_integration')]
     public function index(Request $request): JsonResponse
     {
+       // dd($this->getParameter('kernel.project_dir'));
+
         $message = $this->awsHelper->sqs->getMessageGdsGerarSistema();
         if(!$message->status)
             return $this->json(['status' => false, 'message' => 'Sem dados para processar!' ]);
+
+        //dd($message);
 
         $generator = new Generator(
             projectData: $message->message,

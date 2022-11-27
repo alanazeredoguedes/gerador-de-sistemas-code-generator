@@ -64,6 +64,8 @@ class Generator
         protected AwsHelper $awsHelper,
     )
     {
+        //dd($this->kernelDirectory);
+
         $this->projectName = $this->projectData->app->name;
         $this->projectDescription = $this->projectData->app->description;
         $this->class = $this->projectData->app->diagram->structure->class;
@@ -354,8 +356,6 @@ class Generator
             registerBundle: $registerBundle,
         );
         $makeRegisterService->make();
-
-
 
 
         /** ************************************************************************
