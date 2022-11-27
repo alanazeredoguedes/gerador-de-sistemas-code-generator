@@ -358,6 +358,8 @@ class Generator
         $makeRegisterService->make();
 
 
+
+
         /** ************************************************************************
          * Integração Do Projeto Gerado */
 
