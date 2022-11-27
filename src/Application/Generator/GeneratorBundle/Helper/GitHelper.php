@@ -49,13 +49,13 @@ class GitHelper
         //dd($dir);
 
         $commands = [
+            ['hub', 'delete', '-y', "$this->organization/$this->projectNameBuild"],
             ['rm', '-rf', '.git'],
             ['git', 'init'],
             ['git', 'add', '.'],
             ['git', 'commit', '-m', 'First Commit - By Gerador de Sistemas'],
             ['git',  'commit', '--amend', '--reset-author'],
             ['git', 'branch', '-M', 'main'],
-            ['hub', 'delete', '-y', "$this->organization/$this->projectNameBuild"],
             ['hub', 'create'],
             ['git', 'push', "https://$this->organization:$this->organizationPass@github.com/$this->organization/$this->projectNameBuild.git"  ]
         ];
