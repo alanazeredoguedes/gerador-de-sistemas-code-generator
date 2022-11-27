@@ -44,12 +44,13 @@ class GitHelper
 
     public function commitProject(): string
     {
+        $dir = $this->projectDirectory;
 
-// git config --global --add safe.directory /var/www/html/public/projects/2b24d495052a8ce66358eb576b8912c8
+        //dd($dir);
+
         $commands = [
             ['rm', '-rf', '.git'],
             ['git', 'init'],
-            ['git', 'config', '--global', '--add', 'safe.directory', $this->projectDirectory ],
             ['git', 'add', '.'],
             ['git', 'commit', '-m', 'First Commit - By Gerador de Sistemas'],
             ['git', 'branch', '-M', 'main'],
@@ -60,21 +61,24 @@ class GitHelper
 
         $status = [];
         foreach ($commands as $command){
-            $status[] = $this->runCommand(commands: $command, directory: $this->projectDirectory);
+            $status[] = $this->runCommand(commands: $command, directory: $dir);
         }
 
-       //$this->removeDir($this->projectDirectory);
+        dd($status);
+
+        //$this->removeDir("$this->projectDirectory");
 
         return "https://github.com/$this->organization/$this->projectNameBuild.git";
         //dd($status);
     }
 
-    protected function runCommand($commands, $directory): bool
+    protected function runCommand($commands, $directory)
     {
         $process = new Process($commands);
         $process->setWorkingDirectory($directory);
         $process->run();
 
+        return $process->getOutput();
         return $process->isSuccessful();
     }
 
