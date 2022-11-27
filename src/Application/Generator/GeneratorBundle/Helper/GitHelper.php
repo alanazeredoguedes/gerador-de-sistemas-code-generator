@@ -49,13 +49,12 @@ class GitHelper
         //dd($dir);
 
         $commands = [
-            ['hub', 'delete', '-y', "$this->organization/$this->projectNameBuild"],
             ['rm', '-rf', '.git'],
             ['git', 'init'],
             ['git', 'add', '.'],
             ['git', 'commit', '-m', 'First Commit - By Gerador de Sistemas'],
-            ['git',  'commit', '--amend', '--reset-author'],
             ['git', 'branch', '-M', 'main'],
+            ['hub', 'delete', '-y', "$this->organization/$this->projectNameBuild"],
             ['hub', 'create'],
             ['git', 'push', "https://$this->organization:$this->organizationPass@github.com/$this->organization/$this->projectNameBuild.git"  ]
         ];
@@ -65,21 +64,18 @@ class GitHelper
             $status[] = $this->runCommand(commands: $command, directory: $dir);
         }
 
-        dd($status);
-
-        //$this->removeDir("$this->projectDirectory");
+         //$this->removeDir($this->projectDirectory);
 
         return "https://github.com/$this->organization/$this->projectNameBuild.git";
         //dd($status);
     }
 
-    protected function runCommand($commands, $directory)
+    protected function runCommand($commands, $directory): bool
     {
         $process = new Process($commands);
         $process->setWorkingDirectory($directory);
         $process->run();
 
-        return $process->getOutput();
         return $process->isSuccessful();
     }
 
