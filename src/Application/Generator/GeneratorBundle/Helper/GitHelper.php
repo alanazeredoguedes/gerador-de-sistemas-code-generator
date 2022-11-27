@@ -62,7 +62,7 @@ class GitHelper
             $status[] = $this->runCommand(commands: $command, directory: $this->projectDirectory);
         }
 
-       $this->removeDir($this->projectDirectory);
+       //$this->removeDir($this->projectDirectory);
 
         return "https://github.com/$this->organization/$this->projectNameBuild.git";
         //dd($status);
