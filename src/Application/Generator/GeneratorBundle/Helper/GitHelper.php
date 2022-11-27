@@ -51,6 +51,7 @@ class GitHelper
         $commands = [
             ['rm', '-rf', '.git'],
             ['git', 'init'],
+            ['git',  'commit', '--amend', '--reset-author'],
             ['git', 'add', '.'],
             ['git', 'commit', '-m', 'First Commit - By Gerador de Sistemas'],
             ['git', 'branch', '-M', 'main'],
