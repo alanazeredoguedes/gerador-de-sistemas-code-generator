@@ -64,8 +64,6 @@ class Generator
         protected AwsHelper $awsHelper,
     )
     {
-        //dd($this->kernelDirectory);
-
         $this->projectName = $this->projectData->app->name;
         $this->projectDescription = $this->projectData->app->description;
         $this->class = $this->projectData->app->diagram->structure->class;
@@ -101,6 +99,7 @@ class Generator
             projectDirectory:     $this->projectDirectory,
             projectName:          $this->stringHelper->filterProjectDirName($this->projectName),
             projectNameBuild: $this->projectNameBuild,
+            kernelDirectory:  $this->kernelDirectory,
         );
 
         $this->commandsHelper = new CommandsHelper(
@@ -364,8 +363,15 @@ class Generator
          * Integração Do Projeto Gerado */
 
 
+        $fp = fopen("$this->projectDirectory/end.txt","wb");
+        fwrite($fp,'');
+        fclose($fp);
+
+        sleep(10);
+
         /** Faz commit do projeto no gitHub e retorna url do repositório */
         $repositoryUrl = $this->gitHelper->commitProject();
+
 
         /** Notifica sistema sobre geração do repositório */
         $this->awsHelper->sns->sendMessageGdsSistemaGeradoRepositorio(json_encode([
