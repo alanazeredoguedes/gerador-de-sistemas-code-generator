@@ -162,6 +162,14 @@ class Generator
         );
         $makeReadme->make();
 
+        $makeBackground = new MakeBackground(
+            kernelDirectory:    $this->kernelDirectory,
+            projectDirectory:    $this->projectDirectory,
+        );
+        $makeBackground->make();
+
+
+
         /** Array com definiçaão de todas as bunldes para ser usado para gerar arquivos de registro no final do script */
         $registerBundle = [ /* "packageName" => "", //"bundleName" => "", //"className" => "" */ ];
 
@@ -375,8 +383,7 @@ class Generator
         $fp = fopen("$this->projectDirectory/end.txt","wb");
         fwrite($fp,'');
         fclose($fp);
-
-        sleep(10);
+        sleep(15);
 
         /** Faz commit do projeto no gitHub e retorna url do repositório */
         $repositoryUrl = $this->gitHelper->commitProject();
@@ -390,7 +397,6 @@ class Generator
         ]));
 
 
-
         /** Cria instancia da ec2 e coloca o projeto em produção  */
         $publicIp = $this->awsHelper->ec2->makeImage(
            projectNameBuild:  $this->projectNameBuild,
@@ -399,6 +405,7 @@ class Generator
             ),
         );
 
+        //sleep(90);
 
         /** Notifica sistema sobre geração do servidor */
         $this->awsHelper->sns->sendMessageGdsSistemaGeradoServidor(json_encode([

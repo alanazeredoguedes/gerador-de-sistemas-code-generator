@@ -32,31 +32,210 @@ class {{ className }}ApiController extends BaseApiController
         return $this->doctrine->getManager()->getRepository($this->getClass());
     }
 
+    /** ****************************************************************************************** */
+    /**
+     * Recupera a coleção de recursos — {{ className }}.
+     * Recupera a coleção de recursos — {{ className }}.
+     * @throws QueryException
+     */
+    #[OA\Parameter( name: 'pagina', description: 'O número da página da coleção', in: 'query', required: false, allowEmptyValue: true, example: 1)]
+    #[OA\Parameter( name: 'paginaTamanho', description: 'O tamanho da página da coleção', in: 'query', required: false, example: 10)]
+    #[OA\Response(
+        response: 200,
+        description: 'Retorna Coleção de recursos {{ className }}',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: '{{ attributePrimaryKey.attributeName }}', type: '{{ attributePrimaryKey.typeApi }}'),
+{% for attribute in attributeDefault %}
+                new OA\Property(property: '{{ attribute.attributeName }}', type: '{{ attribute.typeApi }}'),
+{% endfor %}
+{% for attribute in attributeForeignKey %}
+{% if  attribute.typeForeingKey == "owningSide"  %}
+                new OA\Property(property: '{{ attribute.attributeName }}', type: '{{ attribute.typeApi }}'{% if attribute.typeRelationship == 'many-to-many' %}, items: new OA\Items(type: '{{ attribute.inverseSide.primaryKeyTypeApi }}'){% endif %} ),
+{% endif %}
+{% endfor %}
+            ],
+            type: 'object'
+        )
+    )]
+    #[Route('', name: 'list', methods: ['GET'])]
+    #[ACL\Api(enable: true, title: 'Listar', description: 'Listar {{ className }}')]
+    public function listAction(Request $request): Response
+    {
+        $this->validateAccess(actionName: "listAction");
 
+        $filter = new FilterDoctrine(
+            repository:  $this->getRepository(),
+            request: $request,
+            attributesFilters: [
+                {% if not attributePrimaryKey.autoGenerate  %}'{{ attributePrimaryKey.attributeName }}', {% endif %}
+{% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
+{% for attribute in attributeForeignKey %}{% if  attribute.typeRelationship != "many-to-many"  %}{% if  attribute.typeForeingKey == "owningSide"  %}'{{ attribute.attributeName }}', {% endif %}{% endif %}{% endfor %}
 
+            ]
+        );
 
+        $response = $this->objectTransformer->ObjectToJson( $filter->getResult()->data, [
+            {% if not attributePrimaryKey.autoGenerate  %}'{{ attributePrimaryKey.attributeName }}', {% endif %}
+{% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
+{% for attribute in attributeForeignKey %}{% if  attribute.typeForeingKey == "owningSide"  %}'{{ attribute.attributeName }}', {% endif %}{% endfor %}
 
+        ]);
 
+        return $this->json([
+            '@id' => $request->getPathInfo(),
+            'result' => $response,
+            'paginator' => $filter->getResult()->paginator,
+        ]);
+    }
+
+    /** ****************************************************************************************** */
+    /**
+     * Cria o Recurso — {{ className }}.
+     * Cria o Recurso — {{ className }}.
+     */
+    #[OA\Response(
+        response: 201,
+        description: 'Retorna novo recurso {{ className }}',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: '{{ attributePrimaryKey.attributeName }}', type: '{{ attributePrimaryKey.typeApi }}'),
+{% for attribute in attributeDefault %}
+                new OA\Property(property: '{{ attribute.attributeName }}', type: '{{ attribute.typeApi }}'),
+{% endfor %}
+{% for attribute in attributeForeignKey %}
+{% if  attribute.typeForeingKey == "owningSide"  %}
+                new OA\Property(property: '{{ attribute.attributeName }}', type: '{{ attribute.typeApi }}'{% if attribute.typeRelationship == 'many-to-many' %}, items: new OA\Items(type: '{{ attribute.inverseSide.primaryKeyTypeApi }}'){% endif %} ),
+{% endif %}
+{% endfor %}
+            ],
+            type: 'object'
+        )
+    )]
+    #[OA\Response(response: 400, description: 'Dados inválidos!')]
+    #[OA\RequestBody(
+        description: 'Json Payload',
+        content: new OA\JsonContent(
+            properties: [
+{% if not attributePrimaryKey.autoGenerate  %}
+                new OA\Property(property: '{{ attributePrimaryKey.attributeName }}', type: '{{ attributePrimaryKey.typeApi }}'),
+{% endif %}
+{% for attribute in attributeDefault %}
+                new OA\Property(property: '{{ attribute.attributeName }}', type: '{{ attribute.typeApi }}'),
+{% endfor %}
+{% for attribute in attributeForeignKey %}
+{% if  attribute.typeForeingKey == "owningSide"  %}
+                new OA\Property(property: '{{ attribute.attributeName }}', type: '{{ attribute.typeApi }}'{% if attribute.typeRelationship == 'many-to-many' %}, items: new OA\Items(type: '{{ attribute.inverseSide.primaryKeyTypeApi }}'){% endif %} ),
+{% endif %}
+{% endfor %}
+            ],
+            type: 'object'
+        )
+    )]
+    #[Route('', name: 'create', methods: ['POST'])]
+    #[ACL\Api(enable: true, title: 'Criar', description: 'Criar {{ className }}')]
+    public function createAction(Request $request): Response
+    {
+        $this->validateAccess("createAction");
+
+        if(!$request->getContent())
+            return $this->json(['status' => false, 'message' => 'Dados inválidos!'], 400);
+
+        /** Tranforma Corpo da requisação em um objeto da classe. */
+        $object = $this->objectTransformer->JsonToObject( $this->getClass(), $request , [
+            {% if not attributePrimaryKey.autoGenerate  %}'{{ attributePrimaryKey.attributeName }}', {% endif %}
+{% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
+{% for attribute in attributeForeignKey %}{% if  attribute.typeForeingKey == "owningSide"  %}'{{ attribute.attributeName }}', {% endif %}{% endfor %}
+
+        ]);
+
+        /** Valida Restrições do objeto */
+        $errors = $this->validateConstraintErros($object);
+        if($errors)
+            return $this->json($errors);
+
+        $em = $this->doctrine->getManager();
+        $em->persist($object);
+        $em->flush();
+
+        $response = $this->objectTransformer->ObjectToJson( $object, [
+            {% if not attributePrimaryKey.autoGenerate  %}'{{ attributePrimaryKey.attributeName }}', {% endif %}
+{% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
+{% for attribute in attributeForeignKey %}{% if  attribute.typeForeingKey == "owningSide"  %}'{{ attribute.attributeName }}', {% endif %}{% endfor %}
+
+        ]);
+
+        return $this->json($response, 201);
+    }
+
+    /** ****************************************************************************************** */
+    /**
+     * Recupera o recurso — {{ className }}.
+     * Recupera o recurso — {{ className }}.
+     */
+    #[OA\Parameter( name: '{{ attributePrimaryKey.attributeName }}', description: 'Identificador do recurso', in: 'path')]
+    #[OA\Response(
+        response: 200,
+        description: 'Retorna recurso {{ className }}',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: '{{ attributePrimaryKey.attributeName }}', type: '{{ attributePrimaryKey.typeApi }}'),
+{% for attribute in attributeDefault %}
+                new OA\Property(property: '{{ attribute.attributeName }}', type: '{{ attribute.typeApi }}'),
+{% endfor %}
+{% for attribute in attributeForeignKey %}
+{% if  attribute.typeForeingKey == "owningSide"  %}
+                new OA\Property(property: '{{ attribute.attributeName }}', type: '{{ attribute.typeApi }}'{% if attribute.typeRelationship == 'many-to-many' %}, items: new OA\Items(type: '{{ attribute.inverseSide.primaryKeyTypeApi }}'){% endif %} ),
+{% endif %}
+{% endfor %}
+            ],
+            type: 'object'
+        )
+    )]
+    #[OA\Response(response: 404, description: 'Recurso não encontrado')]
+    #[Route('/{{'{'~attributePrimaryKey.attributeName~'}' }}', name: 'show', methods: ['GET'])]
+    #[ACL\Api(enable: true, title: 'Visualizar', description: 'Visualizar {{ className }}')]
+    public function showAction(Request $request, mixed ${{ attributePrimaryKey.attributeName }}): Response
+    {
+        $this->validateAccess("showAction");
+
+        $object = $this->getRepository()->find(${{ attributePrimaryKey.attributeName }});
+        if (!$object)
+            return $this->json(['status' => false, 'message' => '{{ className }} não encontrado!'], 404);
+
+        $response = $this->objectTransformer->ObjectToJson( $object, [
+            {% if not attributePrimaryKey.autoGenerate  %}'{{ attributePrimaryKey.attributeName }}', {% endif %}
+{% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
+{% for attribute in attributeForeignKey %}{% if  attribute.typeForeingKey == "owningSide"  %}'{{ attribute.attributeName }}', {% endif %}{% endfor %}
+
+        ]);
+
+        return $this->json([
+            '@id' => $request->getPathInfo(),
+            'result' => $response,
+        ]);
+    }
 
     /** ****************************************************************************************** */
     /**
      * Substitui o recurso — {{ className }}.
      * Substitui o recurso — {{ className }}.
      */
-    #[OA\Parameter( name: 'id', description: 'Identificador do recurso', in: 'path')]
+    #[OA\Parameter( name: '{{ attributePrimaryKey.attributeName }}', description: 'Identificador do recurso', in: 'path')]
     #[OA\Response(
         response: 200,
         description: 'Retorna recurso {{ className }}',
         content: new OA\JsonContent(
             properties: [
-{% for attribute in allAttributes %}
-    new OA\Property(property: '{{ attribute.attributeName }}', type: '{{ attribute.typeApi }}'),
+                new OA\Property(property: '{{ attributePrimaryKey.attributeName }}', type: '{{ attributePrimaryKey.typeApi }}'),
+{% for attribute in attributeDefault %}
+                new OA\Property(property: '{{ attribute.attributeName }}', type: '{{ attribute.typeApi }}'),
 {% endfor %}
-                new OA\Property(property: 'id', type: 'integer'),
-                new OA\Property(property: 'titulo', type: 'string', nullable: false),
-                new OA\Property(property: 'decricao', type: 'string'),
-                new OA\Property(property: 'tipoDocumento', type: 'integer'),
-                new OA\Property(property: 'autor', type: 'array', items: new OA\Items(type: 'integer')),
+{% for attribute in attributeForeignKey %}
+{% if  attribute.typeForeingKey == "owningSide"  %}
+                new OA\Property(property: '{{ attribute.attributeName }}', type: '{{ attribute.typeApi }}'{% if attribute.typeRelationship == 'many-to-many' %}, items: new OA\Items(type: '{{ attribute.inverseSide.primaryKeyTypeApi }}'){% endif %} ),
+{% endif %}
+{% endfor %}
             ],
             type: 'object'
         )
@@ -67,27 +246,37 @@ class {{ className }}ApiController extends BaseApiController
         description: 'Json Payload',
         content: new OA\JsonContent(
             properties: [
-                new OA\Property(property: 'titulo', type: 'string'),
-                new OA\Property(property: 'decricao', type: 'string'),
-                new OA\Property(property: 'tipoDocumento', type: 'integer'),
-                new OA\Property(property: 'autor', type: 'array', items: new OA\Items(type: 'integer')),
+{% if not attributePrimaryKey.autoGenerate  %}
+                new OA\Property(property: '{{ attributePrimaryKey.attributeName }}', type: '{{ attributePrimaryKey.typeApi }}'),
+{% endif %}
+{% for attribute in attributeDefault %}
+                new OA\Property(property: '{{ attribute.attributeName }}', type: '{{ attribute.typeApi }}'),
+{% endfor %}
+{% for attribute in attributeForeignKey %}
+{% if  attribute.typeForeingKey == "owningSide"  %}
+                new OA\Property(property: '{{ attribute.attributeName }}', type: '{{ attribute.typeApi }}'{% if attribute.typeRelationship == 'many-to-many' %}, items: new OA\Items(type: '{{ attribute.inverseSide.primaryKeyTypeApi }}'){% endif %} ),
+{% endif %}
+{% endfor %}
             ],
             type: 'object'
         )
     )]
-    #[Route('/{id}', name: 'edit', methods: ['PUT','PATCH'])]
+    #[Route('/{{'{'~attributePrimaryKey.attributeName~'}' }}', name: 'edit', methods: ['PUT','PATCH'])]
     #[ACL\Api(enable: true, title: 'Editar', description: 'Editar {{ className }}')]
-    public function editAction(Request $request, int $id): Response
+    public function editAction(Request $request, mixed ${{ attributePrimaryKey.attributeName }}): Response
     {
-        //$this->validateAccess("editAction");
+        $this->validateAccess("editAction");
 
-        $object = $this->getRepository()->find($id);
+        $object = $this->getRepository()->find(${{ attributePrimaryKey.attributeName }});
         if(!$object)
             return $this->json(['status' => false, 'message' => '{{ className }} não encontrado!'], 404);
 
         /** Transforma corpo da requisição em um objeto da classe. */
-        $object = $this->objectTransformer->JsonToObject($object, $request , [
-            'id', 'titulo', 'decricao', 'tipoDocumento', 'autor', 'imagem',
+        $object = $this->objectTransformer->JsonToObject($object, $request, [
+            {% if not attributePrimaryKey.autoGenerate  %}'{{ attributePrimaryKey.attributeName }}', {% endif %}
+{% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
+{% for attribute in attributeForeignKey %}{% if  attribute.typeForeingKey == "owningSide"  %}'{{ attribute.attributeName }}', {% endif %}{% endfor %}
+
         ]);
 
         /** Valida Restrições do objeto */
@@ -101,10 +290,10 @@ class {{ className }}ApiController extends BaseApiController
         $em->flush();
 
         $response = $this->objectTransformer->ObjectToJson( $object, [
-            'id', 'titulo', 'decricao',
-            'tipoDocumento' => [ 'id', 'tipo' ],
-            'autor' => [ 'id', 'nome' ],
-            'imagem' => [ 'id' ]
+            {% if not attributePrimaryKey.autoGenerate  %}'{{ attributePrimaryKey.attributeName }}', {% endif %}
+{% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
+{% for attribute in attributeForeignKey %}{% if  attribute.typeForeingKey == "owningSide"  %}'{{ attribute.attributeName }}', {% endif %}{% endfor %}
+
         ]);
 
         return $this->json($response);
@@ -115,16 +304,16 @@ class {{ className }}ApiController extends BaseApiController
     * Remove o recurso — {{ className }}.
     * Remove o recurso — {{ className }}.
     */
-    #[OA\Parameter( name: 'id', description: 'Identificador do recurso', in: 'path')]
+    #[OA\Parameter( name: '{{ attributePrimaryKey.attributeName }}', description: 'Identificador do recurso', in: 'path')]
     #[OA\Response(response: 204, description: 'Recurso excluído')]
     #[OA\Response(response: 404, description: 'Recurso não encontrado')]
-    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
+    #[Route('/{{'{'~attributePrimaryKey.attributeName~'}' }}', name: 'delete', methods: ['DELETE'])]
     #[ACL\Api(enable: true, title: 'Deletar', description: 'Deletar {{ className }}')]
-    public function deleteAction(int $id): Response
+    public function deleteAction(mixed ${{ attributePrimaryKey.attributeName }}): Response
     {
         $this->validateAccess("deleteAction");
 
-        $object = $this->getRepository()->find($id);
+        $object = $this->getRepository()->find(${{ attributePrimaryKey.attributeName }});
         if (!$object)
             return $this->json(['status' => false, 'message' => '{{ className }} não encontrado.'], 404);
 

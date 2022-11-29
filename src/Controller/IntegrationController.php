@@ -29,7 +29,7 @@ class IntegrationController extends AbstractController
     {
         //dd($this->getParameter('kernel.project_dir'));
 
-        $message = $this->awsHelper->sqs->getMessageGdsGerarSistema();
+        $message = $this->awsHelper->sqs->getMessageGdsGerarSistema(true);
         if(!$message->status)
             return $this->json(['status' => false, 'message' => 'Sem dados para processar!' ]);
 

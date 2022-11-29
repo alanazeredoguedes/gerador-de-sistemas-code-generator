@@ -4,7 +4,7 @@ namespace App\Application\Generator\GeneratorBundle\Helper;
 
 class ValidateDiagram
 {
-    public mixed $classValidate;
+    public mixed $classValidate = [];
     public mixed $relationshipsValidate;
 
 
@@ -153,7 +153,7 @@ class ValidateDiagram
 
        // dd($class, $attribute, $relationship);
 
-        $owningSideClass = $owningSideAttributeName = $owningSideprimaryKey = $inverseSideClass = $inverseSideAttributeName = $inverseSideprimaryKey = '';
+        $owningSideClass = $owningSideAttributeName = $owningSideprimaryKey = $owningSideprimaryKeyTypeApi = $inverseSideprimaryKeyTypeApi =  $inverseSideClass = $inverseSideAttributeName = $inverseSideprimaryKey = '';
         $owningSideAllAttributes = $inverseSideAllAttributes = $typeApi = '';
         $owningSideAttributesSearch = $inverseSideAttributesSearch = [];
         $multiple = $tableName = $owningSideForeingKey = $inverseSideForeingKey= false;
@@ -169,6 +169,8 @@ class ValidateDiagram
             $owningSideAttributeName = ($owningSideAttribute) ? $owningSideAttribute->attributeName : '';
             $owningSideprimaryKey = $this->getPrimaryKeyInClass($relationship->to);
             $owningSideprimaryKey = ($owningSideprimaryKey) ? $owningSideprimaryKey->attributeName : '';
+
+            //$owningSideprimaryKeyTypeApi = ($owningSideprimaryKey) ? $this->getTypeApi($owningSideprimaryKey->type) : '';
             $owningSideAllAttributes = $this->getAllAttributesOfClass($relationship->to);
             $owningSideAttributesSearch = $this->getAllAttributesSearch($relationship->to);
 
@@ -177,6 +179,7 @@ class ValidateDiagram
             $inverseSideAttributeName = ($inverseSideAttribute) ? $inverseSideAttribute->attributeName : '';
             $inverseSideprimaryKey = $this->getPrimaryKeyInClass($relationship->from);
             $inverseSideprimaryKey = ($inverseSideprimaryKey) ? $inverseSideprimaryKey->attributeName : '';
+            //$inverseSideprimaryKeyTypeApi  = ($inverseSideprimaryKey) ? $this->getTypeApi($inverseSideprimaryKey->type) : '';
             $inverseSideAllAttributes = $this->getAllAttributesOfClass($relationship->from);
             $inverseSideAttributesSearch = $this->getAllAttributesSearch($relationship->from);
 
@@ -195,6 +198,7 @@ class ValidateDiagram
                 $inverseSideClass = $this->getClassByKey($relationship->from)->className;
                 $inverseSideAttributeName = $this->getAttributeInClass($relationship->attributeOwningSide, $relationship->from)->attributeName;
                 $inverseSideprimaryKey = ( $this->getPrimaryKeyInClass($relationship->from) ) ? $this->getPrimaryKeyInClass($relationship->from)->attributeName : '';
+                $inverseSideprimaryKeyTypeApi = ( $this->getPrimaryKeyInClass($relationship->from) ) ?  $this->getTypeApi( $this->getPrimaryKeyInClass($relationship->from)->type ) : '';
                 $inverseSideForeingKey = $this->getAttributeInClass($relationship->attributeinverseSide, $relationship->to)->fieldName;
                 $inverseSideAllAttributes = $this->getAllAttributesOfClass($relationship->from);
                 $inverseSideAttributesSearch = $this->getAllAttributesSearch($relationship->from);
@@ -208,6 +212,7 @@ class ValidateDiagram
 
                 $owningSideClass = $this->getClassByKey($owningSideRelationship->from)->className;
                 $owningSideprimaryKey = ( $this->getPrimaryKeyInClass($owningSideRelationship->from) ) ? $this->getPrimaryKeyInClass($owningSideRelationship->from)->attributeName : '';
+                $owningSideprimaryKeyTypeApi = ( $this->getPrimaryKeyInClass($owningSideRelationship->from) ) ? $this->getTypeApi( $this->getPrimaryKeyInClass($owningSideRelationship->from)->type ) : '';
                 $owningSideForeingKey = $owningSideForeingKey->fieldName;
                 $owningSideAllAttributes = $this->getAllAttributesOfClass($owningSideRelationship->from);
                 $owningSideAttributesSearch = $this->getAllAttributesSearch($owningSideRelationship->from);
@@ -223,6 +228,7 @@ class ValidateDiagram
                 $owningSideClass = $this->getClassByKey($relationship->from)->className;
                 $owningSideAttributeName = $this->getAttributeInClass($relationship->attributeOwningSide, $relationship->from)->attributeName;
                 $owningSideprimaryKey = ( $this->getPrimaryKeyInClass($relationship->from) ) ? $this->getPrimaryKeyInClass($relationship->from)->attributeName : '';
+                $owningSideprimaryKeyTypeApi = ( $this->getPrimaryKeyInClass($relationship->from) ) ? $this->getTypeApi( $this->getPrimaryKeyInClass($relationship->from)->type ) : '';
                 $owningSideForeingKey = $this->getAttributeInClass($relationship->attributeinverseSide, $relationship->to)->fieldName;
                 $owningSideAllAttributes = $this->getAllAttributesOfClass($relationship->from);
                 $owningSideAttributesSearch = $this->getAllAttributesSearch($relationship->from);
@@ -235,11 +241,13 @@ class ValidateDiagram
 
                 $inverseSideClass = $this->getClassByKey($inverseSideRelationship->from)->className;;
                 $inverseSideprimaryKey = ( $this->getPrimaryKeyInClass($inverseSideRelationship->from) ) ? $this->getPrimaryKeyInClass($inverseSideRelationship->from)->attributeName : '';
+                $inverseSideprimaryKeyTypeApi = ( $this->getPrimaryKeyInClass($inverseSideRelationship->from) ) ? $this->getTypeApi( $this->getPrimaryKeyInClass($inverseSideRelationship->from)->type ) : '';
                 $inverseSideForeingKey = $inverseSideForeingKey->fieldName;
                 $inverseSideAllAttributes = $this->getAllAttributesOfClass($inverseSideRelationship->from);
                 $inverseSideAttributesSearch = $this->getAllAttributesSearch($inverseSideRelationship->from);
 
-                $typeApi = $this->getPrimaryKeyInClass($inverseSideRelationship->from)->type;
+                //$typeApi = $this->getPrimaryKeyInClass($inverseSideRelationship->from)->type;
+                $typeApi = 'object';
 
                 if($relationship->typeAssociation !== "self-referencing"){
                     $inverseSideAttributeName = $this->getAttributeInClass($inverseSideRelationship->attributeOwningSide, $inverseSideRelationship->from);
@@ -279,6 +287,7 @@ class ValidateDiagram
                 'className'=> $owningSideClass,
                 'attributeName'=> $owningSideAttributeName,
                 'primaryKey'=> $owningSideprimaryKey,
+                'primaryKeyTypeApi'=> $owningSideprimaryKeyTypeApi,
                 'foreingKey'=> $owningSideForeingKey,
                 'allAttributes' => $owningSideAllAttributes,
                 'attributeSearch' => $owningSideAttributesSearch,
@@ -288,6 +297,7 @@ class ValidateDiagram
                 'className'=> $inverseSideClass,
                 'attributeName'=> $inverseSideAttributeName,
                 'primaryKey'=> $inverseSideprimaryKey,
+                'primaryKeyTypeApi'=> $inverseSideprimaryKeyTypeApi,
                 'foreingKey'=> $inverseSideForeingKey,
                 'allAttributes' => $inverseSideAllAttributes,
                 'attributeSearch' => $inverseSideAttributesSearch,
@@ -556,7 +566,7 @@ class ValidateDiagram
             'array', 'simple_array', 'json',
             'date', 'datetime', 'datetimetz', 'time',
             'text', 'string', => 'string',
-            'object' => 'object',
+            'object' => 'array',
             default => 'string',
         };
     }

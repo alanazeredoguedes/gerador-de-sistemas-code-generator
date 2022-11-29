@@ -62,6 +62,9 @@ class MakeApiController
         return $this->twigHelper->getTwig()->render($this->template,[
             'baseNamespace' => $this->baseNamespace,
             'className' => $this->class->className,
+            'attributePrimaryKey' => $this->class->attributes->primaryKey,
+            'attributeForeignKey' => $this->class->attributes->foreignKey,
+            'attributeDefault' => $this->class->attributes->default,
             'allAttributes' => array_merge([$this->class->attributes->primaryKey],$this->class->attributes->default, $this->class->attributes->foreignKey ),
         ]);
     }
