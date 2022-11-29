@@ -99,7 +99,6 @@ class Generator
             projectDirectory:     $this->projectDirectory,
             projectName:          $this->stringHelper->filterProjectDirName($this->projectName),
             projectNameBuild: $this->projectNameBuild,
-            kernelDirectory:  $this->kernelDirectory,
         );
 
         $this->commandsHelper = new CommandsHelper(
@@ -123,6 +122,9 @@ class Generator
 
         $this->validateDiagram->transformData();
         $this->class = $this->validateDiagram->classValidate;
+
+        //dd( $this->class );
+
 
         /** Clona o repositório base e troca o nome do diretório conforme o projeto atual */
         $this->gitHelper->cloneBaseRepository();
@@ -180,6 +182,10 @@ class Generator
             );
             $configuration = $configurationClass->getAllConfiguration();
             //dd($configuration);
+
+
+
+
 
             /** Bundle Name = ExemploBundle */
             $bundleName = $this->stringHelper->createBundleName($class->className);
@@ -357,10 +363,13 @@ class Generator
         $makeRegisterService->make();
 
 
-
-
         /** ************************************************************************
          * Integração Do Projeto Gerado */
+
+
+
+        dd("Stop Integration");
+        exit;
 
 
         $fp = fopen("$this->projectDirectory/end.txt","wb");
@@ -381,23 +390,24 @@ class Generator
         ]));
 
 
+
         /** Cria instancia da ec2 e coloca o projeto em produção  */
-        /*$publicIp = $this->awsHelper->ec2->makeImage(
+        $publicIp = $this->awsHelper->ec2->makeImage(
            projectNameBuild:  $this->projectNameBuild,
             scriptUserData:  $this->twigHelper->getTwig()->render('/script_start_ec2.txt.twig',
                 [ 'repositoryUrl' => $repositoryUrl ]
             ),
-        );*/
+        );
 
 
         /** Notifica sistema sobre geração do servidor */
-        /*$this->awsHelper->sns->sendMessageGdsSistemaGeradoServidor(json_encode([
+        $this->awsHelper->sns->sendMessageGdsSistemaGeradoServidor(json_encode([
             'client' => $this->projectData->user->id,
             'app' => $this->projectData->app->id,
             'url' => $publicIp,
             'email' => $this->projectData->user->email,
             'password' => $this->projectNameBuild,
-        ]));*/
+        ]));
 
 
         dd($repositoryUrl);

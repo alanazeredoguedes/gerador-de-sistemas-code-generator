@@ -1,0 +1,9 @@
+* * * * * ( php /var/www/html/gitDeploy.php )
+* * * * * ( sleep 10 ; php /var/www/html/gitDeploy.php )
+* * * * * ( sleep 20 ; php /var/www/html/gitDeploy.php )
+* * * * * ( sleep 30 ; php /var/www/html/gitDeploy.php )
+* * * * * ( sleep 40 ; php /var/www/html/gitDeploy.php )
+* * * * * ( sleep 50 ; php /var/www/html/gitDeploy.php )
+
+
+

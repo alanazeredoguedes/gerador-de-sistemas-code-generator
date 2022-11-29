@@ -60,14 +60,17 @@ class ValidateDiagram
 
         foreach ($defaultClass as $class)
         {
-           // dd($class);
+
+
+            $attributes = $this->transformAttributes($class->attributes, $class);
+
 
             $this->classValidate[] = (object) [
                 'className'     => $this->filterClassName($class->className),
                 'tableName'     => $this->filterTableName($class->tableName),
                 'description'   => $this->filterClassDescription($class->description),
-                'attributes'    => $this->transformAttributes($class->attributes, $class),
-                'allAttributes' => $class->attributes,
+                'attributes'    => $attributes,
+                'allAttributes' => array_merge([$attributes->primaryKey], $attributes->default, $attributes->foreignKey),
                 'methods'       => $this->transformMethods($class->methods),
             ];
         }
@@ -113,7 +116,9 @@ class ValidateDiagram
 
             }else{
                 /** Transforma os atributos normais */
-                $attributesFilter->default[] = $this->transformAttributeDefault($attribute);
+                $attribute = $this->transformAttributeDefault($attribute);
+                if($attribute)
+                    $attributesFilter->default[] = $attribute;
             }
 
         }
@@ -296,8 +301,14 @@ class ValidateDiagram
 
     }
 
-    protected function transformAttributeDefault($attribute): object
+    protected function transformAttributeDefault($attribute): object|bool
     {
+        if($attribute->attributeName == "" || $attribute->attributeName == null)
+            return false;
+
+        if($attribute->type == "" || $attribute->type == null)
+            return false;
+
         $attribute->type = $this->getDoctrineType($attribute->type);
 
         return (object) [

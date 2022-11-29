@@ -15,7 +15,6 @@ class GitHelper
         protected string $projectDirectory,
         protected string $projectName,
         protected string $projectNameBuild,
-        protected string $kernelDirectory,
     )
     {
     }
@@ -43,14 +42,9 @@ class GitHelper
         }
     }
 
-    public function commit( ){
-        $status[] = $this->runCommand(commands: "php git_deploy.php", directory: $this->kernelDirectory);
-    }
-
-
     public function commitProject(): string
     {
-      /*  $dir = $this->projectDirectory;
+        $dir = $this->projectDirectory;
 
         //dd($dir);
 
@@ -68,7 +62,8 @@ class GitHelper
         $status = [];
         foreach ($commands as $command){
             $status[] = $this->runCommand(commands: $command, directory: $dir);
-        }*/
+        }
+        //dd($status);
 
         return "https://github.com/$this->organization/$this->projectNameBuild.git";
         //dd($status);
