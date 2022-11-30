@@ -384,9 +384,12 @@ class Generator
         fclose($fp);
         sleep(15);
 
-
         /** Faz commit do projeto no gitHub e retorna url do repositório */
-        $repositoryUrl = $this->gitHelper->commitProject();
+        /** Dev */
+        //$repositoryUrl = $this->gitHelper->commitProject();
+        /** Prod */
+        $repositoryUrl = $this->gitHelper->getRepositoryName();
+
 
 
         /** Notifica sistema sobre geração do repositório */

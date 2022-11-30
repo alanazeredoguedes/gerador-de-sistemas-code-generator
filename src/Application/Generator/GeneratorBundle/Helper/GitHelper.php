@@ -42,6 +42,12 @@ class GitHelper
         }
     }
 
+    public function getRepositoryName(): string
+    {
+        return "https://github.com/$this->organization/$this->projectNameBuild.git";
+    }
+
+
     public function commitProject(): string
     {
         $dir = $this->projectDirectory;
