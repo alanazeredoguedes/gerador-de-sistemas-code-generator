@@ -391,7 +391,6 @@ class Generator
         $repositoryUrl = $this->gitHelper->getRepositoryName();
 
 
-
         /** Notifica sistema sobre geração do repositório */
         $this->awsHelper->sns->sendMessageGdsSistemaGeradoRepositorio(json_encode([
             'client' => $this->projectData->user->id,
@@ -408,7 +407,7 @@ class Generator
             ),
         );
 
-        sleep(60);
+        //sleep(60);
 
         /** Notifica sistema sobre geração do servidor */
         $this->awsHelper->sns->sendMessageGdsSistemaGeradoServidor(json_encode([

@@ -28,6 +28,7 @@ class IntegrationController extends AbstractController
     public function index(Request $request): JsonResponse
     {
         //dd($this->getParameter('kernel.project_dir'));
+        $this->awsHelper->sns->confirmSubscribe($request);
 
         $message = $this->awsHelper->sqs->getMessageGdsGerarSistema(true);
         if(!$message->status)
