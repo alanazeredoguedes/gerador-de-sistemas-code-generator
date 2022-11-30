@@ -375,15 +375,15 @@ class Generator
          * Integração Do Projeto Gerado */
 
 
-
-        dd("Stop Integration");
-        exit;
+     /*   dd("Stop Integration");
+        exit;*/
 
 
         $fp = fopen("$this->projectDirectory/end.txt","wb");
         fwrite($fp,'');
         fclose($fp);
         sleep(15);
+
 
         /** Faz commit do projeto no gitHub e retorna url do repositório */
         $repositoryUrl = $this->gitHelper->commitProject();
@@ -405,7 +405,7 @@ class Generator
             ),
         );
 
-        //sleep(90);
+        sleep(60);
 
         /** Notifica sistema sobre geração do servidor */
         $this->awsHelper->sns->sendMessageGdsSistemaGeradoServidor(json_encode([
@@ -417,7 +417,7 @@ class Generator
         ]));
 
 
-        dd($repositoryUrl);
+        //dd($repositoryUrl);
 
         return true;
     }

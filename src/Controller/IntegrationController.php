@@ -45,7 +45,6 @@ class IntegrationController extends AbstractController
         ]);
     }
 
-
     #[Route('/', name: 'app_home')]
     public function home(Request $request): JsonResponse
     {
@@ -73,14 +72,10 @@ class IntegrationController extends AbstractController
         return $this->json('remove');
     }
 
-
     public function convertJsonProject($json)
     {
         $serializer = new Serializer(array(new GetSetMethodNormalizer()), array('json' => new JsonEncoder()));
         return $serializer->decode($json, 'json');
     }
-
-
-
 
 }
