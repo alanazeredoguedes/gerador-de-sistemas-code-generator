@@ -1,3 +1,4 @@
+{% set dateTypes = ['DateType', 'DateTimeType', 'TimeType'] %}
 {% if type == "primaryKey" %}
 {% if not attribute.autoGenerate %}
                 $form->add('{{ attribute.attributeName|raw }}', {{ attribute.sonataType.type }}::class, [
@@ -11,12 +12,19 @@
                 $form->add('{{ attribute.attributeName|raw }}',  {{ attribute.sonataType.type }}::class, [
                     'label' => '{{ attribute.attributeName|capitalize }}',
                     'required' => {% if attribute.nullable %} false {% else %} true {% endif %},
+                    {% if attribute.sonataType.type in dateTypes %}'widget' => 'single_text',{% endif %}
+
                 ]);
 {% endif %}
 {% endif %}
 {% if type == "foreignKey" %}
 {% if attribute.typeForeingKey == "inverseSide" %}
 {% elseif attribute.typeForeingKey == "owningSide" %}
+{% if attribute.inverseSide.className == "SonataMediaMedia" or attribute.inverseSide.className == "SonataMediaGallery" %}
+                $form->add('{{ attribute.attributeName }}', ModelListType::class,[
+                    'label' => '{{ attribute.attributeName|capitalize }}: ',
+                ]);
+{% else %}
                 $form->add('{{ attribute.attributeName }}', ModelAutocompleteType::class, [
                     'property' => '{{ attribute.inverseSide.primaryKey }}',
                     'placeholder' => 'Escolha o {{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:]  }}',
@@ -40,5 +48,6 @@
                         $datagrid->setValue($datagrid->getFilter($property)->getFormName(), null, $value);
                     },
                 ]);
+{% endif %}
 {% endif %}
 {% endif %}

@@ -1,3 +1,4 @@
+{% set dateTypes = ['DateType', 'DateTimeType', 'TimeType'] %}
 {% if type == "primaryKey" or type == "default" %}
 {% if attribute.doctrineType == "dataaaa" %}
         $datagrid->add('dataCriacao', null, [], DateType::class, [
@@ -7,9 +8,16 @@
 {% endif %}
         $datagrid->add('{{ attribute.attributeName|raw }}', null, [
             'label' => '{{ attribute.attributeName|capitalize }}',
+{% if attribute.sonataType.type in dateTypes %}
+            'field_options' => [
+                'widget' => 'single_text',
+            ],
+{% endif %}
         ]);
 {% endif %}
 {% if type == "foreignKey" %}
+{% if attribute.inverseSide.className == "SonataMediaMedia" or attribute.inverseSide.className == "SonataMediaGallery" %}
+{% else %}
 {% if attribute.typeForeingKey == "inverseSide" %}
     $datagrid->add('{{ attribute.attributeName }}', ModelFilter::class, [
         'label' => '{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:]  }}',
@@ -38,5 +46,6 @@
                 },
             ],
         ]);
+{% endif %}
 {% endif %}
 {% endif %}

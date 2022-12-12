@@ -1,10 +1,16 @@
 {% if type == "primaryKey" or type == "default" %}
                 $show->add('{{ attribute.attributeName|raw }}', null, [
                     'label' => '{{ attribute.attributeName|capitalize }}',
+                    {% if attribute.sonataType.type == "DateType" %}'format'=> 'd/m/Y',{% endif %}
+                    {% if attribute.sonataType.type == "DateTimeType" %}'format'=> 'd/m/Y h:i:s',{% endif %}
+                    {% if attribute.sonataType.type == "TimeType" %}'format'=> 'h:i:s',{% endif %}
+
                 ]);
 {% elseif type == "foreignKey" %}
 {% if attribute.typeForeingKey == "inverseSide" %}
 {% elseif attribute.typeForeingKey == "owningSide" %}
+{% if attribute.inverseSide.className == "SonataMediaMedia" or attribute.inverseSide.className == "SonataMediaGallery" %}
+{% else %}
                 $show->add('{{ attribute.attributeName }}', null, [
                     'label' => '{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:]  }}',
                     'associated_property' => function ({{ attribute.inverseSide.className }} ${{ attribute.attributeName }}) {
@@ -15,5 +21,6 @@
                         ;
                     },
                 ]);
+{% endif %}
 {% endif %}
 {% endif %}

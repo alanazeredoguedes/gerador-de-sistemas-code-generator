@@ -112,8 +112,14 @@ class MakeEntity
                     $this->construct[] = $constructor;
 
             if($data->namespaceRelationships)
-                foreach ($data->namespaceRelationships as $namespaceRelationships)
+                foreach ($data->namespaceRelationships as $namespaceRelationships){
+                    //dd($data);
+                    if( in_array($data->namespaceRelationships[0], ['SonataMediaMedia', 'SonataMediaGallery']) )
+                        continue;
+
                     $this->namespaceRelationships[] = $namespaceRelationships;
+                }
+
 
             if($data->uniqueAttributes)
                 foreach ($data->uniqueAttributes as $uniqueAttributes)

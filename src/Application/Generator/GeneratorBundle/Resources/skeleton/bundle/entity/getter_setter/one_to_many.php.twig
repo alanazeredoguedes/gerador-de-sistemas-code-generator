@@ -1,4 +1,15 @@
 {% if attribute.typeAssociation == "unidirectional" %}
+{% if attribute.inverseSide.className == "SonataMediaMedia" or attribute.inverseSide.className == "SonataMediaGallery" %}
+    public function get{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(): mixed
+    {
+        return $this->{{ attribute.attributeName }};
+    }
+
+    public function set{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(mixed ${{ attribute.attributeName }}): void
+    {
+        $this->{{ attribute.attributeName }} = ${{ attribute.attributeName }};
+    }
+{% else %}
     public function get{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(): ?{{ attribute.inverseSide.className }}
     {
         return $this->{{ attribute.attributeName }};
@@ -8,6 +19,7 @@
     {
         $this->{{ attribute.attributeName }} = ${{ attribute.attributeName }};
     }
+{% endif %}
 {% elseif attribute.typeAssociation == "self-referencing" %}
     public function getList{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }}(): Collection
     {

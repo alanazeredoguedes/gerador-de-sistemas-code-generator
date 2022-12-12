@@ -6,10 +6,12 @@ use {{ baseNamespace }}\Entity\{{ className }};
 use {{ baseNamespace }}\Form\{{ className }}Type;
 
 use App\Application\Project\ContentBundle\Controller\Base\BaseWebController;
+use App\Application\Project\ContentBundle\Service\FilterDoctrine;
 use App\Application\Project\ContentBundle\Attributes\Acl as ACL;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Doctrine\Persistence\ObjectRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 
@@ -22,14 +24,19 @@ class {{ className }}WebController extends BaseWebController
         return 'web_{{ className[:1]|lower ~ className[1:]  }}_';
     }
 
-    public function getRepository(): string
+    public function getClass(): string
     {
         return {{ className }}::class;
     }
 
+    public function getRepository($doctrine): ObjectRepository
+    {
+        return $doctrine->getManager()->getRepository($this->getClass());
+    }
+
     public function getBaseTemplate(): string
     {
-        return "@Application{{ packageName }}{{ className }}/{{ className[:1]|lower ~ className[1:]  }}/";
+        return "@Application{{ packageName }}{{ className }}/{{ className|lower  }}/";
     }
 
     #[Route('', name: 'list', methods: ['GET'])]
@@ -38,8 +45,19 @@ class {{ className }}WebController extends BaseWebController
     {
         $this->validateAccess(actionName: 'listAction');
 
+        $filter = new FilterDoctrine(
+            repository:  $this->getRepository($doctrine),
+            request: $request,
+            attributesFilters: [
+                '{{ attributePrimaryKey.attributeName }}', {% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
+{% for attribute in attributeForeignKey %}{% if  attribute.typeRelationship != "many-to-many"  %}{% if  attribute.typeForeingKey == "owningSide"  %}'{{ attribute.attributeName }}', {% endif %}{% endif %}{% endfor %}
+
+            ]
+        );
+
         return $this->render($this->getBaseTemplate() . 'list.html.twig', [
             'title' => 'Listar {{ className }}',
+            'objects' => $filter->getResult()->data,
         ]);
     }
 
@@ -49,20 +67,42 @@ class {{ className }}WebController extends BaseWebController
     {
         $this->validateAccess(actionName: 'createAction');
 
-        return $this->render($this->getBaseTemplate() . 'list.html.twig', [
+        $entityManager = $doctrine->getManager();
+
+        $data = new {{ className }}();
+        $form = $this->createForm({{ className }}Type::class, $data);
+
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+            $data = $form->getData();
+
+            $entityManager->persist($data);
+            $entityManager->flush();
+
+            return $this->redirectToRoute($this->getBaseRouter() . 'list');
+        }
+
+        return $this->render($this->getBaseTemplate() . 'create.html.twig',[
             'title' => 'Criar {{ className }}',
+            'form' => $form->createView(),
         ]);
     }
 
-    #[Route('/{id}/show', name: 'show', methods: ['GET'])]
+    #[Route('/{id}/show', name: 'show', methods: ['GET', 'POST'])]
     #[ACL\Web(enable: true, title: 'Visualizar', description: 'Visualiza {{ className }}')]
     public function showAction(ManagerRegistry $doctrine, Request $request, int $id): Response
     {
         $this->validateAccess(actionName: 'showAction');
 
+        $data = $doctrine->getRepository($this->getClass())->find($id);
+        if(!$data)
+            return $this->redirectToRoute($this->getBaseRouter() . 'list');
 
-        return $this->render($this->getBaseTemplate() . 'list.html.twig', [
+        $form = $this->createForm({{ className }}Type::class, $data);
+
+        return $this->render($this->getBaseTemplate() . 'show.html.twig',[
             'title' => 'Visualizar {{ className }}',
+            'form' => $form->createView(),
         ]);
     }
 
@@ -71,9 +111,27 @@ class {{ className }}WebController extends BaseWebController
     public function editAction(ManagerRegistry $doctrine, Request $request, int $id): Response
     {
         $this->validateAccess(actionName: 'editAction');
+        $entityManager = $doctrine->getManager();
 
-        return $this->render($this->getBaseTemplate() . 'list.html.twig', [
+        $data = $doctrine->getRepository($this->getClass())->find($id);
+        if(!$data)
+            return $this->redirectToRoute($this->getBaseRouter() . 'list');
+
+        $form = $this->createForm({{ className }}Type::class, $data);
+
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+            $data = $form->getData();
+
+            $entityManager->persist($data);
+            $entityManager->flush();
+
+            return $this->redirectToRoute($this->getBaseRouter() . 'list');
+        }
+
+        return $this->render($this->getBaseTemplate() . 'edit.html.twig',[
             'title' => 'Editar {{ className }}',
+            'form' => $form->createView(),
         ]);
     }
 
@@ -83,6 +141,17 @@ class {{ className }}WebController extends BaseWebController
     {
         $this->validateAccess(actionName: 'deleteAction');
 
+        $entityManager = $doctrine->getManager();
+
+        $data = $entityManager->getRepository($this->getClass())->find($id);
+
+        if (!$data)
+            return $this->redirectToRoute($this->getBaseRouter() . 'list');
+
+        $entityManager->remove($data);
+        $entityManager->flush();
+
+        return $this->redirectToRoute($this->getBaseRouter() . 'list');
     }
 
 }

@@ -14,6 +14,7 @@ class MakeAdmin
     protected string $template = "/bundle/admin/admin.php.twig";
 
     protected array $sonataTypeForms = [];
+
     protected array $formFields = [];
     protected array $datagridFilters = [];
     protected array $listFields = [];

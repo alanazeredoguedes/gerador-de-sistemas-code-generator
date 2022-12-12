@@ -9,7 +9,7 @@
     #[Assert\Date]
 {% endif %}
 {% if attribute.typeDoctrine is same as("datetime") or attribute.typeDoctrine is same as("datetimetz") %}
-    #[Assert\DateTime]
+    ##[Assert\DateTime]
 {% endif %}
 {% if attribute.typeDoctrine is same as("time") %}
     #[Assert\Time]

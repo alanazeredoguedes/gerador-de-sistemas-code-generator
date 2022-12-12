@@ -1,0 +1,47 @@
+<?php
+
+namespace {{ baseNamespace }}\Form;
+
+use {{ baseNamespace }}\Entity\{{ className }};
+{% for relationshipClass in namespaceRelationships %}
+{% if relationshipClass == "SonataMediaMedia" or relationshipClass == "SonataMediaGallery" %}
+{% else %}
+use App\Application\{{ packageName }}\{{ relationshipClass }}Bundle\Entity\{{ relationshipClass }};
+{% endif %}
+{% endfor %}
+
+use Sonata\AdminBundle\Form\Type\ModelType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\SubmitButton;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+/** Components Form */
+{% for type in typeForm %}
+use {{ type }};
+{% endfor %}
+
+
+class {{ className }}Type extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+
+{% for ff in formFields %}
+{{ ff|raw }}
+{% endfor %}
+
+         $builder->add('enviar', SubmitType::class, [
+            'attr' => ['type' => 'submit', 'class' => 'save btn btn-primary' ],
+        ]);
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            // Configure your form options here
+        ]);
+    }
+}

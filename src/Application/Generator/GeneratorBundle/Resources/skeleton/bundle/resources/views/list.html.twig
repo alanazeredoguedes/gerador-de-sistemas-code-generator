@@ -1,1 +1,81 @@
-<h1>{{ "{{ title }}" }}</h1>
+{{ '{% extends "@ApplicationProjectContent/base/base_web.html.twig" %}' }}
+
+{{ '{% block title %}' }}
+    {{ '{{ title }}' }}
+{{ '{% endblock %}' }}
+
+{{ '{% block stylesheets %}' }}
+    {{ '{{ parent() }}' }}
+{{ '{% endblock %}' }}
+
+{{ '{% block javascripts %}' }}
+    {{ '{{ parent() }}' }}
+{{ '{% endblock %}' }}
+
+{{ '{% block javascriptsFooter %}' }}
+    {{ '{{ parent() }}' }}
+{{ '{% endblock %}' }}
+
+{{ '{% block body %}' }}
+
+    <div class="container" style="margin-top: 2%">
+        <h2>{{ '{{ title }}' }}</h2>
+
+        <a href="{{ '{{ path("web_dashboard") }}' }}" class="btn btn-secondary" >
+            Voltar
+        </a>
+        <a href="{{ "{{ path('web_" }}{{ className[:1]|lower|raw ~ className[1:] }}{{ "_create') }}" }}" class="btn btn-primary" >
+            Cadastrar
+        </a>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">{{ attributes.primaryKey.attributeName }}</th>
+{% for attribute in attributes.default %}
+                <th scope="col">{{ attribute.attributeName }}</th>
+{% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {{ '{% for data in objects %}' }}
+                <tr>
+                    <th scope="row">
+                        {{ '{{ data.' }}{{ attributes.primaryKey.attributeName }}{{ ' }}' }}
+                    </th>
+{% for attribute in attributes.default %}
+                    <td>
+                        {{ '{{ data.' }}{{ attribute.attributeName }}{{ ' }}' }}
+                    </td>
+{% endfor %}
+                    <td>
+                        <a href="{{ '{{ path("web_' }}{{ className[:1]|lower|raw ~ className[1:] }}{{ '_show", { "id": data.' }}{{ attributes.primaryKey.attributeName }}{{ ' }) }}' }}" class="btn btn-primary">
+                            Exibir
+                        </a>
+                        <a href="{{ '{{ path("web_' }}{{ className[:1]|lower|raw ~ className[1:] }}{{ '_edit", { "id": data.' }}{{ attributes.primaryKey.attributeName }}{{ ' }) }}' }}" class="btn btn-warning">
+                            Editar
+                        </a>
+                        <a href="{{ '{{ path("web_' }}{{ className[:1]|lower|raw ~ className[1:] }}{{ '_delete", { "id": data.' }}{{ attributes.primaryKey.attributeName }}{{ ' }) }}' }}" class="btn btn-danger" >
+                            Deletar
+                        </a>
+                    </td>
+                </tr>
+            {{ '{% endfor %}' }}
+            </tbody>
+        </table>
+
+    </div>
+
+{{ '{% endblock %}' }}
+
+
+
+
+
+
+
+
+
+
+
+

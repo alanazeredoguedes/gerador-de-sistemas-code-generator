@@ -68,24 +68,21 @@ class {{ className }}ApiController extends BaseApiController
             repository:  $this->getRepository(),
             request: $request,
             attributesFilters: [
-                {% if not attributePrimaryKey.autoGenerate  %}'{{ attributePrimaryKey.attributeName }}', {% endif %}
-{% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
+                '{{ attributePrimaryKey.attributeName }}', {% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
 {% for attribute in attributeForeignKey %}{% if  attribute.typeRelationship != "many-to-many"  %}{% if  attribute.typeForeingKey == "owningSide"  %}'{{ attribute.attributeName }}', {% endif %}{% endif %}{% endfor %}
 
             ]
         );
 
         $response = $this->objectTransformer->ObjectToJson( $filter->getResult()->data, [
-            {% if not attributePrimaryKey.autoGenerate  %}'{{ attributePrimaryKey.attributeName }}', {% endif %}
-{% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
+            '{{ attributePrimaryKey.attributeName }}', {% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
 {% for attribute in attributeForeignKey %}{% if  attribute.typeForeingKey == "owningSide"  %}'{{ attribute.attributeName }}', {% endif %}{% endfor %}
 
         ]);
 
         return $this->json([
-            '@id' => $request->getPathInfo(),
-            'result' => $response,
-            'paginator' => $filter->getResult()->paginator,
+            'resultado' => $response,
+            'paginacao' => $filter->getResult()->paginator,
         ]);
     }
 
@@ -159,8 +156,7 @@ class {{ className }}ApiController extends BaseApiController
         $em->flush();
 
         $response = $this->objectTransformer->ObjectToJson( $object, [
-            {% if not attributePrimaryKey.autoGenerate  %}'{{ attributePrimaryKey.attributeName }}', {% endif %}
-{% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
+            '{{ attributePrimaryKey.attributeName }}', {% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
 {% for attribute in attributeForeignKey %}{% if  attribute.typeForeingKey == "owningSide"  %}'{{ attribute.attributeName }}', {% endif %}{% endfor %}
 
         ]);
@@ -204,16 +200,12 @@ class {{ className }}ApiController extends BaseApiController
             return $this->json(['status' => false, 'message' => '{{ className }} não encontrado!'], 404);
 
         $response = $this->objectTransformer->ObjectToJson( $object, [
-            {% if not attributePrimaryKey.autoGenerate  %}'{{ attributePrimaryKey.attributeName }}', {% endif %}
-{% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
+            '{{ attributePrimaryKey.attributeName }}', {% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
 {% for attribute in attributeForeignKey %}{% if  attribute.typeForeingKey == "owningSide"  %}'{{ attribute.attributeName }}', {% endif %}{% endfor %}
 
         ]);
 
-        return $this->json([
-            '@id' => $request->getPathInfo(),
-            'result' => $response,
-        ]);
+        return $this->json($response);
     }
 
     /** ****************************************************************************************** */
@@ -290,8 +282,7 @@ class {{ className }}ApiController extends BaseApiController
         $em->flush();
 
         $response = $this->objectTransformer->ObjectToJson( $object, [
-            {% if not attributePrimaryKey.autoGenerate  %}'{{ attributePrimaryKey.attributeName }}', {% endif %}
-{% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
+            '{{ attributePrimaryKey.attributeName }}', {% for attribute in attributeDefault %}'{{ attribute.attributeName }}', {% endfor %}
 {% for attribute in attributeForeignKey %}{% if  attribute.typeForeingKey == "owningSide"  %}'{{ attribute.attributeName }}', {% endif %}{% endfor %}
 
         ]);

@@ -54,16 +54,18 @@ class ValidateDiagram
     /** Converte os dados recebido e monta estrutura de criação. */
     public function transformData(): void
     {
+        //dd($this->class);
+
+
         $defaultClass = $this->getDefaultClass();
         $associativeClass = $this->getAssociativeClass();
         $systemClass = $this->getSystemClass();
 
+
         foreach ($defaultClass as $class)
         {
 
-
             $attributes = $this->transformAttributes($class->attributes, $class);
-
 
             $this->classValidate[] = (object) [
                 'className'     => $this->filterClassName($class->className),
@@ -74,6 +76,8 @@ class ValidateDiagram
                 'methods'       => $this->transformMethods($class->methods),
             ];
         }
+
+        //dd($this->class, $this->classValidate);
 
         //dd($this->classValidate);
     }
@@ -147,8 +151,6 @@ class ValidateDiagram
         $relationship = $this->getRelationshipByForeingKey($attribute->key);
 
         $fromClass = $this->getClassByKey($relationship->from);
-        if($fromClass->systemModel)
-            return false;
 
 
        // dd($class, $attribute, $relationship);
@@ -305,10 +307,20 @@ class ValidateDiagram
         ];
 
 
+        if($fromClass->systemModel){
+
+            if($data->inverseSide->className === "Media")
+                $data->inverseSide->className = "SonataMediaMedia";
+
+            if($data->inverseSide->className === "Galeria")
+                $data->inverseSide->className = "SonataMediaGallery";
+
+            //dd($attribute, $data);
+            //return false;
+        }
         //dd($attribute, $relationship,  $tableAssociative, $data);
 
         return $data;
-
     }
 
     protected function transformAttributeDefault($attribute): object|bool
@@ -834,6 +846,5 @@ class ValidateDiagram
         ];
 
     }
-
 
 }

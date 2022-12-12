@@ -1,1 +1,37 @@
-<h1>{{ "{{ title }}" }}</h1>
+{{ '{% extends "@ApplicationProjectContent/base/base_web.html.twig" %}' }}
+
+{{ '{% block title %}' }}
+    {{ '{{ title }}' }}
+{{ '{% endblock %}' }}
+
+{{ '{% block stylesheets %}' }}
+    {{ '{{ parent() }}' }}
+{{ '{% endblock %}' }}
+
+{{ '{% block javascripts %}' }}
+    {{ '{{ parent() }}' }}
+{{ '{% endblock %}' }}
+
+{{ '{% block javascriptsFooter %}' }}
+    {{ '{{ parent() }}' }}
+{{ '{% endblock %}' }}
+
+{{ '{% block body %}' }}
+<div class="container" style="margin-top: 2%">
+
+    <h2>{{ '{{ title }}' }}</h2>
+
+    {{ '{{ form_start(form) }}' }}
+
+    <div class="my-custom-class-for-errors">
+        {{ '{{ form_errors(form) }}' }}
+    </div>
+
+    {{ '{{ form_end(form) }}' }}
+
+    <a href="{{ "{{ path('web_" }}{{ className[:1]|lower|raw ~ className[1:] }}{{ "_list') }}" }}" class="btn btn-secondary" style="margin-top: 5px;">
+        Voltar
+    </a>
+
+</div>
+{{ '{% endblock %}' }}

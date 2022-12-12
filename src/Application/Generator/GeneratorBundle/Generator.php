@@ -16,6 +16,7 @@ use App\Application\Generator\GeneratorBundle\Maker\Bundle\Controller\MakeWebCon
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeAttribute;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeConstructor;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Entity\MakeEntity;
+use App\Application\Generator\GeneratorBundle\Maker\Bundle\Form\MakeFormType;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\MakeApplicationFileBundle;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\MakeBundleDir;
 use App\Application\Generator\GeneratorBundle\Maker\Bundle\Repository\MakeRepository;
@@ -125,7 +126,6 @@ class Generator
 
         //dd( $this->class );
 
-
         /** Clona o repositório base e troca o nome do diretório conforme o projeto atual */
         $this->gitHelper->cloneBaseRepository();
 
@@ -169,7 +169,6 @@ class Generator
         $makeBackground->make();
 
 
-
         /** Array com definiçaão de todas as bunldes para ser usado para gerar arquivos de registro no final do script */
         $registerBundle = [ /* "packageName" => "", //"bundleName" => "", //"className" => "" */ ];
 
@@ -192,9 +191,6 @@ class Generator
             //dd($configuration);
 
 
-
-
-
             /** Bundle Name = ExemploBundle */
             $bundleName = $this->stringHelper->createBundleName($class->className);
 
@@ -203,8 +199,6 @@ class Generator
 
             /** Bundle Namespace = App\Application\Package\ExempleBundle */
             $baseNamespace = "App\Application\\" . $this->packageName . "\\" . "$bundleName" ;
-
-
 
 
             /** Utilizado para Realizar registro em arquivos de configuração no final do script */
@@ -275,7 +269,6 @@ class Generator
 //            $makeAuthController = new MakeAuthController();
 //            $makeAuthController->make();
 
-
             /** Gera o arquivo da controladora FrontEnd */
             $makeWebController = new MakeWebController(
                 twigHelper:  $this->twigHelper,
@@ -316,7 +309,14 @@ class Generator
             $makeEntity->make();
 
             /** Gera o arquivo Form Type */
-            //$makeForm = new MakeFormType();
+            $makeForm = new MakeFormType(
+                twigHelper:  $this->twigHelper,
+                bundleDirectory:  $bundleDirectory,
+                baseNamespace:  $baseNamespace,
+                class:  $class,
+                configuration: $configuration,
+            );
+            $makeForm->make();
         }
 
         /** Registra a bundle no arquivo de bundles [bundles.php] */
@@ -374,10 +374,8 @@ class Generator
         /** ************************************************************************
          * Integração Do Projeto Gerado */
 
-
-     /*   dd("Stop Integration");
+       /* dd("Stop Integration");
         exit;*/
-
 
         $fp = fopen("$this->projectDirectory/end.txt","wb");
         fwrite($fp,'');
@@ -390,7 +388,6 @@ class Generator
         /** Prod */
         $repositoryUrl = $this->gitHelper->getRepositoryName();
 
-
         /** Notifica sistema sobre geração do repositório */
         $this->awsHelper->sns->sendMessageGdsSistemaGeradoRepositorio(json_encode([
             'client' => $this->projectData->user->id,
@@ -398,6 +395,8 @@ class Generator
             'repository' => $repositoryUrl,
         ]));
 
+        /*dd("Stop Integration");
+        exit;*/
 
         /** Cria instancia da ec2 e coloca o projeto em produção  */
         $publicIp = $this->awsHelper->ec2->makeImage(
@@ -406,8 +405,6 @@ class Generator
                 [ 'repositoryUrl' => $repositoryUrl ]
             ),
         );
-
-        //sleep(60);
 
         /** Notifica sistema sobre geração do servidor */
         $this->awsHelper->sns->sendMessageGdsSistemaGeradoServidor(json_encode([

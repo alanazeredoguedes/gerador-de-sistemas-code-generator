@@ -1,0 +1,39 @@
+{% set dateTypes = ['DateType', 'DateTimeType', 'TimeType'] %}
+{% if type == "primaryKey" %}
+{% if not attribute.autoGenerate %}
+        $builder->add('{{ attribute.attributeName|raw }}', {{ attribute.sonataType.type }}::class, [
+            'label' => '{{ attribute.attributeName|capitalize }}',
+            'required' => true,
+            'attr' => ['class' => 'form-control mb-2'],
+        ]);
+{% endif %}
+{% endif %}
+{% if type == "default" %}
+{% if not attribute.autoGenerate %}
+        $builder->add('{{ attribute.attributeName|raw }}', {{ attribute.sonataType.type }}::class, [
+            'label' => '{{ attribute.attributeName|capitalize }}',
+            'required' => {% if attribute.nullable %} false {% else %} true {% endif %},
+            'attr' => ['class' => '{% if attribute.sonataType.type == 'CheckboxType' %}form-check-input{% else %} form-control mb-2 {% endif %}'],
+            {% if attribute.sonataType.type in dateTypes %}'widget' => 'single_text',{% endif %}
+
+        ]);
+{% endif %}
+{% endif %}
+{% if type == "foreignKey" %}
+{% if attribute.typeForeingKey == "inverseSide" %}
+{% elseif attribute.typeForeingKey == "owningSide" %}
+{% if attribute.inverseSide.className == "SonataMediaMedia" or attribute.inverseSide.className == "SonataMediaGallery" %}
+{% else %}
+        $builder->add('{{ attribute.attributeName }}', EntityType::class, [
+            'class' => {{ attribute.inverseSide.className }}::class,
+            'choice_label' => function ($data) {
+                return $data->get{{ attribute.inverseSide.primaryKey[:1]|upper ~ attribute.inverseSide.primaryKey[1:]  }}() {% for attributeSearch in attribute.inverseSide.attributeSearch %}.' - '.$data->get{{ attributeSearch[:1]|upper ~ attributeSearch[1:] }}(){% endfor %};
+            },
+            'label' => '{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:]  }}',
+            'required' => {% if attribute.nullable %} false {% else %} true {% endif %},
+            'multiple' => {% if attribute.multiple %} true {% else %} false {% endif %},
+            'attr' => ['class' => 'form-control mb-2 form-select'],
+        ]);
+{% endif %}
+{% endif %}
+{% endif %}

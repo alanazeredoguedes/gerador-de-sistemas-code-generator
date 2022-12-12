@@ -61,6 +61,9 @@ class MakeWebController
             'baseNamespace' => $this->baseNamespace,
             'className' => $this->class->className,
             'packageName' => $this->packageName,
+            'attributePrimaryKey' => $this->class->attributes->primaryKey,
+            'attributeForeignKey' => $this->class->attributes->foreignKey,
+            'attributeDefault' => $this->class->attributes->default,
         ]);
     }
 }

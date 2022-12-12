@@ -1,4 +1,8 @@
 {% if attribute.typeAssociation == "unidirectional" %}
+{% if attribute.inverseSide.className == "SonataMediaMedia" or attribute.inverseSide.className == "SonataMediaGallery" %}
+    #[ORM\ManyToOne(targetEntity: {{ attribute.inverseSide.className }}::class, cascade: ['persist'])]
+    private mixed ${{ attribute.attributeName }};
+{% else %}
 {% if not attribute.nullable %}
     #[Assert\NotNull]
     #[Assert\NotBlank]
@@ -6,6 +10,7 @@
     #[ORM\ManyToOne(targetEntity: {{ attribute.inverseSide.className }}::class)]
     #[ORM\JoinColumn(name: '{{ attribute.attributeName }}_id', referencedColumnName: '{{ attribute.inverseSide.primaryKey }}', onDelete: 'SET NULL')]
     private {{ attribute.inverseSide.className }}|null ${{ attribute.attributeName }} = null;
+{% endif %}
 {% elseif attribute.typeAssociation == "self-referencing" %}
     #[ORM\OneToMany(mappedBy: '{{ attribute.attributeName }}', targetEntity: {{ attribute.className }}::class)]
     private Collection $list{{ attribute.attributeName[:1]|upper ~ attribute.attributeName[1:] }};

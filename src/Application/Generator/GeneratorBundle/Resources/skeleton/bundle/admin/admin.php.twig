@@ -15,6 +15,7 @@ use Sonata\AdminBundle\Show\ShowMapper;
 
 /** Components Form */
 use Sonata\DoctrineORMAdminBundle\Filter\ModelFilter;
+use Sonata\AdminBundle\Form\Type\ModelListType;
 {% for type in typeForm %}
 use {{ type }};
 {% endfor %}
@@ -24,7 +25,7 @@ final class {{ className }}Admin extends BaseAdmin
 
     public function toString(object $object): string
     {
-        return $object instanceof {{ className }} ? $object->get{{ primaryKey[:1]|upper ~ primaryKey[1:] }}()
+        return $object instanceof {{ className }} ? $object->get{{ primaryKey[:1]|upper ~ primaryKey[1:] }}().''
         {% for attr in allAttributes %}{% if attr.attributeSearch %}.' - '.$object->get{{ attr.attributeName[:1]|upper ~ attr.attributeName[1:] }}(){% endif %}{% endfor %}
 
         : '';

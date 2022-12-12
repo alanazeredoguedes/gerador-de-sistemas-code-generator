@@ -39,27 +39,38 @@ class MakeWebViews
     {
         //dd($this->bundleDirectory, $this->baseNamespace, $this->filePath,  $this->class);
 
+        //dd($this->class);
+
         /** Create File Views Create */
         $fp = fopen($this->filePath.'create.html.twig', "a+");
-        $template = $this->getTemplate('create.html.twig', []);
+        $template = $this->getTemplate('create.html.twig', [
+            'className' => $this->class->className,
+        ]);
         fwrite($fp, $template);
         fclose($fp);
 
         /** Create File Views Edit */
         $fp = fopen($this->filePath.'edit.html.twig', "a+");
-        $template = $this->getTemplate('edit.html.twig', []);
+        $template = $this->getTemplate('edit.html.twig', [
+            'className' => $this->class->className,
+        ]);
         fwrite($fp, $template);
         fclose($fp);
 
         /** Create File Views Show */
         $fp = fopen($this->filePath.'show.html.twig', "a+");
-        $template = $this->getTemplate('show.html.twig', []);
+        $template = $this->getTemplate('show.html.twig', [
+            'className' => $this->class->className,
+        ]);
         fwrite($fp, $template);
         fclose($fp);
 
         /** Create File Views List */
         $fp = fopen($this->filePath.'list.html.twig', "a+");
-        $template = $this->getTemplate('list.html.twig', []);
+        $template = $this->getTemplate('list.html.twig', [
+            'className' => $this->class->className,
+            'attributes' => $this->class->attributes,
+        ]);
         fwrite($fp, $template);
         fclose($fp);
 
