@@ -1,6 +1,6 @@
 {% if attribute.typeAssociation == "unidirectional" %}
     #[ORM\JoinTable(name: '{{ attribute.tableName }}')]
-    #[ORM\JoinColumn(name: '{{ attribute.owningSide.foreingKey }}', referencedColumnName: '{{ attribute.owningSide.primaryKey }}', onDelete: 'SET NULL')]
+    #[ORM\JoinColumn(name: '{{ attribute.owningSide.foreingKey }}', referencedColumnName: '{{ attribute.owningSide.primaryKey }}')] // , onDelete: 'SET NULL'
     #[ORM\InverseJoinColumn(name: '{{ attribute.inverseSide.foreingKey }}', referencedColumnName: '{{ attribute.inverseSide.primaryKey }}')]
     #[ORM\ManyToMany(targetEntity: {{ attribute.inverseSide.className }}::class)]
     private Collection ${{ attribute.owningSide.attributeName }};
@@ -9,14 +9,14 @@
     private Collection $list{{ attribute.owningSide.attributeName[:1]|upper ~ attribute.owningSide.attributeName[1:] }};
 
     #[ORM\JoinTable(name: '{{ attribute.tableName }}')]
-    #[ORM\JoinColumn(name: '{{ attribute.owningSide.foreingKey }}', referencedColumnName: '{{ attribute.owningSide.primaryKey }}', onDelete: 'SET NULL')]
+    #[ORM\JoinColumn(name: '{{ attribute.owningSide.foreingKey }}', referencedColumnName: '{{ attribute.owningSide.primaryKey }}')] // , onDelete: 'SET NULL'
     #[ORM\InverseJoinColumn(name: '{{ attribute.inverseSide.foreingKey }}', referencedColumnName: '{{ attribute.owningSide.primaryKey }}')]
     #[ORM\ManyToMany(targetEntity: {{ attribute.owningSide.className }}::class, inversedBy: 'list{{ attribute.owningSide.attributeName[:1]|upper ~ attribute.owningSide.attributeName[1:] }}')]
     private Collection ${{ attribute.owningSide.attributeName }};
 {% elseif attribute.typeAssociation == "bidirectional" %}
 {% if attribute.typeForeingKey == "owningSide"  %}
     #[ORM\JoinTable(name: '{{ attribute.tableName }}')]
-    #[ORM\JoinColumn(name: '{{ attribute.owningSide.foreingKey }}', referencedColumnName: '{{ attribute.owningSide.primaryKey }}', onDelete: 'SET NULL')]
+    #[ORM\JoinColumn(name: '{{ attribute.owningSide.foreingKey }}', referencedColumnName: '{{ attribute.owningSide.primaryKey }}')] // , onDelete: 'SET NULL'
     #[ORM\InverseJoinColumn(name: '{{ attribute.inverseSide.foreingKey }}', referencedColumnName: '{{ attribute.inverseSide.primaryKey }}')]
     #[ORM\ManyToMany(targetEntity: {{ attribute.inverseSide.className }}::class, inversedBy: '{{ attribute.inverseSide.attributeName }}')]
     private Collection ${{ attribute.owningSide.attributeName }};

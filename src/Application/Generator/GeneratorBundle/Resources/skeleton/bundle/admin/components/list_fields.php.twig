@@ -1,9 +1,15 @@
 {% if type == "primaryKey" or type == "default" %}
+{% if attribute.sonataType.type == "CheckboxType" %}
+        $list->add('{{ attribute.attributeName|raw }}', null, [
+{% else %}
         $list->addIdentifier('{{ attribute.attributeName|raw }}', null, [
+{% endif %}
             'label' => '{{ attribute.attributeName|capitalize }}',
             {% if attribute.sonataType.type == "DateType" %}'format'=> 'd/m/Y',{% endif %}
             {% if attribute.sonataType.type == "DateTimeType" %}'format'=> 'd/m/Y h:i:s',{% endif %}
             {% if attribute.sonataType.type == "TimeType" %}'format'=> 'h:i:s',{% endif %}
+            {% if attribute.sonataType.type == "CheckboxType" %}'editable' => true,{% endif %}
+            {% if attribute.sonataType.type == "CheckboxType" %}'inverse' => false,{% endif %}
 
         ]);
 {% elseif type == "foreignKey" %}

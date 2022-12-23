@@ -1,5 +1,26 @@
 sonata_admin:
+
     title: 'Admin'
+    #title_logo: 'img/logo.png'
+    search: true
+    show_mosaic_button: true
+
+    global_search:
+        empty_boxes: hide # hide or fade
+
+#    options:
+#        sort_admins: false
+#        js_debug: false
+#        confirm_exit: true
+#        skin: 'skin-black'
+#        use_select2: true
+#        use_icheck: true
+#        use_bootlint: false
+#        use_stickyforms: true
+#        default_group: default
+#        dropdown_number_groups_per_colums: 2
+
+
     dashboard:
         blocks:
             - { type: sonata.admin.block.admin_list, position: center }
@@ -98,3 +119,5 @@ sonata_block:
     blocks:
         sonata.admin.block.admin_list:
             contexts: [admin]
+        sonata.block.service.text:
+        sonata.admin.block.stats:

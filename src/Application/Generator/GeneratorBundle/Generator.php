@@ -44,7 +44,7 @@ class Generator
     protected string $projectDirectory;
 
     /** @var string Nome do pacote onde será construído as bundles */
-    protected string $packageName = 'Schema';
+    protected string $packageName = 'Internit';
 
     /** Helpers */
     protected GitHelper $gitHelper;
@@ -384,9 +384,9 @@ class Generator
 
         /** Faz commit do projeto no gitHub e retorna url do repositório */
         /** Dev */
-        //$repositoryUrl = $this->gitHelper->commitProject();
+        $repositoryUrl = $this->gitHelper->commitProject();
         /** Prod */
-        $repositoryUrl = $this->gitHelper->getRepositoryName();
+        //$repositoryUrl = $this->gitHelper->getRepositoryName();
 
         /** Notifica sistema sobre geração do repositório */
         $this->awsHelper->sns->sendMessageGdsSistemaGeradoRepositorio(json_encode([
@@ -395,10 +395,19 @@ class Generator
             'repository' => $repositoryUrl,
         ]));
 
-        /*dd("Stop Integration");
-        exit;*/
+        /** Dev */
+        $this->awsHelper->sns->sendMessageGdsSistemaGeradoServidor(json_encode([
+            'client' => $this->projectData->user->id,
+            'app' => $this->projectData->app->id,
+            'url' => 'teste',
+            'email' => $this->projectData->user->email,
+            'password' => $this->projectNameBuild,
+        ]));
 
-        /** Cria instancia da ec2 e coloca o projeto em produção  */
+        dd("Stop Integration", $repositoryUrl);
+        exit;
+
+        /** Cria instancia da ec2 e coloca o projeto em produção */
         $publicIp = $this->awsHelper->ec2->makeImage(
            projectNameBuild:  $this->projectNameBuild,
             scriptUserData:  $this->twigHelper->getTwig()->render('/script_start_ec2.txt.twig',
