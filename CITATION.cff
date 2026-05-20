@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+title: "GDS - Gerador de Sistemas (Code Generator): Motor de geração de código e deploy"
+message: "Se você usar este software, por favor cite-o conforme abaixo."
+type: software
+authors:
+  - family-names: "Guedes"
+    given-names: "Alan Azeredo"
+    email: "alanguedesdev@gmail.com"
+    affiliation: "Centro Universitário La Salle do Rio de Janeiro (Unilasalle-RJ)"
+date-released: 2022-12-23
+version: "1.0.0"
+keywords:
+  - "model-driven development"
+  - "code generation"
+  - "PHP"
+  - "Symfony"
+  - "Twig"
+  - "AWS EC2"
+  - "Docker"
+  - "DevOps"
+  - "low-code"
+license: MIT
+repository-code: "https://github.com/alanazeredoguedes/gerador-de-sistemas-code-generator"
+abstract: >
+  Motor de geração de código (Symfony 6 + Twig) do GDS — Gerador de Sistemas,
+  plataforma de Model-Driven Development desenvolvida como Trabalho de Conclusão
+  de Curso em Sistemas de Informação na Unilasalle-RJ. Este componente recebe a
+  modelagem objeto-relacional persistida pelo backend e produz uma aplicação web
+  completa, incluindo código Symfony, container Docker, deploy em AWS EC2 e
+  publicação automática em repositório GitHub.
