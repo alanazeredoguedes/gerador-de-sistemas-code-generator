@@ -7,6 +7,14 @@ authors:
     given-names: "Alan Azeredo"
     email: "alanguedesdev@gmail.com"
     affiliation: "Centro Universitário La Salle do Rio de Janeiro (Unilasalle-RJ)"
+    orcid: "https://orcid.org/0009-0006-7007-2351"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.20316548
+    description: Concept DOI (always resolves to the latest version)
+  - type: doi
+    value: 10.5281/zenodo.20316549
+    description: DOI for version 1.0.0-tcc-2022
 date-released: 2022-12-23
 version: "1.0.0"
 keywords:
